@@ -1,0 +1,114 @@
+'use client';
+
+import content from '@/data/content.json';
+import SeriousModeToggle from '@/components/SeriousModeToggle';
+
+interface Experience {
+  id: string;
+  date: string;
+  professionalTitle: string;
+  company: string;
+  resumeBulletPoints: string[];
+  isResumeWorthy: boolean;
+}
+
+interface Skill {
+  name: string;
+  level: number;
+  category: string;
+}
+
+export default function ResumePage() {
+  const experiences = (content.experiences as Experience[]).filter(exp => exp.isResumeWorthy);
+  const skills = content.skills as Skill[];
+
+  return (
+    <>
+      <SeriousModeToggle />
+      <main className="max-w-[8.5in] mx-auto p-8 bg-white text-black font-sans print:p-0">
+      {/* Header */}
+      <header className="border-b-2 border-black pb-4 mb-6">
+        <h1 className="text-3xl font-bold">{content.personal.name}</h1>
+        <p className="text-xl text-gray-700">{content.personal.title}</p>
+        
+        <div className="mt-3 flex flex-wrap gap-4 text-sm">
+          <a href={`mailto:${content.contact.email}`} className="text-blue-700 hover:underline">
+            {content.contact.email}
+          </a>
+          <span>|</span>
+          <a href={`https://${content.contact.github}`} className="text-blue-700 hover:underline">
+            {content.contact.github}
+          </a>
+          <span>|</span>
+          <a href={`https://${content.contact.linkedin}`} className="text-blue-700 hover:underline">
+            {content.contact.linkedin}
+          </a>
+        </div>
+      </header>
+
+      {/* Summary */}
+      <section className="mb-6">
+        <h2 className="text-lg font-bold border-b border-black mb-3">PROFESSIONAL SUMMARY</h2>
+        <p className="text-sm leading-relaxed">
+          Experienced developer specializing in geospatial applications, cloud-native solutions, 
+          and modern web technologies. Proven track record of delivering enterprise-grade applications 
+          using Azure, PostGIS, MapLibre, and React/Next.js stack.
+        </p>
+      </section>
+
+      {/* Experience */}
+      <section className="mb-6">
+        <h2 className="text-lg font-bold border-b border-black mb-3">PROFESSIONAL EXPERIENCE</h2>
+        
+        {experiences.map((exp) => (
+          <div key={exp.id} className="mb-4">
+            <div className="flex justify-between items-baseline">
+              <h3 className="font-bold">{exp.professionalTitle}</h3>
+              <span className="text-sm text-gray-600">{exp.date}</span>
+            </div>
+            <p className="text-sm italic text-gray-700 mb-2">{exp.company}</p>
+            <ul className="list-disc list-inside text-sm space-y-1">
+              {exp.resumeBulletPoints.map((point: string, i: number) => (
+                <li key={i}>{point}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </section>
+
+      {/* Skills */}
+      <section className="mb-6">
+        <h2 className="text-lg font-bold border-b border-black mb-3">TECHNICAL SKILLS</h2>
+        
+        <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-sm">
+          {/* Group by category */}
+          {['cloud', 'frontend', 'backend', 'database', 'mapping', 'language'].map(category => {
+            const categorySkills = skills.filter(s => s.category === category);
+            if (categorySkills.length === 0) return null;
+            
+            return (
+              <div key={category} className="flex">
+                <span className="font-semibold capitalize w-24">{category}:</span>
+                <span>{categorySkills.map(s => s.name).join(', ')}</span>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Print Button - Hidden when printing */}
+      <div className="print:hidden mt-8 text-center">
+        <button 
+          onClick={() => window.print()}
+          className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+        >
+          🖨️ Print / Save as PDF
+        </button>
+        <p className="mt-4 text-sm text-gray-500">
+          Use your browser&apos;s print function (Cmd/Ctrl + P) for best results
+        </p>
+      </div>
+    </main>
+    </>
+  );
+}

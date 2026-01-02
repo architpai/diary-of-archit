@@ -1,0 +1,87 @@
+{
+  "personal": {
+    "name": "Archit Pai",
+    "title": "Developer",
+    "tagline": "Building cool stuff, one bug at a time",
+    "hobbies": [
+      {
+        "id": "pokemon",
+        "title": "Pokémon TCG",
+        "narrative": "Some kids collected sports cards. I collected pocket monsters. Still do, actually. My Charizard collection is worth more than my first salary (don't tell anyone).",
+        "icon": "🎴"
+      },
+      {
+        "id": "gym",
+        "title": "Gym & Fitness",
+        "narrative": "Remember when I said I'd start going to the gym 'next Monday'? Well, I finally did. Now I'm addicted to the pain. Send help.",
+        "icon": "💪"
+      },
+      {
+        "id": "llm",
+        "title": "Local LLM Experiments",
+        "narrative": "Running AI models on my MacBook Pro M4 Pro like a mad scientist. My laptop sounds like a jet engine sometimes, but hey, at least it's learning.",
+        "icon": "🤖"
+      }
+    ],
+    "currentSetup": "MacBook Pro M4 Pro"
+  },
+  "experiences": [
+    {
+      "id": "exp-1",
+      "date": "2024",
+      "professionalTitle": "Senior Developer",
+      "company": "Tech Company",
+      "diaryNarrative": "Finally got promoted! Mom was so proud she called all the relatives. ALL of them. My phone didn't stop ringing for a week.",
+      "resumeBulletPoints": [
+        "Led development of enterprise geospatial applications",
+        "Architected cloud-native solutions using Azure services",
+        "Mentored junior developers and conducted code reviews"
+      ],
+      "isResumeWorthy": true,
+      "doodleType": "celebration"
+    },
+    {
+      "id": "exp-2",
+      "date": "2023",
+      "professionalTitle": "Full Stack Developer",
+      "company": "Previous Company",
+      "diaryNarrative": "Discovered the magic of PostGIS. Spent way too many late nights debugging spatial queries. Coffee became my best friend.",
+      "resumeBulletPoints": [
+        "Developed indoor mapping solutions with PostGIS and MapLibre",
+        "Built React-based web applications with real-time updates",
+        "Implemented 3D visualization features for indoor navigation"
+      ],
+      "isResumeWorthy": true,
+      "doodleType": "coding"
+    },
+    {
+      "id": "exp-3",
+      "date": "2022",
+      "professionalTitle": "Junior Developer",
+      "company": "First Job",
+      "diaryNarrative": "Day 1: Broke production. Day 2: Fixed it. Day 3-365: Pretended Day 1 never happened. Classic.",
+      "resumeBulletPoints": [
+        "Contributed to frontend development using React and TypeScript",
+        "Participated in agile development processes",
+        "Gained experience in cloud deployment with Azure"
+      ],
+      "isResumeWorthy": true,
+      "doodleType": "newbie"
+    }
+  ],
+  "skills": [
+    { "name": "Azure", "level": 90, "category": "cloud" },
+    { "name": "PostGIS", "level": 85, "category": "database" },
+    { "name": "MapLibre", "level": 88, "category": "mapping" },
+    { "name": "React", "level": 92, "category": "frontend" },
+    { "name": "Next.js", "level": 85, "category": "frontend" },
+    { "name": "TypeScript", "level": 88, "category": "language" },
+    { "name": "Node.js", "level": 80, "category": "backend" },
+    { "name": "Python", "level": 75, "category": "language" }
+  ],
+  "contact": {
+    "email": "archit@example.com",
+    "github": "github.com/archit",
+    "linkedin": "linkedin.com/in/archit"
+  }
+}

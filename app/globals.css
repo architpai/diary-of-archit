@@ -1,26 +1,430 @@
 @import "tailwindcss";
 
+/* ============================================
+   DIARY OF A DEVELOPER - GLOBAL STYLES
+   ============================================ */
+
+/* Custom CSS Variables */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Paper & Ink Colors */
+  --paper: #FFF9E5;
+  --paper-lines: #a8c5e2;
+  --ink: #2D2D2D;
+  --margin-red: #E63946;
+  --margin-blue: #3B5998;
+  --correction: #E63946;
+
+  /* Typography */
+  --font-handwritten: 'Patrick Hand', cursive;
+  --font-clean: 'Inter', system-ui, sans-serif;
+
+  /* Spacing */
+  --margin-width: 60px;
+  --line-height: 32px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-margin-red: var(--margin-red);
+  --color-margin-blue: var(--margin-blue);
+  --color-correction: var(--correction);
+  --font-handwritten: var(--font-handwritten);
+  --font-clean: var(--font-clean);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ============================================
+   NOTEBOOK PAPER BACKGROUND
+   ============================================ */
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-handwritten);
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Lined Paper Effect */
+.notebook-paper {
+  background-color: var(--paper);
+  background-image:
+    /* Horizontal lines */
+    repeating-linear-gradient(transparent,
+      transparent 31px,
+      var(--paper-lines) 31px,
+      var(--paper-lines) 32px);
+  background-position: 0 0;
+  position: relative;
+}
+
+/* Red Margin Line */
+.notebook-paper::before {
+  content: '';
+  position: fixed;
+  left: var(--margin-width);
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--margin-red);
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Hole Punches */
+.notebook-paper::after {
+  content: '';
+  position: fixed;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 30px;
+  background-image:
+    radial-gradient(circle at center, transparent 8px, var(--paper) 8px),
+    radial-gradient(circle at center, #ddd 10px, transparent 10px);
+  background-size: 30px 150px;
+  background-position: center 50px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* ============================================
+   WOBBLY BORDERS (Hand-drawn effect)
+   ============================================ */
+.wobbly-border {
+  border: 2px solid var(--ink);
+  border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  position: relative;
+}
+
+.wobbly-border-light {
+  border: 2px solid var(--ink);
+  border-radius: 30px 5px 25px 5px/5px 25px 5px 30px;
+}
+
+/* Animated wobble for hover states */
+@keyframes wobble {
+
+  0%,
+  100% {
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  }
+
+  25% {
+    border-radius: 15px 225px 15px 255px/255px 15px 225px 15px;
+  }
+
+  50% {
+    border-radius: 225px 15px 255px 15px/15px 255px 15px 225px;
+  }
+
+  75% {
+    border-radius: 15px 255px 15px 225px/225px 15px 255px 15px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.wobbly-border:hover {
+  animation: wobble 0.5s ease-in-out;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+.handwritten {
+  font-family: var(--font-handwritten);
+}
+
+.clean-font {
+  font-family: var(--font-clean);
+}
+
+.diary-title {
+  font-family: var(--font-handwritten);
+  font-size: clamp(2rem, 8vw, 5rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.diary-subtitle {
+  font-family: var(--font-handwritten);
+  font-size: clamp(1rem, 3vw, 1.5rem);
+}
+
+/* Underline effect */
+.underline-sketch {
+  position: relative;
+  display: inline-block;
+}
+
+.underline-sketch::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 3px;
+  background-color: var(--ink);
+  transform: rotate(-1deg) skewX(-10deg);
+}
+
+/* ============================================
+   POST-IT NOTE STYLES
+   ============================================ */
+.post-it {
+  background: linear-gradient(135deg, #FFEB3B 0%, #FDD835 100%);
+  padding: 1rem;
+  box-shadow:
+    2px 2px 4px rgba(0, 0, 0, 0.2),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.1);
+  transform: rotate(-2deg);
+  position: relative;
+}
+
+.post-it::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 25px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), transparent);
+}
+
+.post-it-pink {
+  background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
+  color: white;
+}
+
+.post-it-blue {
+  background: linear-gradient(135deg, #87CEEB 0%, #4682B4 100%);
+}
+
+.post-it-green {
+  background: linear-gradient(135deg, #98FB98 0%, #32CD32 100%);
+}
+
+/* ============================================
+   TIMELINE STYLES
+   ============================================ */
+.timeline {
+  position: relative;
+  padding-left: calc(var(--margin-width) + 40px);
+}
+
+.timeline-line {
+  position: absolute;
+  left: calc(var(--margin-width) + 10px);
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--margin-blue);
+}
+
+.timeline-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: var(--margin-red);
+  border: 3px solid var(--paper);
+  position: absolute;
+  left: calc(var(--margin-width) + 3px);
+  z-index: 20;
+}
+
+/* ============================================
+   DOODLE ANIMATIONS (Flipbook style)
+   ============================================ */
+@keyframes doodle-idle {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes doodle-wave {
+
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(-10deg);
+  }
+
+  75% {
+    transform: rotate(10deg);
+  }
+}
+
+.doodle-animate {
+  animation: doodle-idle 1s ease-in-out infinite;
+}
+
+.doodle-wave {
+  animation: doodle-wave 0.5s ease-in-out infinite;
+}
+
+/* ============================================
+   SERIOUS MODE STYLES
+   ============================================ */
+body.serious-mode {
+  background-color: #fff;
+  color: #000;
+  font-family: var(--font-clean);
+}
+
+body.serious-mode .notebook-paper::before,
+body.serious-mode .notebook-paper::after {
+  display: none;
+}
+
+body.serious-mode .notebook-paper {
+  background-image: none;
+  background-color: #fff;
+}
+
+body.serious-mode .handwritten {
+  font-family: var(--font-clean);
+}
+
+body.serious-mode .doodle-animate,
+body.serious-mode .floating-doodle,
+body.serious-mode .post-it {
+  display: none !important;
+}
+
+body.serious-mode .wobbly-border {
+  border-radius: 4px;
+  animation: none;
+}
+
+body.serious-mode .diary-title {
+  font-family: var(--font-clean);
+  font-weight: 700;
+}
+
+/* ============================================
+   PRINT STYLES (ATS-Friendly Resume)
+   ============================================ */
+@media print {
+  * {
+    background: none !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  body {
+    font-family: 'Inter', Arial, sans-serif !important;
+    font-size: 11pt;
+    line-height: 1.4;
+  }
+
+  /* Hide non-resume elements */
+  .notebook-paper::before,
+  .notebook-paper::after,
+  .floating-doodle,
+  .post-it,
+  .doodle-animate,
+  .serious-mode-toggle,
+  .post-it-nav,
+  .diary-narrative,
+  .hobby-section,
+  .wobbly-border {
+    display: none !important;
+  }
+
+  .notebook-paper {
+    background: none !important;
+  }
+
+  /* Clean resume styling */
+  .resume-only {
+    display: block !important;
+  }
+
+  h1 {
+    font-size: 18pt;
+    font-weight: bold;
+    margin-bottom: 4pt;
+  }
+
+  h2 {
+    font-size: 14pt;
+    font-weight: bold;
+    border-bottom: 1px solid #000;
+    margin-top: 12pt;
+    margin-bottom: 6pt;
+  }
+
+  h3 {
+    font-size: 12pt;
+    font-weight: bold;
+  }
+
+  ul {
+    margin-left: 1em;
+    list-style-type: disc;
+  }
+
+  a {
+    text-decoration: none;
+    color: #000 !important;
+  }
+
+  .page-break {
+    page-break-before: always;
+  }
+}
+
+/* ============================================
+   RESPONSIVE UTILITIES
+   ============================================ */
+@media (max-width: 768px) {
+  :root {
+    --margin-width: 30px;
+    --line-height: 28px;
+  }
+
+  .notebook-paper::after {
+    display: none;
+  }
+
+  .timeline {
+    padding-left: calc(var(--margin-width) + 30px);
+  }
+
+  .timeline-line {
+    left: calc(var(--margin-width) + 5px);
+  }
+
+  .timeline-dot {
+    left: calc(var(--margin-width) - 1px);
+  }
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--paper);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ink);
+  border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  border: 2px solid var(--paper);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--margin-blue);
 }
