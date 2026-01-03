@@ -9,12 +9,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Diary of a Developer | Archit Pai",
+  title: "Diary of Archit | Portfolio",
   description: "A creative portfolio in the style of a Wimpy Kid diary. Developer, builder, and perpetual learner.",
-  keywords: ["developer", "portfolio", "React", "Next.js", "Azure", "PostGIS", "MapLibre"],
+  keywords: ["Archit Pai", "developer", "portfolio", "React", "Next.js", "Azure", "PostGIS", "MapLibre"],
   authors: [{ name: "Archit Pai" }],
   openGraph: {
-    title: "Diary of a Developer",
+    title: "Diary of Archit",
     description: "A creative portfolio in the style of a Wimpy Kid diary",
     type: "website",
   },

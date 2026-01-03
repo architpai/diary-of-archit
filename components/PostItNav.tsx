@@ -9,19 +9,21 @@ interface NavItem {
   label: string;
   icon: string;
   color: string;
+  splashColor: string;
 }
 
 const navItems: NavItem[] = [
-  { id: 'hero', label: 'Home', icon: '🏠', color: '#FFEB3B' },
-  { id: 'timeline', label: 'Journey', icon: '📅', color: '#FF69B4' },
-  { id: 'skills', label: 'Skills', icon: '💪', color: '#87CEEB' },
-  { id: 'sneakpeek', label: 'About Me', icon: '👀', color: '#98FB98' },
-  { id: 'contact', label: 'Contact', icon: '📧', color: '#FFB347' },
+  { id: 'hero', label: 'Home', icon: '🏠', color: '#FFEB3B', splashColor: '#FFD700' },
+  { id: 'timeline', label: 'Journey', icon: '📅', color: '#FF69B4', splashColor: '#FF1493' },
+  { id: 'skills', label: 'Skills', icon: '💪', color: '#87CEEB', splashColor: '#4682B4' },
+  { id: 'sneakpeek', label: 'About Me', icon: '👀', color: '#98FB98', splashColor: '#32CD32' },
+  { id: 'contact', label: 'Contact', icon: '📧', color: '#FFB347', splashColor: '#FF8C00' },
 ];
 
 export default function PostItNav() {
   const { isSerious } = useSeriousMode();
   const [isOpen, setIsOpen] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   const scrollTo = (id: string) => {
     const element = document.getElementById(id);
@@ -57,9 +59,10 @@ export default function PostItNav() {
     <>
       {/* Mobile Toggle */}
       <motion.button
-        className="fixed top-4 right-4 z-50 p-3 wobbly-border bg-paper md:hidden post-it-nav"
+        className="fixed top-4 right-4 z-50 p-3 wobbly-border bg-paper shadow-lg md:hidden post-it-nav"
         onClick={() => setIsOpen(!isOpen)}
         whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.05 }}
       >
         <span className="text-2xl">{isOpen ? '✕' : '📌'}</span>
       </motion.button>
@@ -69,7 +72,7 @@ export default function PostItNav() {
         className={`
           fixed right-4 top-1/2 -translate-y-1/2 z-40 post-it-nav
           ${isOpen ? 'flex' : 'hidden'} md:flex
-          flex-col gap-3
+          flex-col gap-4
         `}
         initial={{ x: 100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
@@ -79,10 +82,12 @@ export default function PostItNav() {
           <motion.button
             key={item.id}
             onClick={() => scrollTo(item.id)}
+            onMouseEnter={() => setHoveredItem(item.id)}
+            onMouseLeave={() => setHoveredItem(null)}
             className="relative group"
             style={{ transform: `rotate(${(index - 2) * 4}deg)` }}
             whileHover={{ 
-              scale: 1.1, 
+              scale: 1.15, 
               rotate: 0,
               zIndex: 50
             }}
@@ -91,11 +96,29 @@ export default function PostItNav() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.6 + index * 0.1 }}
           >
+            {/* Paint Splash Effect (behind the post-it) */}
+            <motion.div
+              className="absolute inset-0 rounded-lg"
+              style={{
+                background: `radial-gradient(ellipse at center, ${item.splashColor} 0%, transparent 70%)`,
+                transform: 'scale(1.8)',
+              }}
+              initial={{ opacity: 0, scale: 1.2 }}
+              animate={{ 
+                opacity: hoveredItem === item.id ? 0.6 : 0,
+                scale: hoveredItem === item.id ? 1.8 : 1.2
+              }}
+              transition={{ duration: 0.2 }}
+            />
+
             {/* Post-it */}
             <div
-              className="w-14 h-14 flex items-center justify-center shadow-lg transition-shadow group-hover:shadow-xl"
+              className="w-16 h-16 flex items-center justify-center shadow-lg transition-all relative z-10"
               style={{
-                background: `linear-gradient(135deg, ${item.color} 0%, ${item.color}CC 100%)`,
+                background: `linear-gradient(135deg, ${item.color} 0%, ${item.color}DD 100%)`,
+                boxShadow: hoveredItem === item.id 
+                  ? `4px 4px 15px rgba(0,0,0,0.3), 0 0 20px ${item.splashColor}50`
+                  : '3px 3px 8px rgba(0,0,0,0.2)',
               }}
             >
               <span className="text-2xl">{item.icon}</span>
@@ -103,11 +126,17 @@ export default function PostItNav() {
 
             {/* Label tooltip */}
             <motion.span
-              className="absolute right-full mr-2 top-1/2 -translate-y-1/2 bg-ink text-paper px-3 py-1 rounded-lg text-sm whitespace-nowrap handwritten opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-              initial={{ x: 10 }}
-              whileHover={{ x: 0 }}
+              className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-ink text-paper px-4 py-2 rounded-lg text-sm whitespace-nowrap handwritten font-bold shadow-lg"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ 
+                opacity: hoveredItem === item.id ? 1 : 0,
+                x: hoveredItem === item.id ? 0 : 10
+              }}
+              transition={{ duration: 0.2 }}
             >
               {item.label}
+              {/* Arrow */}
+              <span className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-full border-8 border-transparent border-l-ink" />
             </motion.span>
           </motion.button>
         ))}
@@ -115,3 +144,4 @@ export default function PostItNav() {
     </>
   );
 }
+

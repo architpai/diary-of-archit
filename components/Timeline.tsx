@@ -2,92 +2,17 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import content from '@/data/content.json';
+import BlobDivider from './BlobDivider';
+import FloatingDoodles from './FloatingDoodles';
 
-// Doodle SVGs for different milestone types
-const doodles: Record<string, React.ReactElement> = {
-  celebration: (
-    <svg viewBox="0 0 60 60" className="w-16 h-16">
-      <motion.path
-        d="M30 10 L30 5 M30 55 L30 50 M10 30 L5 30 M55 30 L50 30"
-        stroke="#E63946"
-        strokeWidth="2"
-        strokeLinecap="round"
-        animate={{ scale: [1, 1.1, 1], opacity: [1, 0.8, 1] }}
-        transition={{ duration: 1, repeat: Infinity }}
-      />
-      <motion.circle
-        cx="30"
-        cy="30"
-        r="15"
-        fill="#FFD700"
-        stroke="#2D2D2D"
-        strokeWidth="2"
-        animate={{ scale: [1, 1.05, 1] }}
-        transition={{ duration: 0.5, repeat: Infinity }}
-      />
-      <text x="30" y="36" textAnchor="middle" fontSize="16">🎉</text>
-    </svg>
-  ),
-  coding: (
-    <svg viewBox="0 0 60 60" className="w-16 h-16">
-      <rect x="10" y="15" width="40" height="30" rx="3" fill="#E8E8E8" stroke="#2D2D2D" strokeWidth="2" />
-      <rect x="15" y="20" width="30" height="20" fill="#1a1a1a" />
-      <motion.text
-        x="20"
-        y="33"
-        fill="#00ff00"
-        fontSize="8"
-        fontFamily="monospace"
-        animate={{ opacity: [1, 0.5, 1] }}
-        transition={{ duration: 0.8, repeat: Infinity }}
-      >
-        {'</>'}
-      </motion.text>
-      <motion.rect
-        x="35"
-        y="28"
-        width="6"
-        height="10"
-        fill="#00ff00"
-        animate={{ opacity: [0, 1, 0] }}
-        transition={{ duration: 1, repeat: Infinity }}
-      />
-    </svg>
-  ),
-  newbie: (
-    <svg viewBox="0 0 60 60" className="w-16 h-16">
-      <motion.circle
-        cx="30"
-        cy="25"
-        r="12"
-        fill="#FFE4B5"
-        stroke="#2D2D2D"
-        strokeWidth="2"
-      />
-      <circle cx="26" cy="23" r="2" fill="#2D2D2D" />
-      <circle cx="34" cy="23" r="2" fill="#2D2D2D" />
-      <motion.path
-        d="M 25 30 Q 30 35, 35 30"
-        stroke="#2D2D2D"
-        strokeWidth="1.5"
-        fill="none"
-        animate={{ d: ["M 25 30 Q 30 35, 35 30", "M 25 28 Q 30 32, 35 28", "M 25 30 Q 30 35, 35 30"] }}
-        transition={{ duration: 2, repeat: Infinity }}
-      />
-      <motion.text
-        x="30"
-        y="50"
-        textAnchor="middle"
-        fontSize="10"
-        animate={{ y: [50, 48, 50] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
-      >
-        🌱
-      </motion.text>
-    </svg>
-  ),
+// Map doodle types to avatar poses
+const doodlePoses: Record<string, string> = {
+  celebration: '/avatar/victory_pose.png',
+  coding: '/avatar/coding_pose.png',
+  newbie: '/avatar/thinking_pose.png',
 };
 
 interface Experience {
@@ -106,19 +31,27 @@ export default function Timeline() {
   const experiences = content.experiences as Experience[];
 
   return (
-    <section className="py-20 relative">
+    <section className={`py-20 relative ${!isSerious ? 'section-blue' : ''}`}>
+      {/* Top Wave Divider */}
+      {!isSerious && (
+        <BlobDivider position="top" fillColor="var(--paper)" variant={1} />
+      )}
+      
+      {/* Floating Background Doodles */}
+      {!isSerious && <FloatingDoodles variant="tech" density="sparse" />}
+      
       <motion.h2
-        className="diary-title text-3xl md:text-4xl text-center mb-16 text-ink"
+        className={`diary-title text-3xl md:text-4xl text-center mb-16 pt-16 ${!isSerious ? 'text-white drop-shadow-lg' : 'text-ink'}`}
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
       >
-        The Journey So Far...
+        {!isSerious ? '📅 The Journey So Far...' : 'Professional Experience'}
       </motion.h2>
 
       <div className="timeline relative max-w-4xl mx-auto px-4">
         {/* Timeline Line */}
-        <div className="timeline-line" />
+        <div className={`timeline-line ${!isSerious ? 'bg-white/30' : ''}`} style={!isSerious ? { backgroundColor: 'rgba(255,255,255,0.3)' } : {}} />
 
         {experiences.map((exp, index) => (
           <motion.div
@@ -131,15 +64,19 @@ export default function Timeline() {
           >
             {/* Timeline Dot */}
             <div
-              className="timeline-dot"
-              style={{ top: '20px' }}
+              className={`timeline-dot ${!isSerious ? 'bg-yellow-400 border-white' : ''}`}
+              style={{ top: '20px', ...(isSerious ? {} : { backgroundColor: '#FFCC33', borderColor: 'white' }) }}
             />
 
             {/* Content Card */}
-            <div className={`
-              ml-8 p-6 
-              ${isSerious ? 'bg-white border border-gray-200 rounded' : 'wobbly-border bg-paper/80'}
-            `}>
+            <motion.div 
+              className={`
+                ml-8 p-6 relative
+                ${isSerious ? 'bg-white border border-gray-200 rounded' : 'wobbly-border bg-paper/95 tape-corner'}
+              `}
+              whileHover={!isSerious ? { scale: 1.02, rotate: 0.5 } : {}}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
               {/* Header */}
               <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
                 <div>
@@ -160,13 +97,21 @@ export default function Timeline() {
                   </p>
                 </div>
 
-                {/* Doodle - hidden in serious mode */}
+                {/* PNG Avatar Doodle - hidden in serious mode, larger size */}
                 {!isSerious && (
                   <motion.div
                     className="doodle-animate"
-                    whileHover={{ scale: 1.2, rotate: 10 }}
+                    whileHover={{ scale: 1.15, rotate: 5 }}
+                    animate={{ y: [0, -5, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                   >
-                    {doodles[exp.doodleType] || doodles.coding}
+                    <Image
+                      src={doodlePoses[exp.doodleType] || doodlePoses.coding}
+                      alt={`${exp.doodleType} doodle`}
+                      width={120}
+                      height={155}
+                      className="object-contain drop-shadow-md"
+                    />
                   </motion.div>
                 )}
               </div>
@@ -174,7 +119,7 @@ export default function Timeline() {
               {/* Diary Narrative - hidden in serious mode */}
               {!isSerious && (
                 <motion.p
-                  className="diary-narrative handwritten text-lg text-ink mb-4 italic"
+                  className="diary-narrative handwritten text-lg text-ink mb-4 italic bg-yellow-100/50 p-3 rounded-lg"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
@@ -195,10 +140,16 @@ export default function Timeline() {
                   <li key={i}>{point}</li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
           </motion.div>
         ))}
       </div>
+
+      {/* Bottom Wave Divider */}
+      {!isSerious && (
+        <BlobDivider position="bottom" fillColor="var(--paper)" variant={2} />
+      )}
     </section>
   );
 }
+

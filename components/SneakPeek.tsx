@@ -1,8 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import content from '@/data/content.json';
+import BlobDivider from './BlobDivider';
+import FloatingDoodles from './FloatingDoodles';
 
 interface Hobby {
   id: string;
@@ -10,6 +13,20 @@ interface Hobby {
   narrative: string;
   icon: string;
 }
+
+// Map hobbies to specific avatar poses
+const hobbyPoses: Record<string, string> = {
+  pokemon: '/avatar/waving_pose.png',
+  gym: '/avatar/flexing_pose.png',
+  llm: '/avatar/coding_pose.png',
+};
+
+// Hobby card colors
+const hobbyColors: Record<string, { bg: string; accent: string }> = {
+  pokemon: { bg: '#FFEB3B', accent: '#FDD835' },
+  gym: { bg: '#FF69B4', accent: '#FF1493' },
+  llm: { bg: '#87CEEB', accent: '#4682B4' },
+};
 
 export default function SneakPeek() {
   const { isSerious } = useSeriousMode();
@@ -19,97 +36,119 @@ export default function SneakPeek() {
   if (isSerious) return null;
 
   return (
-    <section className="py-20 relative">
+    <section className="py-20 relative section-blue">
+      {/* Top Wave Divider */}
+      <BlobDivider position="top" fillColor="var(--paper)" variant={3} />
+      
+      {/* Floating Background Doodles */}
+      <FloatingDoodles variant="fun" density="normal" />
+
       {/* Section Title */}
       <motion.div
-        className="text-center mb-16"
+        className="text-center mb-16 pt-16 relative z-10"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
       >
-        <h2 className="diary-title text-3xl md:text-4xl text-ink mb-2">
-          The &ldquo;Sneak Peek&rdquo; Section
+        <h2 className="diary-title text-3xl md:text-4xl text-white drop-shadow-lg mb-2">
+          👀 The &ldquo;Sneak Peek&rdquo; Section
         </h2>
-        <p className="diary-subtitle text-margin-blue handwritten">
+        <p className="diary-subtitle text-white/80 handwritten">
           (The stuff that doesn&apos;t go on the resume... but should)
         </p>
       </motion.div>
 
       {/* Hobbies Grid */}
-      <div className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
         {hobbies.map((hobby, index) => (
           <motion.div
             key={hobby.id}
-            className="post-it p-6"
+            className="relative"
             style={{ transform: `rotate(${(index - 1) * 3}deg)` }}
             initial={{ opacity: 0, y: 50, rotate: (index - 1) * 3 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: index * 0.15 }}
-            whileHover={{ 
-              scale: 1.05, 
-              rotate: 0,
-              boxShadow: '5px 5px 15px rgba(0,0,0,0.3)'
-            }}
           >
-            {/* Icon */}
+            {/* Post-it Card */}
             <motion.div
-              className="text-5xl mb-4 text-center"
-              animate={{ 
-                rotate: [0, 5, -5, 0],
-                scale: [1, 1.1, 1]
+              className="p-6 flex flex-col items-center relative tape-corner"
+              style={{
+                background: `linear-gradient(135deg, ${hobbyColors[hobby.id]?.bg || '#FFEB3B'} 0%, ${hobbyColors[hobby.id]?.accent || '#FDD835'} 100%)`,
+                boxShadow: '4px 4px 12px rgba(0,0,0,0.25), inset 0 -2px 4px rgba(0,0,0,0.1)',
               }}
-              transition={{ 
-                duration: 2, 
-                repeat: Infinity,
-                delay: index * 0.3
+              whileHover={{ 
+                scale: 1.08, 
+                rotate: 0,
+                boxShadow: '8px 8px 20px rgba(0,0,0,0.35)',
+                zIndex: 20
               }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
-              {hobby.icon}
+              {/* Pin decoration */}
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 text-2xl drop-shadow-md">
+                📌
+              </div>
+
+              {/* Avatar Pose */}
+              <motion.div
+                className="mb-4 flex justify-center"
+                animate={{ y: [0, -8, 0] }}
+                transition={{ 
+                  duration: 2, 
+                  repeat: Infinity,
+                  delay: index * 0.3,
+                  ease: "easeInOut"
+                }}
+              >
+                <Image
+                  src={hobbyPoses[hobby.id] || '/avatar/waving_pose.png'}
+                  alt={`${hobby.title} pose`}
+                  width={140}
+                  height={175}
+                  className="object-contain drop-shadow-lg"
+                />
+              </motion.div>
+
+              {/* Title */}
+              <h3 className="handwritten text-xl font-bold text-ink text-center mb-3">
+                {hobby.icon} {hobby.title}
+              </h3>
+
+              {/* Narrative */}
+              <p className="handwritten text-ink text-center leading-relaxed text-sm">
+                {hobby.narrative}
+              </p>
             </motion.div>
-
-            {/* Title */}
-            <h3 className="handwritten text-xl font-bold text-ink text-center mb-3">
-              {hobby.title}
-            </h3>
-
-            {/* Narrative */}
-            <p className="handwritten text-ink text-center leading-relaxed">
-              {hobby.narrative}
-            </p>
           </motion.div>
         ))}
       </div>
 
       {/* Current Setup Note */}
       <motion.div
-        className="mt-16 max-w-md mx-auto"
+        className="mt-16 max-w-md mx-auto relative z-10"
         initial={{ opacity: 0, scale: 0.9 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
       >
-        <div className="post-it-blue p-4 text-center" style={{ transform: 'rotate(2deg)' }}>
-          <p className="handwritten text-ink">
+        <div 
+          className="p-5 text-center relative"
+          style={{ 
+            background: 'linear-gradient(135deg, #98FB98 0%, #32CD32 100%)',
+            transform: 'rotate(2deg)',
+            boxShadow: '3px 3px 10px rgba(0,0,0,0.2)'
+          }}
+        >
+          <span className="absolute -top-3 left-1/2 transform -translate-x-1/2 text-xl">📌</span>
+          <p className="handwritten text-ink text-lg">
             Current Weapon of Choice: <strong>{content.personal.currentSetup}</strong> 💪
           </p>
         </div>
       </motion.div>
 
-      {/* Floating Doodles */}
-      <motion.div
-        className="absolute top-20 left-5 text-4xl floating-doodle opacity-50"
-        animate={{ y: [0, -15, 0], rotate: [0, 10, 0] }}
-        transition={{ duration: 4, repeat: Infinity }}
-      >
-        🎮
-      </motion.div>
-      <motion.div
-        className="absolute bottom-20 right-10 text-4xl floating-doodle opacity-50"
-        animate={{ y: [0, -10, 0], x: [0, 5, 0] }}
-        transition={{ duration: 3.5, repeat: Infinity, delay: 0.5 }}
-      >
-        ☕
-      </motion.div>
+      {/* Bottom Wave Divider */}
+      <BlobDivider position="bottom" fillColor="var(--paper)" variant={1} />
     </section>
   );
 }
+
