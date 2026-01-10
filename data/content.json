@@ -5,22 +5,16 @@
     "tagline": "Building scalable systems, one experiment at a time",
     "hobbies": [
       {
-        "id": "pokemon-rom-dev",
-        "title": "Pokémon ROM development",
-        "narrative": "Building custom ROMs for Pokémon games because apparently FireRed wasn't perfect enough. Nintendo’s lawyers have not been contacted (yet).",
-        "icon": "🎴"
-      },
-      {
         "id": "gym",
         "title": "Gym & Fitness",
-        "narrative": "Started training to be the next Mr. Olympia. Now I’m addicted to discipline and soreness. Send help.",
+        "narrative": "Started training to be the next Mr. Olympia. Now I’m addicted to the PAIN. Send help. pls.",
         "icon": "💪"
       },
       {
         "id": "llm",
         "title": "Local LLM Experiments",
         "narrative": "Running LLMs locally and experimenting with fine-tuning, RAG pipelines, and my own “Claude-like” coding assistant. My laptop sounds like a jet engine sometimes.",
-        "icon": "🤖"
+        "icon": ""
       }
     ],
     "currentSetup": "MacBook Pro M4 Pro"

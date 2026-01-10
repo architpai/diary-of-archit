@@ -61,7 +61,7 @@ export default function ResumePage() {
         <h2 className="text-lg font-bold border-b border-black mb-3">PROFESSIONAL EXPERIENCE</h2>
         
         {experiences.map((exp) => (
-          <div key={exp.id} className="mb-4">
+          <div key={exp.id} className="mb-4 break-inside-avoid">
             <div className="flex justify-between items-baseline">
               <h3 className="font-bold">{exp.professionalTitle}</h3>
               <span className="text-sm text-gray-600">{exp.date}</span>
@@ -80,16 +80,16 @@ export default function ResumePage() {
       <section className="mb-6">
         <h2 className="text-lg font-bold border-b border-black mb-3">TECHNICAL SKILLS</h2>
         
-        <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-sm">
+        <div className="grid grid-cols-2 gap-x-12 gap-y-2 text-sm">
           {/* Group by category */}
-          {['cloud', 'frontend', 'backend', 'database', 'mapping', 'language'].map(category => {
+          {['domain', 'mapping', 'database', 'frontend', 'backend', 'cloud', 'devops', 'graphics', 'architecture'].map(category => {
             const categorySkills = skills.filter(s => s.category === category);
             if (categorySkills.length === 0) return null;
             
             return (
-              <div key={category} className="flex">
-                <span className="font-semibold capitalize w-24">{category}:</span>
-                <span>{categorySkills.map(s => s.name).join(', ')}</span>
+              <div key={category} className="flex gap-2">
+                <span className="font-semibold capitalize min-w-[100px] shrink-0">{category}:</span>
+                <span className="text-gray-700">{categorySkills.map(s => s.name).join(', ')}</span>
               </div>
             );
           })}

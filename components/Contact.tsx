@@ -161,7 +161,7 @@ export default function Contact() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          Thanks for reading my diary! 📖✨
+          Thanks for reading my diary! ✨
         </motion.p>
       )}
     </section>

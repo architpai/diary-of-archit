@@ -131,8 +131,11 @@ export default function Hero() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.8 }}
         >
-          <p className={`diary-subtitle ${isSerious ? '' : 'text-ink'} max-w-md mx-auto handwritten`}>
-            {"Building cool stuff, one bug at a time 🐛"}
+          <p 
+            className={`diary-subtitle ${isSerious ? '' : 'text-ink glitch-text'} max-w-md mx-auto handwritten`}
+            data-text="Building cool stuff, one bug at a time"
+          >
+            {"Building cool stuff, one bug at a time !"}
           </p>
         </motion.div>
 

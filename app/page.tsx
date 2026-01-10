@@ -7,6 +7,7 @@ import SneakPeek from "@/components/SneakPeek";
 import Contact from "@/components/Contact";
 import PostItNav from "@/components/PostItNav";
 import SeriousModeToggle from "@/components/SeriousModeToggle";
+import MapScrollNav from "@/components/MapScrollNav";
 import { useSeriousMode } from "@/contexts/SeriousModeContext";
 
 export default function Home() {
@@ -16,6 +17,9 @@ export default function Home() {
     <main className={`notebook-paper min-h-screen ${isSerious ? 'pt-16' : ''}`}>
       {/* Navigation */}
       <PostItNav />
+      
+      {/* Map Scroll Navigation */}
+      <MapScrollNav />
       
       {/* Serious Mode Toggle */}
       <SeriousModeToggle />
@@ -44,7 +48,7 @@ export default function Home() {
         <p>
           {isSerious 
             ? '© 2024 Archit Pai. All rights reserved.'
-            : '✏️ Scribbled with ❤️ in 2024'
+            : ' Scribbled with ❤️ | Archit Pai'
           }
         </p>
       </footer>
