@@ -12,7 +12,7 @@ import FloatingDoodles from './FloatingDoodles';
 const doodlePoses: Record<string, string> = {
   celebration: '/avatar/victory_pose.png',
   coding: '/avatar/coding_pose.png',
-  newbie: '/avatar/thinking_pose.png',
+  newbie: '/avatar/waving_pose.png',
 };
 
 interface Experience {

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
+import { useState, useEffect } from 'react';
 
 interface Doodle {
   content: string;
@@ -42,18 +43,20 @@ function generateDoodles(variant: 'code' | 'tech' | 'fun' | 'mixed', density: 's
   }));
 }
 
-export default function FloatingDoodles({ 
-  variant = 'mixed',
+export default function FloatingDoodles({   variant = 'mixed',
   density = 'normal',
   className = ''
 }: FloatingDoodlesProps) {
   const { isSerious } = useSeriousMode();
+  const [doodles, setDoodles] = useState<Doodle[]>([]);
   
+  useEffect(() => {
+    setDoodles(generateDoodles(variant, density));
+  }, [variant, density]);
+
   // Hide in serious mode
   if (isSerious) return null;
   
-  const doodles = generateDoodles(variant, density);
-
   return (
     <div className={`absolute inset-0 overflow-hidden pointer-events-none z-0 ${className}`}>
       {doodles.map((doodle, index) => (

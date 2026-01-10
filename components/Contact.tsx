@@ -34,11 +34,10 @@ export default function Contact() {
         {!isSerious && (
           <motion.div
             className="flex-shrink-0"
-            initial={{ opacity: 0, x: -50 }}
+            initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <Image
               src="/avatar/namaste_pose.png"

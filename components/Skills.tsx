@@ -19,7 +19,10 @@ const categoryColors: Record<string, string> = {
   mapping: '#e74c3c',
   frontend: '#9b59b6',
   backend: '#f39c12',
-  language: '#1abc9c',
+  domain: '#f1c40f',
+  graphics: '#e67e22',
+  architecture: '#7f8c8d',
+  devops: '#1abc9c',
 };
 
 // Category icons
@@ -29,7 +32,10 @@ const categoryIcons: Record<string, string> = {
   mapping: '🗺️',
   frontend: '🎨',
   backend: '⚙️',
-  language: '💬',
+  domain: '🎯',
+  graphics: '🧱',
+  architecture: '🏗️',
+  devops: '🛠️',
 };
 
 export default function Skills() {
