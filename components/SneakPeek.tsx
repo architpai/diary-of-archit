@@ -16,9 +16,9 @@ interface Hobby {
 
 // Map hobbies to specific avatar poses
 const hobbyPoses: Record<string, string> = {
-  pokemon: '/avatar/waving_pose.png',
-  gym: '/avatar/flexing_pose.png',
-  llm: '/avatar/coding_pose.png',
+  pokemon: '/avatar/waving_pose.webp',
+  gym: '/avatar/flexing_pose.webp',
+  llm: '/avatar/coding_pose.webp',
 };
 
 // Hobby card colors
@@ -102,7 +102,7 @@ export default function SneakPeek() {
                 }}
               >
                 <Image
-                  src={hobbyPoses[hobby.id] || '/avatar/waving_pose.png'}
+                  src={hobbyPoses[hobby.id] || '/avatar/waving_pose.webp'}
                   alt={`${hobby.title} pose`}
                   width={140}
                   height={175}

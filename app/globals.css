@@ -34,113 +34,43 @@
 }
 
 /* ============================================
-   GLITCH / CYBERPUNK EASTER EGG ANIMATION
+   SHAKY PENCIL ANIMATION
    ============================================ */
-@keyframes glitch-1 {
-  0%, 100% {
-    clip-path: inset(0 0 0 0);
-    transform: translate(0);
+@keyframes shaky-pencil {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
   }
-  5% {
-    clip-path: inset(20% 0 30% 0);
-    transform: translate(-3px, 2px);
-  }
-  10% {
-    clip-path: inset(60% 0 10% 0);
-    transform: translate(3px, -2px);
-  }
-  15% {
-    clip-path: inset(40% 0 20% 0);
-    transform: translate(-2px, 1px);
-  }
-  20% {
-    clip-path: inset(0 0 0 0);
-    transform: translate(0);
-  }
-}
 
-@keyframes glitch-2 {
-  0%, 100% {
-    clip-path: inset(0 0 0 0);
-    transform: translate(0);
+  25% {
+    transform: translate(-1px, 1px) rotate(-0.5deg);
   }
-  5% {
-    clip-path: inset(10% 0 50% 0);
-    transform: translate(4px, -1px);
-  }
-  10% {
-    clip-path: inset(70% 0 5% 0);
-    transform: translate(-4px, 1px);
-  }
-  15% {
-    clip-path: inset(30% 0 40% 0);
-    transform: translate(2px, -2px);
-  }
-  20% {
-    clip-path: inset(0 0 0 0);
-    transform: translate(0);
-  }
-}
 
-@keyframes glitch-skew {
-  0%, 100% {
-    transform: skewX(0deg);
-  }
-  10% {
-    transform: skewX(-2deg);
-  }
-  20% {
-    transform: skewX(2deg);
-  }
-  30% {
-    transform: skewX(-1deg);
-  }
-  40% {
-    transform: skewX(1deg);
-  }
   50% {
-    transform: skewX(0deg);
+    transform: translate(1px, -1px) rotate(0.5deg);
+  }
+
+  75% {
+    transform: translate(-1px, -1px) rotate(-0.3deg);
+  }
+
+  100% {
+    transform: translate(0, 0) rotate(0deg);
   }
 }
 
-.glitch-text {
-  position: relative;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.shaky-pencil {
+  display: inline-block;
 }
 
-.glitch-text:hover {
-  animation: glitch-skew 0.5s ease-in-out;
-  text-shadow: 
-    2px 0 #00ffff,
-    -2px 0 #ff00ff,
-    0 0 10px rgba(0, 255, 255, 0.5);
+.shaky-pencil:hover {
+  animation: shaky-pencil 0.15s infinite;
+  text-decoration: underline wavy var(--ink);
 }
 
-.glitch-text::before,
-.glitch-text::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.glitch-text:hover::before {
-  opacity: 0.8;
-  color: #00ffff;
-  animation: glitch-1 0.3s ease-in-out infinite;
-  z-index: -1;
-}
-
-.glitch-text:hover::after {
-  opacity: 0.8;
-  color: #ff00ff;
-  animation: glitch-2 0.3s ease-in-out 0.05s infinite;
-  z-index: -1;
+/* Pencil Scribble Texture for Progress Bars */
+.scribble-texture {
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='20' viewBox='0 0 100 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10 Q5 5 10 10 T20 10 T30 10 T40 10 T50 10 T60 10 T70 10 T80 10 T90 10 T100 10' fill='none' stroke='white' stroke-width='2' opacity='0.5'/%3E%3Cpath d='M0 12 Q5 7 10 12 T20 12 T30 12 T40 12 T50 12 T60 12 T70 12 T80 12 T90 12 T100 12' fill='none' stroke='white' stroke-width='1' opacity='0.3'/%3E%3C/svg%3E");
+  background-size: 50px 100%;
 }
 
 /* ============================================

@@ -6,6 +6,7 @@ import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import content from '@/data/content.json';
 import BlobDivider from './BlobDivider';
 import FloatingDoodles from './FloatingDoodles';
+import Avatar from './Avatar';
 
 export default function Contact() {
   const { isSerious } = useSeriousMode();
@@ -39,12 +40,11 @@ export default function Contact() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <Image
-              src="/avatar/namaste_pose.png"
-              alt="Namaste greeting"
-              width={200}
-              height={260}
-              className="object-contain drop-shadow-lg"
+            <Avatar 
+              pose="namaste" 
+              width={200} 
+              height={260} 
+              className="drop-shadow-lg" 
             />
           </motion.div>
         )}

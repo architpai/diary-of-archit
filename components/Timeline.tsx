@@ -10,9 +10,9 @@ import FloatingDoodles from './FloatingDoodles';
 
 // Map doodle types to avatar poses
 const doodlePoses: Record<string, string> = {
-  celebration: '/avatar/victory_pose.png',
-  coding: '/avatar/coding_pose.png',
-  newbie: '/avatar/waving_pose.png',
+  celebration: '/avatar/victory_pose.webp',
+  coding: '/avatar/coding_pose.webp',
+  newbie: '/avatar/waving_pose.webp',
 };
 
 interface Experience {

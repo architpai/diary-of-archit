@@ -14,15 +14,15 @@ interface Skill {
 
 // Category colors for visual distinction
 const categoryColors: Record<string, string> = {
-  cloud: '#3B5998',
-  database: '#27ae60',
-  mapping: '#e74c3c',
-  frontend: '#9b59b6',
-  backend: '#f39c12',
-  domain: '#2c7a7b',
-  graphics: '#e67e22',
-  architecture: '#7f8c8d',
-  devops: '#1abc9c',
+  cloud: '#5A6B8D',      // Desaturated Blue
+  database: '#5C7C5C',   // Desaturated Green
+  mapping: '#A65D57',    // Desaturated Red
+  frontend: '#7D6B8D',   // Desaturated Purple
+  backend: '#B88B4A',    // Desaturated Orange
+  domain: '#4A6B6B',     // Desaturated Teal
+  graphics: '#A67C52',   // Desaturated Brown
+  architecture: '#6B6B6B', // Desaturated Gray
+  devops: '#578D82',     // Desaturated Mint
 };
 
 // Category icons
@@ -171,17 +171,17 @@ export default function Skills() {
                           borderWidth: '3px',
                         }}
                       >
-                        {/* Glow effect on hover */}
+                        {/* Subtle paper-like shadow on hover, no digital glows */}
                         <div 
-                          className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-xl"
-                          style={{ backgroundColor: categoryColors[skill.category] }}
+                          className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none"
+                          style={{ backgroundColor: 'black' }}
                         />
 
-                        {/* Corner decoration */}
+                        {/* Corner decoration (ink smudge style) */}
                         <div 
-                          className="absolute top-0 right-0 w-16 h-16 opacity-10"
+                          className="absolute top-0 right-0 w-12 h-12 opacity-5"
                           style={{
-                            background: `linear-gradient(135deg, transparent 50%, ${categoryColors[skill.category]} 50%)`,
+                            background: `radial-gradient(circle at top right, ${categoryColors[skill.category]}, transparent)`,
                           }}
                         />
 
@@ -195,58 +195,38 @@ export default function Skills() {
 
                         {/* Segmented Stamina Bar */}
                         <div className="relative z-10">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="handwritten text-xs text-ink/60">Power Level</span>
+                          <div className="flex items-center justify-end mb-1">
                             <span 
                               className="handwritten text-sm font-bold"
                               style={{ color: categoryColors[skill.category] }}
                             >
-                              {skill.level}
+                              {skill.level}%
                             </span>
                           </div>
                           
-                          {/* Segmented bars (like RPG stamina) */}
-                          <div className="flex gap-1">
-                            {Array.from({ length: 10 }).map((_, i) => {
-                              const segmentFilled = ((i + 1) * 10) <= skill.level;
-                              const isPartialFill = ((i * 10) < skill.level) && (skill.level < ((i + 1) * 10));
-                              const partialWidth = isPartialFill ? ((skill.level % 10) * 10) : 100;
-
-                              return (
-                                <motion.div
-                                  key={i}
-                                  className="flex-1 h-3 rounded-sm border border-ink/20 overflow-hidden relative"
-                                  style={{ backgroundColor: '#f5f5f5' }}
-                                  initial={{ scaleX: 0 }}
-                                  whileInView={{ scaleX: 1 }}
-                                  viewport={{ once: true }}
-                                  transition={{ 
-                                    duration: 0.3, 
-                                    delay: categoryIndex * 0.2 + index * 0.1 + i * 0.02 
-                                  }}
-                                >
-                                  {(segmentFilled || isPartialFill) && (
-                                    <motion.div
-                                      className="h-full absolute left-0 top-0"
-                                      style={{ 
-                                        backgroundColor: categoryColors[skill.category],
-                                        width: isPartialFill ? `${partialWidth}%` : '100%',
-                                      }}
-                                      initial={{ width: 0 }}
-                                      whileInView={{ 
-                                        width: isPartialFill ? `${partialWidth}%` : '100%' 
-                                      }}
-                                      viewport={{ once: true }}
-                                      transition={{ 
-                                        duration: 0.5, 
-                                        delay: categoryIndex * 0.2 + index * 0.1 + i * 0.05,
-                                        ease: "easeOut"
-                                      }}
-                                    />
-                                  )}
-                                </motion.div>
-                              );
-                            })}
+                          {/* Continuous scribble bar */}
+                          <div className="relative h-4 rounded-sm border-2 border-ink/40 overflow-hidden bg-white/50 wobbly-border-light">
+                            <motion.div
+                              className="h-full scribble-texture absolute left-0 top-0"
+                              style={{ 
+                                backgroundColor: categoryColors[skill.category],
+                                opacity: 0.8,
+                              }}
+                              initial={{ width: 0 }}
+                              whileInView={{ width: `${skill.level}%` }}
+                              viewport={{ once: true }}
+                              transition={{ 
+                                duration: 1, 
+                                delay: categoryIndex * 0.1 + index * 0.05,
+                                ease: "easeOut"
+                              }}
+                            />
+                            {/* Hand-drawn marker lines */}
+                            <div className="absolute inset-0 flex justify-between px-1 pointer-events-none">
+                              {[25, 50, 75].map(marker => (
+                                <div key={marker} className="h-full w-[1px] bg-ink/20" style={{ marginLeft: `${marker}%` }} />
+                              ))}
+                            </div>
                           </div>
                         </div>
 

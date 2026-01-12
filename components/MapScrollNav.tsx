@@ -244,7 +244,7 @@ export default function MapScrollNav() {
           transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut' }}
         >
           <Image
-            src="/avatar/walking_pose.png"
+            src="/avatar/walking_pose.webp"
             alt="Walking character"
             width={35}
             height={45}

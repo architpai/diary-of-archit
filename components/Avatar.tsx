@@ -5,13 +5,13 @@ import Image from 'next/image';
 
 // Available poses with their image paths
 export const AVATAR_POSES = {
-  hero: '/avatar/hero_pose.png',
-  coding: '/avatar/coding_pose.png',
-  flexing: '/avatar/flexing_pose.png',
-  namaste: '/avatar/namaste_pose.png',
-  thinking: '/avatar/thinking_pose.png',
-  victory: '/avatar/victory_pose.png',
-  waving: '/avatar/waving_pose.png',
+  hero: '/avatar/hero_pose.webp',
+  coding: '/avatar/coding_pose.webp',
+  flexing: '/avatar/flexing_pose.webp',
+  namaste: '/avatar/namaste_pose.webp',
+  thinking: '/avatar/thinking_pose.webp',
+  victory: '/avatar/victory_pose.webp',
+  waving: '/avatar/waving_pose.webp',
 } as const;
 
 export type AvatarPose = keyof typeof AVATAR_POSES;

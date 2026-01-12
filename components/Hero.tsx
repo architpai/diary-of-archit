@@ -132,8 +132,7 @@ export default function Hero() {
           transition={{ duration: 0.5, delay: 0.8 }}
         >
           <p 
-            className={`diary-subtitle ${isSerious ? '' : 'text-ink glitch-text'} max-w-md mx-auto handwritten`}
-            data-text="Building cool stuff, one bug at a time"
+            className={`diary-subtitle ${isSerious ? '' : 'shaky-pencil'} max-w-md mx-auto handwritten`}
           >
             {"Building cool stuff, one bug at a time !"}
           </p>
