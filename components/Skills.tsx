@@ -61,7 +61,7 @@ export default function Skills() {
         {isSerious ? 'Technical Skills' : '💪 My Superpowers ⚡'}
       </motion.h2>
 
-      <div className="max-w-5xl mx-auto px-4">
+      <div className="max-w-5xl mx-auto px-4 relative z-20">
         {isSerious ? (
           // Organized skills by category for serious mode
           <div className="max-w-4xl mx-auto">
