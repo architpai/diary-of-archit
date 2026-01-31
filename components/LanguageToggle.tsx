@@ -6,7 +6,7 @@ export default function LanguageToggle() {
   const { language, setLanguage, isTransitioning } = useLanguage();
 
   const toggleLanguage = () => {
-    const newLanguage = language === 'en' ? 'jp' : 'en';
+    const newLanguage = language === 'en' ? 'ja' : 'en';
     setLanguage(newLanguage);
   };
 
@@ -37,7 +37,7 @@ export default function LanguageToggle() {
 
           <span 
             className={`text-sm md:text-lg ${
-              language === 'jp' 
+              language === 'ja' 
                 ? 'text-ink font-bold' 
                 : 'text-ink/50 scribble-strikethrough'
             }`}

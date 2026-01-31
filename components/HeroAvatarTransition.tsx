@@ -1,25 +1,30 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface HeroAvatarTransitionProps {
   width: number;
   height: number;
+  className?: string;
+  sizes?: string;
 }
 
 export default function HeroAvatarTransition({
   width,
   height,
+  className = "",
+  sizes,
 }: HeroAvatarTransitionProps) {
   const { targetLanguage, isTransitioning } = useLanguage();
   const [currentFrame, setCurrentFrame] = useState(1);
   const [isLoaded, setIsLoaded] = useState(false);
   const animationRef = useRef<NodeJS.Timeout | null>(null);
   const imagesRef = useRef<HTMLImageElement[]>([]);
-  const previousTargetRef = useRef<"en" | "jp">("en");
+  const previousTargetRef = useRef<"en" | "ja">("en");
+  const shouldReduceMotion = useReducedMotion();
 
   // Preload all frames on mount
   useEffect(() => {
@@ -47,31 +52,35 @@ export default function HeroAvatarTransition({
   // Animate through frames when target language changes
   useEffect(() => {
     if (!isLoaded) {
-      // Set initial frame based on target language
       setCurrentFrame(targetLanguage === "en" ? 1 : 40);
       previousTargetRef.current = targetLanguage;
       return;
     }
 
-    // If target hasn't changed, don't animate
     if (previousTargetRef.current === targetLanguage) {
       return;
     }
 
-    // Clear any existing animation
+    const targetFrame = targetLanguage === "ja" ? 40 : 1;
+
+    if (shouldReduceMotion) {
+      setCurrentFrame(targetFrame);
+      previousTargetRef.current = targetLanguage;
+      return;
+    }
+
     if (animationRef.current) {
       clearInterval(animationRef.current);
     }
 
-    const targetFrame = targetLanguage === "jp" ? 40 : 1;
-    const startFrame = targetLanguage === "jp" ? 1 : 40;
-    const direction = targetLanguage === "jp" ? 1 : -1;
+    const startFrame = targetLanguage === "ja" ? 1 : 40;
+    const direction = targetLanguage === "ja" ? 1 : -1;
 
     let frame = startFrame;
     setCurrentFrame(frame);
     previousTargetRef.current = targetLanguage;
 
-    const frameInterval = 25; // 25ms per frame = 1000ms total for 40 frames
+    const frameInterval = 25;
 
     animationRef.current = setInterval(() => {
       frame += direction;
@@ -97,22 +106,30 @@ export default function HeroAvatarTransition({
         animationRef.current = null;
       }
     };
-  }, [targetLanguage, isLoaded]);
+  }, [targetLanguage, isLoaded, shouldReduceMotion]);
 
   const frameNum = currentFrame.toString().padStart(3, "0");
   const frameSrc = `/avatar/sequence/ezgif-frame-${frameNum}.webp`;
 
   return (
     <motion.div
-      className="relative"
-      animate={{
-        y: [0, -15, 0],
-      }}
-      transition={{
-        duration: 3,
-        repeat: Infinity,
-        ease: "easeInOut",
-      }}
+      className={`relative ${className}`}
+      animate={
+        shouldReduceMotion
+          ? undefined
+          : {
+              y: [0, -15, 0],
+            }
+      }
+      transition={
+        shouldReduceMotion
+          ? undefined
+          : {
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }
+      }
     >
       <Image
         src={frameSrc}
@@ -120,7 +137,8 @@ export default function HeroAvatarTransition({
         width={width}
         height={height}
         priority
-        className="drop-shadow-2xl object-contain"
+        sizes={sizes}
+        className="w-full h-auto drop-shadow-2xl object-contain"
       />
     </motion.div>
   );

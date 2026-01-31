@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import BlobDivider from './BlobDivider';
@@ -41,6 +41,7 @@ const categoryIcons: Record<string, string> = {
 export default function Skills() {
   const { isSerious } = useSeriousMode();
   const { content, t, isJapanese } = useTranslation();
+  const shouldReduceMotion = useReducedMotion();
   const skills = content.skills as Skill[];
 
   return (
@@ -55,7 +56,7 @@ export default function Skills() {
       
       <motion.h2
         className={`text-3xl md:text-4xl text-center mb-16 pt-16 ${isSerious ? 'font-sans font-bold text-ink' : 'diary-title text-ink drop-shadow-lg'}`}
-        initial={{ opacity: 0, y: 30 }}
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         style={isJapanese && !isSerious ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
@@ -77,10 +78,10 @@ export default function Skills() {
               <motion.div 
                 key={category} 
                 className="mb-8"
-                initial={{ opacity: 0, y: 20 }}
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: categoryIndex * 0.1 }}
+                transition={shouldReduceMotion ? { duration: 0 } : { delay: categoryIndex * 0.1 }}
               >
                 <h3 className="font-sans text-lg font-bold capitalize mb-4 text-gray-700 border-b border-gray-300 pb-2">
                   {category}
@@ -90,10 +91,10 @@ export default function Skills() {
                     <motion.div
                       key={skill.name}
                       className="flex items-center justify-between"
-                      initial={{ opacity: 0, x: -20 }}
+                      initial={shouldReduceMotion ? false : { opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                      transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3, delay: index * 0.05 }}
                     >
                       <span className="font-sans text-sm">{skill.name}</span>
                       <div className="flex items-center gap-2">
@@ -101,10 +102,10 @@ export default function Skills() {
                           <motion.div
                             className="h-full rounded-full"
                             style={{ backgroundColor: '#2D2D2D' }}
-                            initial={{ width: 0 }}
+                            initial={shouldReduceMotion ? false : { width: 0 }}
                             whileInView={{ width: `${skill.level}%` }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.8, delay: index * 0.1, ease: "easeOut" }}
+                            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8, delay: index * 0.1, ease: "easeOut" }}
                           />
                         </div>
                         <span className="text-xs text-gray-500 font-sans w-8">{skill.level}%</span>
@@ -130,10 +131,10 @@ export default function Skills() {
                 {/* Category Header */}
                 <motion.div
                   className="flex items-center gap-3 mb-6"
-                  initial={{ opacity: 0, x: -30 }}
+                  initial={shouldReduceMotion ? false : { opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: categoryIndex * 0.1 }}
+                  transition={shouldReduceMotion ? { duration: 0 } : { delay: categoryIndex * 0.1 }}
                 >
                   <span className="text-3xl">{categoryIcons[category] || '🔧'}</span>
                   <h3 className="handwritten text-2xl font-bold capitalize" style={{ color: categoryColors[category] }}>
@@ -148,21 +149,29 @@ export default function Skills() {
                     <motion.div
                       key={skill.name}
                       className="relative group"
-                      initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                      initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.9, y: 20 }}
                       whileInView={{ opacity: 1, scale: 1, y: 0 }}
                       viewport={{ once: true }}
-                      transition={{ 
-                        duration: 0.5, 
-                        delay: index * 0.1,
-                        type: "spring",
-                        stiffness: 100
-                      }}
-                      whileHover={{ 
-                        scale: 1.05,
-                        rotateY: 5,
-                        rotateX: 5,
-                        z: 50,
-                      }}
+                      transition={
+                        shouldReduceMotion
+                          ? { duration: 0 }
+                          : {
+                              duration: 0.5,
+                              delay: index * 0.1,
+                              type: "spring",
+                              stiffness: 100,
+                            }
+                      }
+                      whileHover={
+                        shouldReduceMotion
+                          ? undefined
+                          : {
+                              scale: 1.05,
+                              rotateY: 5,
+                              rotateX: 5,
+                              z: 50,
+                            }
+                      }
                       style={{ perspective: 1000 }}
                     >
                       {/* Card */}
@@ -214,14 +223,18 @@ export default function Skills() {
                                 backgroundColor: categoryColors[skill.category],
                                 opacity: 0.8,
                               }}
-                              initial={{ width: 0 }}
+                              initial={shouldReduceMotion ? false : { width: 0 }}
                               whileInView={{ width: `${skill.level}%` }}
                               viewport={{ once: true }}
-                              transition={{ 
-                                duration: 1, 
-                                delay: categoryIndex * 0.1 + index * 0.05,
-                                ease: "easeOut"
-                              }}
+                              transition={
+                                shouldReduceMotion
+                                  ? { duration: 0 }
+                                  : {
+                                      duration: 1,
+                                      delay: categoryIndex * 0.1 + index * 0.05,
+                                      ease: "easeOut",
+                                    }
+                              }
                             />
                             {/* Hand-drawn marker lines */}
                             <div className="absolute inset-0 flex justify-between px-1 pointer-events-none">
@@ -246,7 +259,7 @@ export default function Skills() {
         {!isSerious && (
           <motion.div
             className="text-center mt-8"
-            initial={{ opacity: 0 }}
+            initial={shouldReduceMotion ? false : { opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
           >
@@ -264,4 +277,3 @@ export default function Skills() {
     </section>
   );
 }
-

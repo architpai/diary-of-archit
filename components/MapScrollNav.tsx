@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import Image from 'next/image';
@@ -15,6 +15,7 @@ interface Section {
 export default function MapScrollNav() {
   const { isSerious } = useSeriousMode();
   const { t, isJapanese } = useTranslation();
+  const shouldReduceMotion = useReducedMotion();
   const [activeSection, setActiveSection] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
 
@@ -116,100 +117,100 @@ export default function MapScrollNav() {
 
   return (
     <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 hidden md:block">
-      {/* Map Container - wider for better visibility */}
-      <div className="relative bg-paper/95 p-6 rounded-2xl wobbly-border shadow-lg" style={{ width: '140px' }}>
-        {/* Treasure Map Title */}
-        <div className="text-center mb-3">
-          <span 
-            className="handwritten text-sm text-ink/70"
-            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-          >
-            {t('nav.map_title')}
-          </span>
-        </div>
+        {/* Map Container - wider for better visibility */}
+        <div className="relative bg-paper/95 p-6 rounded-2xl wobbly-border shadow-lg" style={{ width: '140px' }}>
+          {/* Treasure Map Title */}
+          <div className="text-center mb-3">
+            <span 
+              className="handwritten text-sm text-ink/70"
+              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            >
+              {t('nav.map_title')}
+            </span>
+          </div>
 
-        {/* Winding Path SVG */}
-        <svg
-          width="100"
-          height={totalSvgHeight}
-          viewBox={`0 0 100 ${totalSvgHeight}`}
-          className="relative mx-auto"
-        >
-          {/* Background path (faded) */}
-          <path
-            d={(() => {
-              let path = '';
-              for (let i = 0; i < sections.length - 1; i++) {
-                const y = topPadding + (i / (sections.length - 1)) * pathHeight;
-                const x = i % 2 === 0 ? 40 : 60;
-                const nextY = topPadding + ((i + 1) / (sections.length - 1)) * pathHeight;
-                const nextX = (i + 1) % 2 === 0 ? 40 : 60;
-                const controlX = i % 2 === 0 ? 80 : 20;
-                const controlY = (y + nextY) / 2;
-                
-                if (i === 0) {
-                  path += `M ${x} ${y} `;
+          {/* Winding Path SVG */}
+          <svg
+            width="100"
+            height={totalSvgHeight}
+            viewBox={`0 0 100 ${totalSvgHeight}`}
+            className="relative mx-auto"
+          >
+            {/* Background path (faded) */}
+            <path
+              d={(() => {
+                let path = '';
+                for (let i = 0; i < sections.length - 1; i++) {
+                  const y = topPadding + (i / (sections.length - 1)) * pathHeight;
+                  const x = i % 2 === 0 ? 40 : 60;
+                  const nextY = topPadding + ((i + 1) / (sections.length - 1)) * pathHeight;
+                  const nextX = (i + 1) % 2 === 0 ? 40 : 60;
+                  const controlX = i % 2 === 0 ? 80 : 20;
+                  const controlY = (y + nextY) / 2;
+                  
+                  if (i === 0) {
+                    path += `M ${x} ${y} `;
+                  }
+                  path += `Q ${controlX} ${controlY} ${nextX} ${nextY} `;
                 }
-                path += `Q ${controlX} ${controlY} ${nextX} ${nextY} `;
-              }
-              return path.trim();
-            })()}
-            stroke="#D4A373"
-            strokeWidth="6"
-            fill="none"
-            strokeLinecap="round"
-            strokeDasharray="10 5"
-            opacity="0.3"
-          />
-          
-          {/* Progress path (animated) */}
+                return path.trim();
+              })()}
+              stroke="#D4A373"
+              strokeWidth="6"
+              fill="none"
+              strokeLinecap="round"
+              strokeDasharray="10 5"
+              opacity="0.3"
+            />
+            
+            {/* Progress path (animated) */}
           <motion.path
             d={(() => {
-              let path = '';
-              for (let i = 0; i < sections.length - 1; i++) {
-                const y = topPadding + (i / (sections.length - 1)) * pathHeight;
-                const x = i % 2 === 0 ? 40 : 60;
-                const nextY = topPadding + ((i + 1) / (sections.length - 1)) * pathHeight;
-                const nextX = (i + 1) % 2 === 0 ? 40 : 60;
-                const controlX = i % 2 === 0 ? 80 : 20;
-                const controlY = (y + nextY) / 2;
-                
-                if (i === 0) {
-                  path += `M ${x} ${y} `;
+                let path = '';
+                for (let i = 0; i < sections.length - 1; i++) {
+                  const y = topPadding + (i / (sections.length - 1)) * pathHeight;
+                  const x = i % 2 === 0 ? 40 : 60;
+                  const nextY = topPadding + ((i + 1) / (sections.length - 1)) * pathHeight;
+                  const nextX = (i + 1) % 2 === 0 ? 40 : 60;
+                  const controlX = i % 2 === 0 ? 80 : 20;
+                  const controlY = (y + nextY) / 2;
+                  
+                  if (i === 0) {
+                    path += `M ${x} ${y} `;
+                  }
+                  path += `Q ${controlX} ${controlY} ${nextX} ${nextY} `;
                 }
-                path += `Q ${controlX} ${controlY} ${nextX} ${nextY} `;
-              }
-              return path.trim();
-            })()}
-            stroke="#E63946"
-            strokeWidth="6"
-            fill="none"
-            strokeLinecap="round"
-            strokeDasharray="10 5"
+                return path.trim();
+              })()}
+              stroke="#E63946"
+              strokeWidth="6"
+              fill="none"
+              strokeLinecap="round"
+              strokeDasharray="10 5"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: scrollProgress / 100 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.2 }}
           />
 
-          {/* Section Landmarks - clickable map pins */}
-          {sections.map((section, index) => {
-            const yPos = topPadding + (index / (sections.length - 1)) * pathHeight;
-            const xPos = index % 2 === 0 ? 40 : 60;
-            const isActive = activeSection === index;
+            {/* Section Landmarks - clickable map pins */}
+            {sections.map((section, index) => {
+              const yPos = topPadding + (index / (sections.length - 1)) * pathHeight;
+              const xPos = index % 2 === 0 ? 40 : 60;
+              const isActive = activeSection === index;
 
-            return (
-              <g key={section.id}>
-                {/* Clickable area (larger for easier clicking) */}
-                <circle
-                  cx={xPos}
-                  cy={yPos}
-                  r={15}
-                  fill="transparent"
-                  className="cursor-pointer"
-                  onClick={() => scrollToSection(index)}
-                />
-                
-                {/* Map Pin */}
+              return (
+                <g key={section.id}>
+                  {/* Clickable area (larger for easier clicking) */}
+                  <circle
+                    cx={xPos}
+                    cy={yPos}
+                    r={15}
+                    fill="transparent"
+                    className="cursor-pointer"
+                    onClick={() => scrollToSection(index)}
+                  />
+                  
+                  {/* Map Pin */}
                 <motion.circle
                   cx={xPos}
                   cy={yPos}
@@ -218,49 +219,55 @@ export default function MapScrollNav() {
                   stroke="#2D2D2D"
                   strokeWidth="2"
                   className="cursor-pointer pointer-events-none"
-                  animate={isActive ? { scale: [1, 1.1, 1] } : {}}
-                  transition={{ duration: 0.5, repeat: isActive ? Infinity : 0 }}
+                  animate={
+                    shouldReduceMotion || !isActive ? undefined : { scale: [1, 1.1, 1] }
+                  }
+                  transition={
+                    shouldReduceMotion
+                      ? undefined
+                      : { duration: 0.5, repeat: isActive ? Infinity : 0 }
+                  }
                 />
-                
-                {/* Icon */}
-                <text
-                  x={xPos}
-                  y={yPos + 1}
-                  fontSize="9"
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  className="pointer-events-none select-none"
-                >
-                  {section.icon}
-                </text>
-              </g>
-            );
-          })}
-        </svg>
+                  
+                  {/* Icon */}
+                  <text
+                    x={xPos}
+                    y={yPos + 1}
+                    fontSize="9"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="pointer-events-none select-none"
+                  >
+                    {section.icon}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
 
-        {/* Walking Avatar - follows curve with offset */}
+          {/* Walking Avatar - follows curve with offset */}
         <motion.div
           className="absolute pointer-events-none"
           style={{
             left: `${20 + avatarPos.x - 17}px`,
             top: `${56 + avatarPos.y}px`,
           }}
-          animate={{ 
-            y: [0, -3, 0],
-          }}
-          transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut' }}
+          animate={shouldReduceMotion ? undefined : { y: [0, -3, 0] }}
+          transition={
+            shouldReduceMotion ? undefined : { duration: 1, repeat: Infinity, ease: 'easeInOut' }
+          }
         >
-          <Image
-            src="/avatar/walking_pose.webp"
-            alt="Walking character"
-            width={35}
-            height={45}
-            className="drop-shadow-md"
-          />
-        </motion.div>
+            <Image
+              src="/avatar/walking_pose.webp"
+              alt="Walking character"
+              width={35}
+              height={45}
+              className="drop-shadow-md"
+            />
+          </motion.div>
 
 
+        </div>
       </div>
-    </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useState, useEffect } from 'react';
 
@@ -48,6 +48,7 @@ export default function FloatingDoodles({   variant = 'mixed',
   className = ''
 }: FloatingDoodlesProps) {
   const { isSerious } = useSeriousMode();
+  const shouldReduceMotion = useReducedMotion();
   const [doodles, setDoodles] = useState<Doodle[]>([]);
   
   useEffect(() => {
@@ -55,7 +56,7 @@ export default function FloatingDoodles({   variant = 'mixed',
   }, [variant, density]);
 
   // Hide in serious mode
-  if (isSerious) return null;
+  if (isSerious || shouldReduceMotion) return null;
   
   return (
     <div className={`absolute inset-0 overflow-hidden pointer-events-none z-0 ${className}`}>

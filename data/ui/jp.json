@@ -1,29 +1,29 @@
 {
   "hero": {
-    "diary": "日記",
+    "diary": "アーチット",
     "of": "の",
-    "name": "アルキット",
-    "subtitle": "バグを一つずつ潰しながら、かっこいいものを作ってる！",
-    "scroll": "↓ もっと見る ↓"
+    "name": "日記",
+    "subtitle": "一つずつバグを潰して、面白いもの作ってます！",
+    "scroll": "↓ スクロールして続きを見る ↓"
   },
   "timeline": {
-    "title_diary": "📅 これまでの旅...",
+    "title_diary": "📅 これまでの道のり...",
     "title_serious": "職務経歴"
   },
   "skills": {
-    "title_diary": "💪 俺のスーパーパワー ⚡",
+    "title_diary": "💪 俺のスキル ⚡",
     "title_serious": "技術スキル",
-    "disclaimer": "※ これらの数値は完全に科学的で、全然でたらめじゃないよ"
+    "disclaimer": "※ この数値は完全に科学的です（ということにしておいてください）"
   },
   "sneakpeek": {
-    "title": "👀 「ちょっと見せ」セクション",
-    "subtitle": "（履歴書には載らないけど... 本当は載せたい）",
-    "current_setup": "現在の武器："
+    "title": "👀 ここだけの話",
+    "subtitle": "（履歴書には書けないけど... 本当は書きたいこと）",
+    "current_setup": "今の愛用ツール："
   },
   "contact": {
-    "title_diary": "📬 話そうぜ！",
+    "title_diary": "📬 気軽に連絡して！",
     "title_serious": "連絡先",
-    "message": "コードの話でも、ポケモンカードの話でも、人生の意味でも... 何でも聞くよ！👂",
+    "message": "コードの話でも、ポケモンカードでも、人生の意味でも... なんでも話そう！👂",
     "thanks": "日記を読んでくれてありがとう！✨"
   },
   "nav": {
@@ -32,23 +32,23 @@
     "skills": "スキル",
     "about": "自己紹介",
     "contact": "連絡",
-    "peek": "見せ",
+    "peek": "おまけ",
     "map_title": "🗺️ 経歴マップ"
   },
   "mode": {
-    "fun": "🎨 楽しいモード",
-    "serious": "👔 真面目モード"
+    "fun": "🎨 カジュアルモード",
+    "serious": "👔 ビジネスモード"
   },
   "footer": {
-    "copyright": "© 2024 アルキット・パイ. All rights reserved.",
-    "scribbled": "❤️ で落書き | アルキット・パイ"
+    "copyright": "© 2024 アーチット・パイ 無断転載禁止",
+    "scribbled": "❤️ を込めて制作 | アーチット・パイ"
   },
   "resume": {
-    "summary_title": "【職務要約】",
-    "summary_text": "地理空間アプリケーション、クラウドネイティブソリューション、モダンなウェブ技術を専門とするエンジニア。Azure、PostGIS、MapLibre、React/Next.jsスタックを使用したエンタープライズグレードのアプリケーション開発の実績があります。",
-    "experience_title": "【職務経歴】",
-    "skills_title": "【技術スキル】",
+    "summary_title": "職務要約",
+    "summary_text": "地理空間アプリケーション、クラウドネイティブソリューション、最新のWeb技術を専門とするエンジニア。Azure、PostGIS、MapLibre、React/Next.jsを活用したエンタープライズグレードのアプリケーション開発において実績があります。",
+    "experience_title": "職務経歴",
+    "skills_title": "技術スキル",
     "print_button": "🖨️ 印刷 / PDFで保存",
-    "print_hint": "最良の結果を得るには、ブラウザの印刷機能（Cmd/Ctrl + P）を使用してください"
+    "print_hint": "最適な結果を得るにはブラウザの印刷機能（Cmd/Ctrl + P）をご利用ください"
   }
 }

@@ -504,6 +504,10 @@ body {
   animation: wobble 0.5s ease-in-out;
 }
 
+.wobble-hover:hover {
+  animation: wobble 0.5s ease-in-out;
+}
+
 /* ============================================
    TYPOGRAPHY
    ============================================ */
@@ -812,15 +816,15 @@ body.serious-mode .diary-title {
    ============================================ */
 
 /* Language-aware font switching */
-[lang="jp"] .handwritten,
-[lang="jp"] .diary-title,
-[lang="jp"] .diary-subtitle {
+[lang="ja"] .handwritten,
+[lang="ja"] .diary-title,
+[lang="ja"] .diary-subtitle {
   font-family: var(--font-jp-handwritten);
   letter-spacing: 0.02em;
 }
 
-[lang="jp"] .clean-font,
-[lang="jp"] body.serious-mode {
+[lang="ja"] .clean-font,
+[lang="ja"] body.serious-mode {
   font-family: var(--font-jp-clean);
 }
 
@@ -837,25 +841,39 @@ body.serious-mode .diary-title {
 }
 
 /* Japanese punctuation and spacing */
-[lang="jp"] {
+[lang="ja"] {
   word-break: break-word;
   overflow-wrap: break-word;
 }
 
 /* Adjust line height for Japanese text readability */
-[lang="jp"] p,
-[lang="jp"] li {
+[lang="ja"] p,
+[lang="ja"] li {
   line-height: 1.8;
 }
 
 /* Japanese resume specific styles */
-[lang="jp"] .resume-section {
+[lang="ja"] .resume-section {
   font-family: var(--font-jp-clean);
 }
 
 /* Better rendering for Japanese characters */
-[lang="jp"] {
+[lang="ja"] {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+/* ============================================
+   REDUCED MOTION PREFERENCES
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

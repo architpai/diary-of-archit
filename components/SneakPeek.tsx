@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -31,6 +31,7 @@ const hobbyColors: Record<string, { bg: string; accent: string }> = {
 export default function SneakPeek() {
   const { isSerious } = useSeriousMode();
   const { t, content, isJapanese } = useTranslation();
+  const shouldReduceMotion = useReducedMotion();
   const hobbies = content.personal.hobbies as Hobby[];
 
   // Hide this section in serious mode
@@ -47,7 +48,7 @@ export default function SneakPeek() {
       {/* Section Title */}
       <motion.div
         className="text-center mb-16 pt-16 relative z-10"
-        initial={{ opacity: 0, y: 30 }}
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
       >
@@ -72,10 +73,10 @@ export default function SneakPeek() {
             key={hobby.id}
             className="relative"
             style={{ transform: `rotate(${(index - 1) * 3}deg)` }}
-            initial={{ opacity: 0, y: 50, rotate: (index - 1) * 3 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 50, rotate: (index - 1) * 3 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: index * 0.15 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: index * 0.15 }}
           >
             {/* Post-it Card */}
             <motion.div
@@ -84,13 +85,17 @@ export default function SneakPeek() {
                 background: `linear-gradient(135deg, ${hobbyColors[hobby.id]?.bg || '#FFEB3B'} 0%, ${hobbyColors[hobby.id]?.accent || '#FDD835'} 100%)`,
                 boxShadow: '4px 4px 12px rgba(0,0,0,0.25), inset 0 -2px 4px rgba(0,0,0,0.1)',
               }}
-              whileHover={{ 
-                scale: 1.08, 
-                rotate: 0,
-                boxShadow: '8px 8px 20px rgba(0,0,0,0.35)',
-                zIndex: 20
-              }}
-              transition={{ type: "spring", stiffness: 300 }}
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : {
+                      scale: 1.08,
+                      rotate: 0,
+                      boxShadow: '8px 8px 20px rgba(0,0,0,0.35)',
+                      zIndex: 20,
+                    }
+              }
+              transition={shouldReduceMotion ? undefined : { type: "spring", stiffness: 300 }}
             >
               {/* Pin decoration */}
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 text-2xl drop-shadow-md">
@@ -100,13 +105,17 @@ export default function SneakPeek() {
               {/* Avatar Pose */}
               <motion.div
                 className="mb-4 flex justify-center"
-                animate={{ y: [0, -8, 0] }}
-                transition={{ 
-                  duration: 2, 
-                  repeat: Infinity,
-                  delay: index * 0.3,
-                  ease: "easeInOut"
-                }}
+                animate={shouldReduceMotion ? undefined : { y: [0, -8, 0] }}
+                transition={
+                  shouldReduceMotion
+                    ? undefined
+                    : {
+                        duration: 2,
+                        repeat: Infinity,
+                        delay: index * 0.3,
+                        ease: "easeInOut",
+                      }
+                }
               >
                 <Image
                   src={hobbyPoses[hobby.id] || '/avatar/waving_pose.webp'}
@@ -140,7 +149,7 @@ export default function SneakPeek() {
       {/* Current Setup Note */}
       <motion.div
         className="mt-16 max-w-md mx-auto relative z-10"
-        initial={{ opacity: 0, scale: 0.9 }}
+        initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.9 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
       >
@@ -167,4 +176,3 @@ export default function SneakPeek() {
     </section>
   );
 }
-

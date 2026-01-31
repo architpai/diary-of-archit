@@ -20,7 +20,9 @@ export default function SeriousModeToggle() {
   return (
     <button
       onClick={handleToggle}
-      className="print:hidden fixed bottom-6 right-6 z-[9999] px-4 py-3 rounded-lg transition-all duration-300 font-sans text-sm font-medium shadow-lg isolate"
+      className={`print:hidden fixed bottom-6 right-6 z-[9999] px-4 py-3 rounded-lg transition-all duration-300 font-sans text-sm font-medium shadow-lg isolate ${
+        isOnResume ? '' : 'wobble-hover'
+      }`}
       style={{
         backgroundColor: isOnResume ? '#2D2D2D' : '#FFF9E5',
         color: isOnResume ? 'white' : '#2D2D2D',

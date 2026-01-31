@@ -11,8 +11,8 @@ export function useTranslation() {
   const { language } = useLanguage();
   
   // Select content based on language
-  const content: Content = language === 'jp' ? contentJP as Content : contentEN;
-  const ui: UIStrings = language === 'jp' ? uiJP as UIStrings : uiEN;
+  const content: Content = language === 'ja' ? contentJP as Content : contentEN;
+  const ui: UIStrings = language === 'ja' ? uiJP as UIStrings : uiEN;
   
   // Translation function for UI strings with nested key support
   const t = (key: string): string => {
@@ -35,6 +35,6 @@ export function useTranslation() {
     content,
     t,
     language,
-    isJapanese: language === 'jp'
+    isJapanese: language === 'ja'
   };
 }

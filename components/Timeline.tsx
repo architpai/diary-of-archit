@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -35,6 +35,7 @@ interface ExperienceCardProps {
 }
 
 function ExperienceCard({ exp, index, isExpanded, onInView }: ExperienceCardProps) {
+  const shouldReduceMotion = useReducedMotion();
   const cardRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(cardRef, { margin: "0px 0px -20% 0px", once: true });
 
@@ -45,21 +46,21 @@ function ExperienceCard({ exp, index, isExpanded, onInView }: ExperienceCardProp
   }, [isInView, onInView]);
 
   return (
-    <motion.div
-      ref={cardRef}
-      className={`flex flex-col md:flex-row items-center gap-8 ${
-        index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
-      }`}
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.6, delay: 0.2 }}
-    >
+      <motion.div
+        ref={cardRef}
+        className={`flex flex-col md:flex-row items-center gap-8 ${
+          index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
+        }`}
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 50 }}
+        whileInView={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 0.2 }}
+      >
       {/* Map Pin Landmark */}
       <motion.div
         className="relative flex-shrink-0"
-        whileHover={{ scale: 1.1, rotate: 10 }}
-        transition={{ type: "spring", stiffness: 300 }}
+        whileHover={shouldReduceMotion ? undefined : { scale: 1.1, rotate: 10 }}
+        transition={shouldReduceMotion ? undefined : { type: "spring", stiffness: 300 }}
       >
         {/* Pin shadow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-20 bg-yellow-400/20 rounded-full blur-xl" />
@@ -83,8 +84,8 @@ function ExperienceCard({ exp, index, isExpanded, onInView }: ExperienceCardProp
         {/* Year badge */}
         <motion.div 
           className="absolute -top-2 -right-2 bg-margin-blue text-white px-3 py-1 rounded-full shadow-lg"
-          animate={{ rotate: [0, -5, 5, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          animate={shouldReduceMotion ? undefined : { rotate: [0, -5, 5, 0] }}
+          transition={shouldReduceMotion ? undefined : { duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
           <span className="handwritten text-sm font-bold">{exp.date}</span>
         </motion.div>
@@ -93,8 +94,8 @@ function ExperienceCard({ exp, index, isExpanded, onInView }: ExperienceCardProp
       {/* Experience Card */}
       <motion.div
         className="flex-1 max-w-xl"
-        whileHover={{ scale: 1.02, rotate: index % 2 === 0 ? 1 : -1 }}
-        transition={{ type: "spring", stiffness: 300 }}
+        whileHover={shouldReduceMotion ? undefined : { scale: 1.02, rotate: index % 2 === 0 ? 1 : -1 }}
+        transition={shouldReduceMotion ? undefined : { type: "spring", stiffness: 300 }}
       >
         <div className="relative p-6 wobbly-border bg-paper/95 tape-corner shadow-xl">
           {/* Header */}
@@ -108,9 +109,9 @@ function ExperienceCard({ exp, index, isExpanded, onInView }: ExperienceCardProp
           {/* Diary Narrative */}
           <motion.p
             className="diary-narrative handwritten text-lg text-ink mb-4 italic bg-yellow-100/50 p-3 rounded-lg"
-            initial={{ opacity: 0 }}
+            initial={shouldReduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.3 }}
           >
             &ldquo;{exp.diaryNarrative}&rdquo;
           </motion.p>
@@ -118,15 +119,17 @@ function ExperienceCard({ exp, index, isExpanded, onInView }: ExperienceCardProp
           {/* Resume Bullet Points (auto-expand with letter opening animation) */}
           <div style={{ overflow: 'hidden' }}>
             <motion.div
-              initial={{ scaleY: 0, opacity: 0 }}
-              animate={{
-                scaleY: isExpanded ? 1 : 0,
-                opacity: isExpanded ? 1 : 0,
-              }}
-              transition={{ 
-                duration: 0.5, 
-                ease: [0.4, 0.0, 0.2, 1],
-              }}
+              initial={shouldReduceMotion ? false : { scaleY: 0, opacity: 0 }}
+              animate={
+                isExpanded
+                  ? { scaleY: 1, opacity: 1 }
+                  : { scaleY: 0, opacity: 0 }
+              }
+              transition={
+                shouldReduceMotion
+                  ? { duration: 0 }
+                  : { duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }
+              }
               style={{
                 transformOrigin: 'top',
               }}
@@ -149,6 +152,7 @@ function ExperienceCard({ exp, index, isExpanded, onInView }: ExperienceCardProp
 export default function Timeline() {
   const { isSerious } = useSeriousMode();
   const { content, t, isJapanese } = useTranslation();
+  const shouldReduceMotion = useReducedMotion();
   const experiences = content.experiences as Experience[];
   const [openedExperiences, setOpenedExperiences] = useState<Set<number>>(new Set());
 
@@ -171,7 +175,7 @@ export default function Timeline() {
       
       <motion.h2
         className={`diary-title text-3xl md:text-4xl text-center mb-16 pt-16 ${!isSerious ? 'text-white drop-shadow-lg' : 'text-ink'}`}
-        initial={{ opacity: 0, y: 30 }}
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
@@ -188,10 +192,10 @@ export default function Timeline() {
               <motion.div
                 key={exp.id}
                 className="relative mb-16"
-                initial={{ opacity: 0, x: -50 }}
+                initial={shouldReduceMotion ? false : { opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.5, delay: index * 0.2 }}
+                transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: index * 0.2 }}
               >
                 <div
                   className="timeline-dot bg-gray-600 border-white"
@@ -304,7 +308,7 @@ export default function Timeline() {
                 initial={{ pathLength: 0 }}
                 whileInView={{ pathLength: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 2, ease: "easeInOut" }}
+                transition={{ duration: shouldReduceMotion ? 0 : 2, ease: "easeInOut" }}
               />
             </svg>
 
@@ -331,4 +335,3 @@ export default function Timeline() {
     </section>
   );
 }
-

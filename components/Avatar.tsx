@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
 
 // Available poses with their image paths
@@ -31,15 +31,22 @@ export default function Avatar({
   width = 300,
   height = 400,
 }: AvatarProps) {
+  const shouldReduceMotion = useReducedMotion();
   return (
     <motion.div
       className={`relative ${className}`}
-      animate={animate ? { y: [0, -10, 0] } : undefined}
-      transition={animate ? {
-        duration: 3,
-        repeat: Infinity,
-        ease: "easeInOut",
-      } : undefined}
+      animate={
+        animate && !shouldReduceMotion ? { y: [0, -10, 0] } : undefined
+      }
+      transition={
+        animate && !shouldReduceMotion
+          ? {
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }
+          : undefined
+      }
     >
       <Image
         src={AVATAR_POSES[pose]}
