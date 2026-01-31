@@ -41,7 +41,7 @@ export default function LanguageToggle() {
                 ? 'text-ink font-bold' 
                 : 'text-ink/50 scribble-strikethrough'
             }`}
-            style={{ fontFamily: "'Zen Kaku Gothic New', sans-serif" }}
+            style={{ fontFamily: "var(--font-jp-handwritten)" }}
           >
             日本語
           </span>

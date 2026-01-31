@@ -5,9 +5,11 @@ import HeroAvatarTransition from "./HeroAvatarTransition";
 import BlobDivider from "./BlobDivider";
 import FloatingDoodles from "./FloatingDoodles";
 import { useSeriousMode } from "@/contexts/SeriousModeContext";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function Hero() {
   const { isSerious } = useSeriousMode();
+  const { t, isJapanese } = useTranslation();
 
   return (
     <section
@@ -86,7 +88,8 @@ export default function Hero() {
           transition={{ duration: 0.5, delay: 0.3 }}
         >
           <h1
-            className={`diary-title ${!isSerious ? "text-ink drop-shadow-lg" : "text-ink"}`}
+            className={`diary-title ${!isSerious ? 'text-ink drop-shadow-lg' : 'text-ink'}`}
+            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
           >
             <motion.span
               className="block"
@@ -94,10 +97,10 @@ export default function Hero() {
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              DIARY
+              {t('hero.diary')}
             </motion.span>
             <motion.span
-              className={`block ${!isSerious ? "text-white text-shadow-outline" : "text-margin-blue"}`}
+              className={`block ${!isSerious ? 'text-white text-shadow-outline' : 'text-margin-blue'}`}
               initial={{ x: 50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -105,20 +108,20 @@ export default function Hero() {
                 !isSerious
                   ? {
                       textShadow:
-                        "2px 2px 0 #2D2D2D, -2px -2px 0 #2D2D2D, 2px -2px 0 #2D2D2D, -2px 2px 0 #2D2D2D",
+                        '2px 2px 0 #2D2D2D, -2px -2px 0 #2D2D2D, 2px -2px 0 #2D2D2D, -2px 2px 0 #2D2D2D',
                     }
                   : {}
               }
             >
-              of a
+              {t('hero.of')}
             </motion.span>
             <motion.span
-              className={`block ${!isSerious ? "scribble-underline" : "underline-sketch"}`}
+              className={`block ${!isSerious ? 'scribble-underline' : 'underline-sketch'}`}
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.6 }}
             >
-              ARCHIT
+              {t('hero.name')}
             </motion.span>
           </h1>
         </motion.div>
@@ -150,10 +153,11 @@ export default function Hero() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.8 }}
         >
-          <p
-            className={`diary-subtitle ${isSerious ? "" : "shaky-pencil"} max-w-md mx-auto handwritten`}
+          <p 
+            className={`diary-subtitle ${isSerious ? '' : 'shaky-pencil'} max-w-md mx-auto handwritten`}
+            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
           >
-            {"Building cool stuff, one bug at a time !"}
+            {t('hero.subtitle')}
           </p>
         </motion.div>
 
@@ -164,9 +168,10 @@ export default function Hero() {
           transition={{ duration: 1.5, repeat: Infinity }}
         >
           <div
-            className={`handwritten ${!isSerious ? "text-ink" : "text-ink/60"}`}
+            className={`handwritten ${!isSerious ? 'text-ink' : 'text-ink/60'}`}
+            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
           >
-            ↓ scroll for more ↓
+            {t('hero.scroll')}
           </div>
         </motion.div>
       </motion.div>

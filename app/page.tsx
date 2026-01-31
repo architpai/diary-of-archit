@@ -10,9 +10,11 @@ import SeriousModeToggle from "@/components/SeriousModeToggle";
 import MapScrollNav from "@/components/MapScrollNav";
 import LanguageToggle from "@/components/LanguageToggle";
 import { useSeriousMode } from "@/contexts/SeriousModeContext";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function Home() {
   const { isSerious } = useSeriousMode();
+  const { t, isJapanese } = useTranslation();
 
   return (
     <main className={`notebook-paper min-h-screen ${isSerious ? 'pt-16' : ''}`}>
@@ -48,11 +50,14 @@ export default function Home() {
       <Contact />
       
       {/* Footer */}
-      <footer className={`py-8 text-center ${isSerious ? 'font-sans text-sm text-gray-500' : 'handwritten text-ink/50'}`}>
+      <footer 
+        className={`py-8 text-center ${isSerious ? 'font-sans text-sm text-gray-500' : 'handwritten text-ink/50'}`}
+        style={isJapanese && !isSerious ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+      >
         <p>
           {isSerious 
-            ? '© 2024 Archit Pai. All rights reserved.'
-            : ' Scribbled with ❤️ | Archit Pai'
+            ? t('footer.copyright')
+            : t('footer.scribbled')
           }
         </p>
       </footer>

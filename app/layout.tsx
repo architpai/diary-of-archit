@@ -5,6 +5,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { SeriousModeProvider } from "@/contexts/SeriousModeContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import LanguageHtmlWrapper from "@/components/LanguageHtmlWrapper";
 
 const inter = Inter({
   variable: "--font-clean",
@@ -34,12 +35,13 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link 
-          href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" 
+          href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Zen+Kurenaido&family=Noto+Sans+JP:wght@400;500;700&display=swap" 
           rel="stylesheet" 
         />
       </head>
       <body className={`${inter.variable} antialiased`}>
         <LanguageProvider>
+          <LanguageHtmlWrapper />
           <SeriousModeProvider>
             {children}
             <Analytics />

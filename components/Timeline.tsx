@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, useInView } from 'framer-motion';
 import Image from 'next/image';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
-import content from '@/data/content.json';
+import { useTranslation } from '@/hooks/useTranslation';
 import BlobDivider from './BlobDivider';
 import FloatingDoodles from './FloatingDoodles';
 
@@ -148,6 +148,7 @@ function ExperienceCard({ exp, index, isExpanded, onInView }: ExperienceCardProp
 
 export default function Timeline() {
   const { isSerious } = useSeriousMode();
+  const { content, t, isJapanese } = useTranslation();
   const experiences = content.experiences as Experience[];
   const [openedExperiences, setOpenedExperiences] = useState<Set<number>>(new Set());
 
@@ -173,8 +174,9 @@ export default function Timeline() {
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
+        style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
       >
-        {!isSerious ? '📅 The Journey So Far...' : 'Professional Experience'}
+        {!isSerious ? t('timeline.title_diary') : t('timeline.title_serious')}
       </motion.h2>
 
       <div className="relative max-w-5xl mx-auto px-4">

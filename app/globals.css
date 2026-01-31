@@ -17,6 +17,8 @@
   /* Typography */
   --font-handwritten: 'Patrick Hand', cursive;
   --font-clean: 'Inter', system-ui, sans-serif;
+  --font-jp-handwritten: 'Zen Kurenaido', sans-serif;
+  --font-jp-clean: 'Noto Sans JP', sans-serif;
 
   /* Spacing */
   --margin-width: 60px;
@@ -803,4 +805,57 @@ body.serious-mode .diary-title {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--margin-blue);
+}
+
+/* ============================================
+   JAPANESE TYPOGRAPHY UTILITIES
+   ============================================ */
+
+/* Language-aware font switching */
+[lang="jp"] .handwritten,
+[lang="jp"] .diary-title,
+[lang="jp"] .diary-subtitle {
+  font-family: var(--font-jp-handwritten);
+  letter-spacing: 0.02em;
+}
+
+[lang="jp"] .clean-font,
+[lang="jp"] body.serious-mode {
+  font-family: var(--font-jp-clean);
+}
+
+/* Japanese text utilities */
+.jp-handwritten {
+  font-family: var(--font-jp-handwritten);
+  letter-spacing: 0.02em;
+  line-height: 1.8;
+}
+
+.jp-clean {
+  font-family: var(--font-jp-clean);
+  line-height: 1.8;
+}
+
+/* Japanese punctuation and spacing */
+[lang="jp"] {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Adjust line height for Japanese text readability */
+[lang="jp"] p,
+[lang="jp"] li {
+  line-height: 1.8;
+}
+
+/* Japanese resume specific styles */
+[lang="jp"] .resume-section {
+  font-family: var(--font-jp-clean);
+}
+
+/* Better rendering for Japanese characters */
+[lang="jp"] {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }

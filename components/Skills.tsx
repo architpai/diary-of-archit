@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
-import content from '@/data/content.json';
+import { useTranslation } from '@/hooks/useTranslation';
 import BlobDivider from './BlobDivider';
 import FloatingDoodles from './FloatingDoodles';
 
@@ -40,6 +40,7 @@ const categoryIcons: Record<string, string> = {
 
 export default function Skills() {
   const { isSerious } = useSeriousMode();
+  const { content, t, isJapanese } = useTranslation();
   const skills = content.skills as Skill[];
 
   return (
@@ -57,8 +58,9 @@ export default function Skills() {
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
+        style={isJapanese && !isSerious ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
       >
-        {isSerious ? 'Technical Skills' : '💪 My Superpowers ⚡'}
+        {isSerious ? t('skills.title_serious') : t('skills.title_diary')}
       </motion.h2>
 
       <div className="max-w-5xl mx-auto px-4 relative z-20">
@@ -248,8 +250,8 @@ export default function Skills() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
           >
-            <p className="handwritten text-ink/60 italic inline-block bg-paper/80 px-4 py-2 rounded-lg">
-              * These percentages are totally scientific and not made up at all 
+            <p className="handwritten text-ink/60 italic inline-block bg-paper/80 px-4 py-2 rounded-lg" style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}>
+              {t('skills.disclaimer')}
             </p>
           </motion.div>
         )}

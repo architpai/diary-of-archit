@@ -3,13 +3,14 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
-import content from '@/data/content.json';
+import { useTranslation } from '@/hooks/useTranslation';
 import BlobDivider from './BlobDivider';
 import FloatingDoodles from './FloatingDoodles';
 import Avatar from './Avatar';
 
 export default function Contact() {
   const { isSerious } = useSeriousMode();
+  const { t, content, isJapanese } = useTranslation();
 
   return (
     <section id="contact" className={`py-20 relative ${!isSerious ? 'section-yellow' : ''}`}>
@@ -23,11 +24,12 @@ export default function Contact() {
       
       <motion.h2
         className={`text-3xl md:text-4xl text-center mb-12 pt-16 ${isSerious ? 'font-sans font-bold text-ink' : 'diary-title text-ink drop-shadow-lg'}`}
+        style={isJapanese && !isSerious ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
       >
-        {isSerious ? 'Contact Information' : "📬 Let's Talk!"}
+        {isSerious ? t('contact.title_serious') : t('contact.title_diary')}
       </motion.h2>
 
       <div className="max-w-4xl mx-auto px-4 flex flex-col md:flex-row items-center gap-8 relative z-10">
@@ -68,11 +70,12 @@ export default function Contact() {
           {!isSerious && (
             <motion.p
               className="handwritten text-lg mb-6 text-ink"
+              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
             >
-              Whether you want to talk about code, Pokémon cards, or the meaning of life... I&apos;m all ears! 👂
+              {t('contact.message')}
             </motion.p>
           )}
 
@@ -157,11 +160,12 @@ export default function Contact() {
       {!isSerious && (
         <motion.p
           className="handwritten text-center mt-12 text-ink/80 text-lg relative z-10"
+          style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          Thanks for reading my diary! ✨
+          {t('contact.thanks')}
         </motion.p>
       )}
     </section>

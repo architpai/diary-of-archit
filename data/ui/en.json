@@ -1,0 +1,54 @@
+{
+  "hero": {
+    "diary": "DIARY",
+    "of": "of a",
+    "name": "ARCHIT",
+    "subtitle": "Building cool stuff, one bug at a time !",
+    "scroll": "↓ scroll for more ↓"
+  },
+  "timeline": {
+    "title_diary": "📅 The Journey So Far...",
+    "title_serious": "Professional Experience"
+  },
+  "skills": {
+    "title_diary": "💪 My Superpowers ⚡",
+    "title_serious": "Technical Skills",
+    "disclaimer": "* These percentages are totally scientific and not made up at all"
+  },
+  "sneakpeek": {
+    "title": "👀 The \"Sneak Peek\" Section",
+    "subtitle": "(The stuff that doesn't go on the resume... but should)",
+    "current_setup": "Current Weapon of Choice:"
+  },
+  "contact": {
+    "title_diary": "📬 Let's Talk!",
+    "title_serious": "Contact Information",
+    "message": "Whether you want to talk about code, Pokémon cards, or the meaning of life... I'm all ears! 👂",
+    "thanks": "Thanks for reading my diary! ✨"
+  },
+  "nav": {
+    "home": "Home",
+    "journey": "Journey",
+    "skills": "Skills",
+    "about": "About Me",
+    "contact": "Contact",
+    "peek": "Peek",
+    "map_title": "🗺️ Journey Map"
+  },
+  "mode": {
+    "fun": "🎨 Fun Mode",
+    "serious": "👔 Serious Mode"
+  },
+  "footer": {
+    "copyright": "© 2024 Archit Pai. All rights reserved.",
+    "scribbled": " Scribbled with ❤️ | Archit Pai"
+  },
+  "resume": {
+    "summary_title": "PROFESSIONAL SUMMARY",
+    "summary_text": "Experienced developer specializing in geospatial applications, cloud-native solutions, and modern web technologies. Proven track record of delivering enterprise-grade applications using Azure, PostGIS, MapLibre, and React/Next.js stack.",
+    "experience_title": "PROFESSIONAL EXPERIENCE",
+    "skills_title": "TECHNICAL SKILLS",
+    "print_button": "🖨️ Print / Save as PDF",
+    "print_hint": "Use your browser's print function (Cmd/Ctrl + P) for best results"
+  }
+}

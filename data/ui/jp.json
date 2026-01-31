@@ -1,0 +1,54 @@
+{
+  "hero": {
+    "diary": "日記",
+    "of": "の",
+    "name": "アルキット",
+    "subtitle": "バグを一つずつ潰しながら、かっこいいものを作ってる！",
+    "scroll": "↓ もっと見る ↓"
+  },
+  "timeline": {
+    "title_diary": "📅 これまでの旅...",
+    "title_serious": "職務経歴"
+  },
+  "skills": {
+    "title_diary": "💪 俺のスーパーパワー ⚡",
+    "title_serious": "技術スキル",
+    "disclaimer": "※ これらの数値は完全に科学的で、全然でたらめじゃないよ"
+  },
+  "sneakpeek": {
+    "title": "👀 「ちょっと見せ」セクション",
+    "subtitle": "（履歴書には載らないけど... 本当は載せたい）",
+    "current_setup": "現在の武器："
+  },
+  "contact": {
+    "title_diary": "📬 話そうぜ！",
+    "title_serious": "連絡先",
+    "message": "コードの話でも、ポケモンカードの話でも、人生の意味でも... 何でも聞くよ！👂",
+    "thanks": "日記を読んでくれてありがとう！✨"
+  },
+  "nav": {
+    "home": "ホーム",
+    "journey": "経歴",
+    "skills": "スキル",
+    "about": "自己紹介",
+    "contact": "連絡",
+    "peek": "見せ",
+    "map_title": "🗺️ 経歴マップ"
+  },
+  "mode": {
+    "fun": "🎨 楽しいモード",
+    "serious": "👔 真面目モード"
+  },
+  "footer": {
+    "copyright": "© 2024 アルキット・パイ. All rights reserved.",
+    "scribbled": "❤️ で落書き | アルキット・パイ"
+  },
+  "resume": {
+    "summary_title": "【職務要約】",
+    "summary_text": "地理空間アプリケーション、クラウドネイティブソリューション、モダンなウェブ技術を専門とするエンジニア。Azure、PostGIS、MapLibre、React/Next.jsスタックを使用したエンタープライズグレードのアプリケーション開発の実績があります。",
+    "experience_title": "【職務経歴】",
+    "skills_title": "【技術スキル】",
+    "print_button": "🖨️ 印刷 / PDFで保存",
+    "print_hint": "最良の結果を得るには、ブラウザの印刷機能（Cmd/Ctrl + P）を使用してください"
+  }
+}

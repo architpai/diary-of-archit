@@ -1,0 +1,177 @@
+{
+  "personal": {
+    "name": "Archit Pai",
+    "title": "Full-Stack Engineer | Geospatial Systems",
+    "tagline": "Building scalable systems, one experiment at a time",
+    "hobbies": [
+      {
+        "id": "gym",
+        "title": "Gym & Fitness",
+        "narrative": "Started training to be the next Mr. Olympia. Now I’m addicted to the PAIN. Send help. pls.",
+        "icon": "💪"
+      },
+      {
+        "id": "llm",
+        "title": "Local LLM Experiments",
+        "narrative": "Running LLMs locally and experimenting with fine-tuning, RAG pipelines, and my own “Claude-like” coding assistant. My laptop sounds like a jet engine sometimes.",
+        "icon": ""
+      }
+    ],
+    "currentSetup": "MacBook Pro M4 Pro"
+  },
+  "experiences": [
+    {
+      "id": "exp-1",
+      "date": "2025",
+      "professionalTitle": "Developer-2",
+      "company": "Stealth Startup",
+      "diaryNarrative": "Finally got promoted. Mom was so proud she called all the relatives. All of them. My phone didn’t stop ringing for a week. Worth it.",
+      "resumeBulletPoints": [
+        "First engineering hire, serving as the bridge between mapping research and production engineering; contributed across map rendering, routing, analytics, positioning, and data pipelines as the company scaled from zero to production",
+        "Architected and owned the hybrid map tile delivery system, balancing real-time updates, database load, and infrastructure cost for high-density geospatial datasets",
+        "Led the evolution from static → dynamic → hybrid tile generation, validating design assumptions with benchmarks and pivoting mid-implementation to avoid long-term scalability failures",
+        "Designed trigger-based tile regeneration and cache invalidation across cold storage and Redis hot cache, enabling near-real-time updates while preventing low-zoom regeneration storms",
+        "Solved low-zoom performance bottlenecks involving millions of features by introducing category-aware zoom visibility and locality-based invalidation strategies",
+        "Acted as technical lead for the tile pipeline, defining architectural conventions, reviewing PRs, and mentoring two mid-level engineers end-to-end"
+      ],
+      "isResumeWorthy": true,
+      "doodleType": "celebration"
+    },
+    {
+      "id": "exp-2",
+      "date": "2024",
+      "professionalTitle": "Developer-1",
+      "company": "SoftBank",
+      "diaryNarrative": "Discovered the magic of PostGIS. Spent way too many late nights debugging spatial queries. Coffee became my best friend.",
+      "resumeBulletPoints": [
+        "Founding engineer on a newly formed geospatial platform team, building systems from early proof-of-concept to production deployments for enterprise clients",
+        "Designed and implemented core GIS infrastructure using PostgreSQL/PostGIS, vector tiles, and OSM data, developing deep expertise in spatial data modeling and querying",
+        "Built end-to-end web mapping applications delivering POI search, indoor wayfinding, and location data management",
+        "Transitioned toward backend and infrastructure ownership as the team scaled, leading API design, database architecture, and Azure deployments while reviewing frontend contributions",
+        "Led development of an indoor geofencing system for a major automotive client POC under real production timelines and constraints",
+        "Developed a strong bias toward iterative delivery, balancing correctness, performance, and experimentation in high-pressure enterprise environments"
+      ],
+      "isResumeWorthy": true,
+      "doodleType": "coding"
+    },
+    {
+      "id": "exp-3",
+      "date": "2022",
+      "professionalTitle": "Software Engineer",
+      "company": "Human Resocia [Contract: Kawasaki Heavy Industries]",
+      "diaryNarrative": "Day 1: Broke production. Day 2: Fixed it. Day 3–365: Pretended Day 1 never happened.",
+      "resumeBulletPoints": [
+        "Worked as a full-stack engineer on multiple internal and customer-facing location-based applications, contributing across frontend, backend, and data layers in a production enterprise environment",
+        "Built and maintained web-based mapping applications using a proprietary SDK, implementing features such as POI search, wayfinding, and user location storage for GPS and indoor positioning",
+        "Developed analytics dashboards to visualize real-time and historical user movement data, supporting internal monitoring, analysis, and planning use cases",
+        "Contributed to nationwide population coverage visualization tools to assess service reach and inform rollout planning, adapting telecom-style coverage concepts to location services",
+        "Implemented supporting tools including client-facing SDK integrations, BLE beacon configuration interfaces, and early indoor positioning prototypes using Wi-Fi and Raspberry Pi",
+        "Gained hands-on experience evolving systems from scripts and monolithic services to state-managed React frontends and microservice-style backends using Azure Functions"
+      ],
+      "isResumeWorthy": true,
+      "doodleType": "newbie"
+    },
+    {
+      "id": "exp-4",
+      "date": "2019",
+      "professionalTitle": "Project Intern",
+      "company": "Scorpio Group",
+      "diaryNarrative": "First day as an intern and they gave me real data to work with. I spent 40% of the time building dashboards and 60% perfecting the “focused face” whenever the boss walked by.",
+      "resumeBulletPoints": [
+        "Built an interactive incident analysis dashboard for maritime operations, visualizing ship-wise safety incidents, mechanical failures, and mitigation actions for internal QA teams",
+        "Performed exploratory data analysis using Python (pandas, matplotlib) to identify failure patterns from historical incident and maintenance datasets",
+        "Designed a basic data ingestion pipeline and implemented an early predictive model for mechanical part failures, translating operational data into actionable insights",
+        "Developed a React-based frontend with coordinated interactive charts supporting time-range filtering and cross-chart highlighting"
+      ],
+      "isResumeWorthy": true,
+      "doodleType": "newbie"
+    }
+  ],
+  "skills": [
+    {
+      "name": "Geospatial Systems & Mapping",
+      "level": 92,
+      "category": "domain"
+    },
+    {
+      "name": "Vector Tiles (MVT)",
+      "level": 88,
+      "category": "mapping"
+    },
+    {
+      "name": "Wayfinding",
+      "level": 88,
+      "category": "mapping"
+    },
+    {
+      "name": "MapLibre",
+      "level": 92,
+      "category": "mapping"
+    },
+    {
+      "name": "PostgreSQL (PostGIS)",
+      "level": 90,
+      "category": "database"
+    },
+    {
+      "name": "Redis & Caching",
+      "level": 88,
+      "category": "database"
+    },
+    {
+      "name": "React",
+      "level": 92,
+      "category": "frontend"
+    },
+    {
+      "name": "TypeScript",
+      "level": 85,
+      "category": "frontend"
+    },
+    {
+      "name": "State Management (Redux)",
+      "level": 88,
+      "category": "frontend"
+    },
+    {
+      "name": "Node.js (Express/Fastify)",
+      "level": 85,
+      "category": "backend"
+    },
+    {
+      "name": "Python",
+      "level": 75,
+      "category": "backend"
+    },
+    {
+      "name": "Azure Cloud Services",
+      "level": 88,
+      "category": "cloud"
+    },
+    {
+      "name": "Docker & Containerization",
+      "level": 80,
+      "category": "devops"
+    },
+    {
+      "name": "CI/CD (Azure DevOps)",
+      "level": 80,
+      "category": "devops"
+    },
+    {
+      "name": "Three.js (3D Visualization)",
+      "level": 82,
+      "category": "graphics"
+    },
+    {
+      "name": "System Design & Microservices",
+      "level": 90,
+      "category": "architecture"
+    }
+  ],
+  "contact": {
+    "email": "architpai.dev@gmail.com",
+    "github": "github.com/architpai",
+    "linkedin": "linkedin.com/in/paiarchit"
+  }
+}

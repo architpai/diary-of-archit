@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
-import content from '@/data/content.json';
+import { useTranslation } from '@/hooks/useTranslation';
 import BlobDivider from './BlobDivider';
 import FloatingDoodles from './FloatingDoodles';
 
@@ -30,6 +30,7 @@ const hobbyColors: Record<string, { bg: string; accent: string }> = {
 
 export default function SneakPeek() {
   const { isSerious } = useSeriousMode();
+  const { t, content, isJapanese } = useTranslation();
   const hobbies = content.personal.hobbies as Hobby[];
 
   // Hide this section in serious mode
@@ -50,11 +51,17 @@ export default function SneakPeek() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
       >
-        <h2 className="diary-title text-3xl md:text-4xl text-white drop-shadow-lg mb-2">
-          👀 The &ldquo;Sneak Peek&rdquo; Section
+        <h2 
+          className="diary-title text-3xl md:text-4xl text-white drop-shadow-lg mb-2"
+          style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+        >
+          {t('sneakpeek.title')}
         </h2>
-        <p className="diary-subtitle text-white/80 handwritten">
-          (The stuff that doesn&apos;t go on the resume... but should)
+        <p 
+          className="diary-subtitle text-white/80 handwritten"
+          style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+        >
+          {t('sneakpeek.subtitle')}
         </p>
       </motion.div>
 
@@ -111,12 +118,18 @@ export default function SneakPeek() {
               </motion.div>
 
               {/* Title */}
-              <h3 className="handwritten text-xl font-bold text-ink text-center mb-3">
+              <h3 
+                className="handwritten text-xl font-bold text-ink text-center mb-3"
+                style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+              >
                 {hobby.icon} {hobby.title}
               </h3>
 
               {/* Narrative */}
-              <p className="handwritten text-ink text-center leading-relaxed text-sm">
+              <p 
+                className="handwritten text-ink text-center leading-relaxed text-sm"
+                style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+              >
                 {hobby.narrative}
               </p>
             </motion.div>
@@ -140,8 +153,11 @@ export default function SneakPeek() {
           }}
         >
           <span className="absolute -top-3 left-1/2 transform -translate-x-1/2 text-xl">📌</span>
-          <p className="handwritten text-ink text-lg">
-            Current Weapon of Choice: <strong>{content.personal.currentSetup}</strong> 💪
+          <p 
+            className="handwritten text-ink text-lg"
+            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+          >
+            {t('sneakpeek.current_setup')}: <strong>{content.personal.currentSetup}</strong> 💪
           </p>
         </div>
       </motion.div>

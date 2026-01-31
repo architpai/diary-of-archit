@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
+import { useTranslation } from '@/hooks/useTranslation';
 import Image from 'next/image';
 
 interface Section {
@@ -11,18 +12,19 @@ interface Section {
   icon: string;
 }
 
-const sections: Section[] = [
-  { id: 'hero', label: 'Home', icon: '🏠' },
-  { id: 'timeline', label: 'Journey', icon: '🗺️' },
-  { id: 'skills', label: 'Skills', icon: '⚡' },
-  { id: 'sneakpeek', label: 'Peek', icon: '👀' },
-  { id: 'contact', label: 'Contact', icon: '📬' },
-];
-
 export default function MapScrollNav() {
   const { isSerious } = useSeriousMode();
+  const { t, isJapanese } = useTranslation();
   const [activeSection, setActiveSection] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
+
+  const sections: Section[] = [
+    { id: 'hero', label: t('nav.home'), icon: '🏠' },
+    { id: 'timeline', label: t('nav.journey'), icon: '🗺️' },
+    { id: 'skills', label: t('nav.skills'), icon: '⚡' },
+    { id: 'sneakpeek', label: t('nav.peek'), icon: '👀' },
+    { id: 'contact', label: t('nav.contact'), icon: '📬' },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -118,7 +120,12 @@ export default function MapScrollNav() {
       <div className="relative bg-paper/95 p-6 rounded-2xl wobbly-border shadow-lg" style={{ width: '140px' }}>
         {/* Treasure Map Title */}
         <div className="text-center mb-3">
-          <span className="handwritten text-sm text-ink/70">🗺️ Journey Map</span>
+          <span 
+            className="handwritten text-sm text-ink/70"
+            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+          >
+            {t('nav.map_title')}
+          </span>
         </div>
 
         {/* Winding Path SVG */}

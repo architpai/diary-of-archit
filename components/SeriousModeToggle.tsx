@@ -1,10 +1,12 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function SeriousModeToggle() {
   const router = useRouter();
   const pathname = usePathname();
+  const { t, isJapanese } = useTranslation();
   const isOnResume = pathname === '/resume';
 
   const handleToggle = () => {
@@ -28,12 +30,18 @@ export default function SeriousModeToggle() {
       aria-label={isOnResume ? 'Switch to Fun Mode' : 'Switch to Serious Mode'}
     >
       {isOnResume ? (
-        <span className="flex items-center gap-2">
-          🎨 Fun Mode
+        <span 
+          className="flex items-center gap-2"
+          style={isJapanese ? { fontFamily: 'var(--font-jp-clean)' } : {}}
+        >
+          {t('mode.fun')}
         </span>
       ) : (
-        <span className="flex items-center gap-2 text-lg" style={{ fontFamily: "'Patrick Hand', cursive" }}>
-          👔 Serious Mode
+        <span 
+          className="flex items-center gap-2 text-lg" 
+          style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : { fontFamily: "'Patrick Hand', cursive" }}
+        >
+          {t('mode.serious')}
         </span>
       )}
     </button>
