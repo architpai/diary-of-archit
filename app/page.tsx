@@ -8,6 +8,7 @@ import Contact from "@/components/Contact";
 import PostItNav from "@/components/PostItNav";
 import SeriousModeToggle from "@/components/SeriousModeToggle";
 import MapScrollNav from "@/components/MapScrollNav";
+import LanguageToggle from "@/components/LanguageToggle";
 import { useSeriousMode } from "@/contexts/SeriousModeContext";
 
 export default function Home() {
@@ -20,6 +21,9 @@ export default function Home() {
       
       {/* Map Scroll Navigation */}
       <MapScrollNav />
+      
+      {/* Language Toggle */}
+      <LanguageToggle />
       
       {/* Serious Mode Toggle */}
       <SeriousModeToggle />

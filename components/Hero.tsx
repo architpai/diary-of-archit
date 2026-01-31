@@ -1,19 +1,21 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import Avatar from './Avatar';
-import BlobDivider from './BlobDivider';
-import FloatingDoodles from './FloatingDoodles';
-import { useSeriousMode } from '@/contexts/SeriousModeContext';
+import { motion } from "framer-motion";
+import HeroAvatarTransition from "./HeroAvatarTransition";
+import BlobDivider from "./BlobDivider";
+import FloatingDoodles from "./FloatingDoodles";
+import { useSeriousMode } from "@/contexts/SeriousModeContext";
 
 export default function Hero() {
   const { isSerious } = useSeriousMode();
 
   return (
-    <section className={`min-h-screen flex flex-col items-center justify-center px-4 py-20 relative overflow-hidden ${!isSerious ? 'section-yellow' : ''}`}>
+    <section
+      className={`min-h-screen flex flex-col items-center justify-center px-4 py-20 relative overflow-hidden ${!isSerious ? "section-yellow" : ""}`}
+    >
       {/* Floating Background Doodles */}
       {!isSerious && <FloatingDoodles variant="code" density="normal" />}
-      
+
       {/* Large corner doodles */}
       {!isSerious && (
         <>
@@ -33,7 +35,12 @@ export default function Hero() {
               y: [0, -15, 0],
               rotate: [0, -5, 0],
             }}
-            transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+            transition={{
+              duration: 3.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.5,
+            }}
           >
             ⚡
           </motion.div>
@@ -43,9 +50,14 @@ export default function Hero() {
               y: [0, -10, 0],
               x: [0, 5, 0],
             }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            transition={{
+              duration: 5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 1,
+            }}
           >
-            {'{ }'}
+            {"{ }"}
           </motion.div>
           <motion.div
             className="absolute top-[15%] right-[20%] text-4xl opacity-20 font-mono"
@@ -58,7 +70,7 @@ export default function Hero() {
           </motion.div>
         </>
       )}
-      
+
       {/* Main Content */}
       <motion.div
         className="text-center z-10 relative"
@@ -73,8 +85,10 @@ export default function Hero() {
           animate={{ scale: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <h1 className={`diary-title ${!isSerious ? 'text-ink drop-shadow-lg' : 'text-ink'}`}>
-            <motion.span 
+          <h1
+            className={`diary-title ${!isSerious ? "text-ink drop-shadow-lg" : "text-ink"}`}
+          >
+            <motion.span
               className="block"
               initial={{ x: -50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
@@ -82,19 +96,24 @@ export default function Hero() {
             >
               DIARY
             </motion.span>
-            <motion.span 
-              className={`block ${!isSerious ? 'text-white text-shadow-outline' : 'text-margin-blue'}`}
+            <motion.span
+              className={`block ${!isSerious ? "text-white text-shadow-outline" : "text-margin-blue"}`}
               initial={{ x: 50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
-              style={!isSerious ? { 
-                textShadow: '2px 2px 0 #2D2D2D, -2px -2px 0 #2D2D2D, 2px -2px 0 #2D2D2D, -2px 2px 0 #2D2D2D'
-              } : {}}
+              style={
+                !isSerious
+                  ? {
+                      textShadow:
+                        "2px 2px 0 #2D2D2D, -2px -2px 0 #2D2D2D, 2px -2px 0 #2D2D2D, -2px 2px 0 #2D2D2D",
+                    }
+                  : {}
+              }
             >
               of a
             </motion.span>
-            <motion.span 
-              className={`block ${!isSerious ? 'scribble-underline' : 'underline-sketch'}`}
+            <motion.span
+              className={`block ${!isSerious ? "scribble-underline" : "underline-sketch"}`}
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.6 }}
@@ -118,21 +137,21 @@ export default function Hero() {
               animate={{ rotate: 360 }}
               transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
             >
-              <div className="w-72 h-72 rounded-full border-4 border-dashed border-white/30" />
+              <div className="w-96 h-96 rounded-full border-4 border-dashed border-white/30" />
             </motion.div>
           )}
-          <Avatar pose="hero" animate={true} width={260} height={350} />
+          <HeroAvatarTransition width={400} height={540} />
         </motion.div>
 
         {/* Subtitle with enhanced styling */}
         <motion.div
-          className={`relative inline-block ${!isSerious ? 'wobbly-border bg-paper/90 px-6 py-3' : ''}`}
+          className={`relative inline-block ${!isSerious ? "wobbly-border bg-paper/90 px-6 py-3" : ""}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.8 }}
         >
-          <p 
-            className={`diary-subtitle ${isSerious ? '' : 'shaky-pencil'} max-w-md mx-auto handwritten`}
+          <p
+            className={`diary-subtitle ${isSerious ? "" : "shaky-pencil"} max-w-md mx-auto handwritten`}
           >
             {"Building cool stuff, one bug at a time !"}
           </p>
@@ -144,7 +163,9 @@ export default function Hero() {
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
         >
-          <div className={`handwritten ${!isSerious ? 'text-ink' : 'text-ink/60'}`}>
+          <div
+            className={`handwritten ${!isSerious ? "text-ink" : "text-ink/60"}`}
+          >
             ↓ scroll for more ↓
           </div>
         </motion.div>
@@ -157,4 +178,3 @@ export default function Hero() {
     </section>
   );
 }
-

@@ -344,11 +344,35 @@ body {
 .scribble-circle::before {
   content: '';
   position: absolute;
-  inset: -15px;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cellipse cx='50' cy='50' rx='45' ry='40' stroke='%23E63946' stroke-width='2' fill='none' stroke-dasharray='5 3' transform='rotate(-5 50 50)'/%3E%3C/svg%3E");
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% + 20px);
+  height: calc(100% + 20px);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3C!-- Filled background like MCQ marking --%3E%3Cellipse cx='50' cy='50' rx='40' ry='35' fill='%23E63946' opacity='0.35'/%3E%3C!-- Bold hand-drawn scribble strokes on top --%3E%3Cpath d='M18 50 C18 28 25 15 48 13 C70 11 85 25 86 48 C87 70 75 87 52 88 C28 89 16 72 18 50' stroke='%23E63946' stroke-width='3.5' fill='none' stroke-linecap='round' stroke-linejoin='round' opacity='0.9'/%3E%3Cpath d='M20 48 C21 27 28 16 50 15 C72 14 83 28 84 50 C85 72 72 85 50 86 C27 87 19 70 20 48' stroke='%23E63946' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round' opacity='0.75'/%3E%3Cpath d='M22 51 C23 30 30 18 48 17 C68 16 81 30 82 49 C83 69 70 83 48 84 C28 85 21 68 22 51' stroke='%23E63946' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round' opacity='0.6'/%3E%3C/svg%3E");
   background-size: 100% 100%;
   background-repeat: no-repeat;
   z-index: -1;
+  pointer-events: none;
+}
+
+/* Hand-drawn strike-through for crossed-out text (like marking wrong answer) */
+.scribble-strikethrough {
+  position: relative;
+  display: inline-block;
+}
+
+.scribble-strikethrough::after {
+  content: '';
+  position: absolute;
+  left: -5%;
+  top: 45%;
+  width: 110%;
+  height: 3px;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 5 Q10 3 20 5 T40 5 T60 5 T80 5 T100 5' stroke='%23E63946' stroke-width='2.5' fill='none' stroke-linecap='round' opacity='0.85'/%3E%3Cpath d='M0 6 Q10 4 20 6 T40 6 T60 6 T80 6 T100 6' stroke='%23E63946' stroke-width='2' fill='none' stroke-linecap='round' opacity='0.7'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  pointer-events: none;
 }
 
 /* Hand-drawn arrow */
