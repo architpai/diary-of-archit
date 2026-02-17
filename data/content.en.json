@@ -2,19 +2,19 @@
   "personal": {
     "name": "Archit Pai",
     "title": "Full-Stack Engineer | Geospatial Systems",
-    "tagline": "Building scalable systems, one experiment at a time",
+    "tagline": "Building scalable systems through steady experimentation",
     "hobbies": [
       {
         "id": "gym",
         "title": "Gym & Fitness",
-        "narrative": "Started training to be the next Mr. Olympia. Now I’m addicted to the PAIN. Send help. pls.",
+        "narrative": "Started training to be the next Mr. Olympia. Now I'm addicted to the pain. Send help.",
         "icon": "💪"
       },
       {
         "id": "llm",
         "title": "Local LLM Experiments",
-        "narrative": "Running LLMs locally and experimenting with fine-tuning, RAG pipelines, and my own “Claude-like” coding assistant. My laptop sounds like a jet engine sometimes.",
-        "icon": ""
+        "narrative": "Running LLMs locally and experimenting with fine-tuning, RAG pipelines, and my own \"Claude-like\" coding assistant. Pretty sure my M4 is plotting revenge at this point.",
+        "icon": "🤖"
       }
     ],
     "currentSetup": "MacBook Pro M4 Pro"
@@ -25,14 +25,14 @@
       "date": "2025",
       "professionalTitle": "Developer-2",
       "company": "Stealth Startup",
-      "diaryNarrative": "Finally got promoted. Mom was so proud she called all the relatives. All of them. My phone didn’t stop ringing for a week. Worth it.",
+      "diaryNarrative": "Finally got promoted. Mom was so proud she called all the relatives. All of them. My phone didn't stop ringing for a week. Worth it.",
       "resumeBulletPoints": [
-        "First engineering hire, serving as the bridge between mapping research and production engineering; contributed across map rendering, routing, analytics, positioning, and data pipelines as the company scaled from zero to production",
+        "First engineering hire; built and scaled the company's geospatial stack from zero to production, spanning map rendering, routing, analytics, positioning, and data pipelines",
         "Architected and owned the hybrid map tile delivery system, balancing real-time updates, database load, and infrastructure cost for high-density geospatial datasets",
-        "Led the evolution from static → dynamic → hybrid tile generation, validating design assumptions with benchmarks and pivoting mid-implementation to avoid long-term scalability failures",
-        "Designed trigger-based tile regeneration and cache invalidation across cold storage and Redis hot cache, enabling near-real-time updates while preventing low-zoom regeneration storms",
+        "Led the evolution from static to dynamic to hybrid tile generation, benchmarking each approach and pivoting mid-implementation to a cache-layered architecture to avoid long-term scalability failures",
+        "Designed trigger-based tile regeneration and cache invalidation across cold storage and Redis hot cache, enabling near-real-time updates while preventing low-zoom regeneration cascades",
         "Solved low-zoom performance bottlenecks involving millions of features by introducing category-aware zoom visibility and locality-based invalidation strategies",
-        "Acted as technical lead for the tile pipeline, defining architectural conventions, reviewing PRs, and mentoring two mid-level engineers end-to-end"
+        "Served as technical lead for the tile pipeline, defining architectural conventions, reviewing PRs, and mentoring two mid-level engineers end-to-end"
       ],
       "isResumeWorthy": true,
       "doodleType": "celebration"
@@ -42,14 +42,13 @@
       "date": "2024",
       "professionalTitle": "Developer-1",
       "company": "SoftBank",
-      "diaryNarrative": "Discovered the magic of PostGIS. Spent way too many late nights debugging spatial queries. Coffee became my best friend.",
+      "diaryNarrative": "Discovered the magic of PostGIS. Spent way too many late nights debugging polygons with holes in all the wrong places. Geometry broke me before I learned to tame it.",
       "resumeBulletPoints": [
-        "Founding engineer on a newly formed geospatial platform team, building systems from early proof-of-concept to production deployments for enterprise clients",
+        "Founding member of a new geospatial platform team, building systems from early proof-of-concept to production deployments serving enterprise clients",
         "Designed and implemented core GIS infrastructure using PostgreSQL/PostGIS, vector tiles, and OSM data, developing deep expertise in spatial data modeling and querying",
         "Built end-to-end web mapping applications delivering POI search, indoor wayfinding, and location data management",
         "Transitioned toward backend and infrastructure ownership as the team scaled, leading API design, database architecture, and Azure deployments while reviewing frontend contributions",
-        "Led development of an indoor geofencing system for a major automotive client POC under real production timelines and constraints",
-        "Developed a strong bias toward iterative delivery, balancing correctness, performance, and experimentation in high-pressure enterprise environments"
+        "Led development of an indoor geofencing system for a major automotive client PoC under production-grade timelines and constraints"
       ],
       "isResumeWorthy": true,
       "doodleType": "coding"
@@ -61,12 +60,12 @@
       "company": "Human Resocia [Contract: Kawasaki Heavy Industries]",
       "diaryNarrative": "Day 1: Broke production. Day 2: Fixed it. Day 3–365: Pretended Day 1 never happened.",
       "resumeBulletPoints": [
-        "Worked as a full-stack engineer on multiple internal and customer-facing location-based applications, contributing across frontend, backend, and data layers in a production enterprise environment",
-        "Built and maintained web-based mapping applications using a proprietary SDK, implementing features such as POI search, wayfinding, and user location storage for GPS and indoor positioning",
-        "Developed analytics dashboards to visualize real-time and historical user movement data, supporting internal monitoring, analysis, and planning use cases",
-        "Contributed to nationwide population coverage visualization tools to assess service reach and inform rollout planning, adapting telecom-style coverage concepts to location services",
-        "Implemented supporting tools including client-facing SDK integrations, BLE beacon configuration interfaces, and early indoor positioning prototypes using Wi-Fi and Raspberry Pi",
-        "Gained hands-on experience evolving systems from scripts and monolithic services to state-managed React frontends and microservice-style backends using Azure Functions"
+        "Built and maintained multiple internal and customer-facing location-based web applications across frontend, backend, and data layers",
+        "Implemented mapping features including POI search, wayfinding, and user location storage for GPS and indoor positioning using a proprietary SDK",
+        "Developed analytics dashboards visualizing real-time and historical user movement data for monitoring, analysis, and planning",
+        "Contributed to nationwide population coverage visualization tools to assess service reach and inform rollout planning",
+        "Built supporting tools including client-facing SDK integrations, BLE beacon configuration interfaces, and indoor positioning prototypes using Wi-Fi and Raspberry Pi",
+        "Migrated systems from script-heavy monoliths to state-managed React frontends and Azure Functions-based microservice backends"
       ],
       "isResumeWorthy": true,
       "doodleType": "newbie"
@@ -76,11 +75,11 @@
       "date": "2019",
       "professionalTitle": "Project Intern",
       "company": "Scorpio Group",
-      "diaryNarrative": "First day as an intern and they gave me real data to work with. I spent 40% of the time building dashboards and 60% perfecting the “focused face” whenever the boss walked by.",
+      "diaryNarrative": "On day one as an intern, they gave me real data to work with. I spent 40% of the time building dashboards and 60% perfecting my \"focused face\" whenever the boss walked by.",
       "resumeBulletPoints": [
-        "Built an interactive incident analysis dashboard for maritime operations, visualizing ship-wise safety incidents, mechanical failures, and mitigation actions for internal QA teams",
+        "Built an interactive incident analysis dashboard for maritime operations, visualizing vessel-level safety incidents, mechanical failures, and mitigation actions",
         "Performed exploratory data analysis using Python (pandas, matplotlib) to identify failure patterns from historical incident and maintenance datasets",
-        "Designed a basic data ingestion pipeline and implemented an early predictive model for mechanical part failures, translating operational data into actionable insights",
+        "Designed a data ingestion pipeline and implemented an early predictive model for mechanical part failures, translating operational data into actionable insights",
         "Developed a React-based frontend with coordinated interactive charts supporting time-range filtering and cross-chart highlighting"
       ],
       "isResumeWorthy": true,
@@ -171,7 +170,7 @@
   ],
   "contact": {
     "email": "architpai.dev@gmail.com",
-    "github": "github.com/architpai",
-    "linkedin": "linkedin.com/in/paiarchit"
+    "github": "https://github.com/architpai",
+    "linkedin": "https://linkedin.com/in/paiarchit"
   }
 }
