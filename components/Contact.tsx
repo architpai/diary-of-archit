@@ -1,12 +1,12 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
-import Image from 'next/image';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import BlobDivider from './BlobDivider';
 import FloatingDoodles from './FloatingDoodles';
 import Avatar from './Avatar';
+import { GitHubIcon, LinkedInIcon, MailIcon } from './icons/SocialIcons';
 
 export default function Contact() {
   const { isSerious } = useSeriousMode();
@@ -100,9 +100,15 @@ export default function Contact() {
               }
             >
               {isSerious ? (
-                <span>📧 {content.contact.email}</span>
+                <span className="inline-flex items-center gap-2">
+                  <MailIcon className="h-5 w-5 shrink-0" />
+                  {content.contact.email}
+                </span>
               ) : (
-                <span className="handwritten text-ink text-lg font-bold">📧 {content.contact.email}</span>
+                <span className="handwritten text-ink text-lg font-bold inline-flex items-center gap-2">
+                  <MailIcon className="h-5 w-5 shrink-0" />
+                  {content.contact.email}
+                </span>
               )}
             </motion.a>
 
@@ -127,9 +133,15 @@ export default function Contact() {
               }
             >
               {isSerious ? (
-                <span>🐙 {content.contact.github}</span>
+                <span className="inline-flex items-center gap-2">
+                  <GitHubIcon className="h-5 w-5 shrink-0" />
+                  {content.contact.github}
+                </span>
               ) : (
-                <span className="handwritten text-ink text-lg font-bold">🐙 {content.contact.github}</span>
+                <span className="handwritten text-ink text-lg font-bold inline-flex items-center gap-2">
+                  <GitHubIcon className="h-5 w-5 shrink-0" />
+                  {content.contact.github}
+                </span>
               )}
             </motion.a>
 
@@ -154,9 +166,15 @@ export default function Contact() {
               }
             >
               {isSerious ? (
-                <span>💼 {content.contact.linkedin}</span>
+                <span className="inline-flex items-center gap-2">
+                  <LinkedInIcon className="h-5 w-5 shrink-0" />
+                  {content.contact.linkedin}
+                </span>
               ) : (
-                <span className="handwritten text-ink text-lg font-bold">💼 {content.contact.linkedin}</span>
+                <span className="handwritten text-ink text-lg font-bold inline-flex items-center gap-2">
+                  <LinkedInIcon className="h-5 w-5 shrink-0" />
+                  {content.contact.linkedin}
+                </span>
               )}
             </motion.a>
           </div>

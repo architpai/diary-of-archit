@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslation } from '@/hooks/useTranslation';
+import { GitHubIcon, LinkedInIcon, MailIcon } from '@/components/icons/SocialIcons';
 
 interface Experience {
   id: string;
@@ -31,15 +32,24 @@ export default function ResumeEN() {
         
         <div className="mt-3 flex flex-wrap gap-4 text-sm">
           <a href={`mailto:${content.contact.email}`} className="text-blue-700 hover:underline">
-            {content.contact.email}
+            <span className="inline-flex items-center gap-1.5">
+              <MailIcon className="h-4 w-4 shrink-0" />
+              {content.contact.email}
+            </span>
           </a>
           <span>|</span>
           <a href={`https://${content.contact.github}`} className="text-blue-700 hover:underline">
-            {content.contact.github}
+            <span className="inline-flex items-center gap-1.5">
+              <GitHubIcon className="h-4 w-4 shrink-0" />
+              {content.contact.github}
+            </span>
           </a>
           <span>|</span>
           <a href={`https://${content.contact.linkedin}`} className="text-blue-700 hover:underline">
-            {content.contact.linkedin}
+            <span className="inline-flex items-center gap-1.5">
+              <LinkedInIcon className="h-4 w-4 shrink-0" />
+              {content.contact.linkedin}
+            </span>
           </a>
         </div>
       </header>
