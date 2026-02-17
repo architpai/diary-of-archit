@@ -181,10 +181,9 @@ export default function Hero() {
             </motion.div>
           )}
           <HeroAvatarTransition
-            width={400}
-            height={540}
+            width={800}
+            height={1080}
             className="w-[240px] sm:w-[300px] md:w-[360px] lg:w-[400px]"
-            sizes="(max-width: 640px) 240px, (max-width: 768px) 300px, (max-width: 1024px) 360px, 400px"
           />
         </motion.div>
 
