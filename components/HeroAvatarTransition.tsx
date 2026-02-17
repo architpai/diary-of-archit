@@ -82,7 +82,7 @@ export default function HeroAvatarTransition({
               }
               resolve();
             };
-            img.onerror = resolve; // Continue even if one fails
+            img.onerror = () => resolve(); // Continue even if one fails
           }),
         );
         img.src = `/avatar/sequence/ezgif-frame-${frameNum}.webp`;
