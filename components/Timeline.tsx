@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, useInView, useReducedMotion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -27,27 +27,13 @@ interface Experience {
 }
 
 // ExperienceCard component - extracted to avoid hooks issues
-interface ExperienceCardProps {
-  exp: Experience;
-  index: number;
-  isExpanded: boolean;
-  onInView: () => void;
-}
-
-function ExperienceCard({ exp, index, isExpanded, onInView }: ExperienceCardProps) {
+function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
   const shouldReduceMotion = useReducedMotion();
-  const cardRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(cardRef, { margin: "0px 0px -20% 0px", once: true });
-
-  useEffect(() => {
-    if (isInView) {
-      onInView();
-    }
-  }, [isInView, onInView]);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const { t, isJapanese } = useTranslation();
 
   return (
       <motion.div
-        ref={cardRef}
         className={`flex flex-col md:flex-row items-center gap-8 ${
           index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
         }`}
@@ -100,10 +86,18 @@ function ExperienceCard({ exp, index, isExpanded, onInView }: ExperienceCardProp
         <div className="relative p-6 wobbly-border bg-paper/95 tape-corner shadow-xl">
           {/* Header */}
           <div className="mb-4">
-            <h3 className="handwritten text-xl md:text-2xl font-bold text-ink">
+            <h3
+              className="handwritten text-xl md:text-2xl font-bold text-ink"
+              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            >
               {exp.professionalTitle}
             </h3>
-            <p className="handwritten text-gray-600">@ {exp.company}</p>
+            <p
+              className="handwritten text-gray-600"
+              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            >
+              @ {exp.company}
+            </p>
           </div>
 
           {/* Diary Narrative */}
@@ -116,24 +110,39 @@ function ExperienceCard({ exp, index, isExpanded, onInView }: ExperienceCardProp
             &ldquo;{exp.diaryNarrative}&rdquo;
           </motion.p>
 
-          {/* Resume Bullet Points (auto-expand with letter opening animation) */}
-          <div style={{ overflow: 'hidden' }}>
-            <motion.div
-              initial={shouldReduceMotion ? false : { scaleY: 0, opacity: 0 }}
-              animate={
-                isExpanded
-                  ? { scaleY: 1, opacity: 1 }
-                  : { scaleY: 0, opacity: 0 }
-              }
-              transition={
-                shouldReduceMotion
-                  ? { duration: 0 }
-                  : { duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }
-              }
-              style={{
-                transformOrigin: 'top',
-              }}
+          {/* Expand CTA */}
+          {!isExpanded && (
+            <motion.button
+              onClick={() => setIsExpanded(true)}
+              className="handwritten text-ink/50 text-sm hover:text-ink/80 transition-colors cursor-pointer flex items-center gap-1"
+              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+              whileHover={shouldReduceMotion ? undefined : { x: 5 }}
             >
+              {t('timeline.expand_cta')}
+              <motion.span
+                animate={shouldReduceMotion ? undefined : { x: [0, 4, 0] }}
+                transition={shouldReduceMotion ? undefined : { duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+                className="inline-block"
+              >
+              </motion.span>
+            </motion.button>
+          )}
+
+          {/* Resume Bullet Points (expand on click) */}
+          <motion.div
+            initial={false}
+            animate={
+              isExpanded
+                ? { height: 'auto', opacity: 1 }
+                : { height: 0, opacity: 0 }
+            }
+            transition={
+              shouldReduceMotion
+                ? { duration: 0 }
+                : { duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }
+            }
+            style={{ overflow: 'hidden' }}
+          >
               <div className="pt-3 border-t border-ink/10">
                 <ul className="list-disc list-inside space-y-1 handwritten text-sm text-ink/70">
                   {exp.resumeBulletPoints.map((point: string, i: number) => (
@@ -141,8 +150,7 @@ function ExperienceCard({ exp, index, isExpanded, onInView }: ExperienceCardProp
                   ))}
                 </ul>
               </div>
-            </motion.div>
-          </div>
+          </motion.div>
         </div>
       </motion.div>
     </motion.div>
@@ -154,14 +162,6 @@ export default function Timeline() {
   const { content, t, isJapanese } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const experiences = content.experiences as Experience[];
-  const [openedExperiences, setOpenedExperiences] = useState<Set<number>>(new Set());
-
-  const handleCardInView = useCallback((index: number) => {
-    setOpenedExperiences(prev => {
-      if (prev.has(index)) return prev; // Don't create new Set if already has this index
-      return new Set(prev).add(index);
-    });
-  }, []);
 
   return (
     <section className={`py-20 relative ${!isSerious ? 'section-blue' : ''}`}>
@@ -315,13 +315,7 @@ export default function Timeline() {
             {/* Experience Cards */}
             <div className="relative z-10 space-y-32">
               {experiences.map((exp, index) => (
-                <ExperienceCard
-                  key={exp.id}
-                  exp={exp}
-                  index={index}
-                  isExpanded={openedExperiences.has(index)}
-                  onInView={() => handleCardInView(index)}
-                />
+                <ExperienceCard key={exp.id} exp={exp} index={index} />
               ))}
             </div>
           </div>
