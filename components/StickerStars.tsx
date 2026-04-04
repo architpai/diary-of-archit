@@ -196,7 +196,11 @@ export default function StickerStars({ rating, color, seed = 0 }: StickerStarsPr
 
   const stars = Array.from({ length: 5 }, (_, i) => {
     const isFilled = i < rating;
-    const styleIndex = Math.floor(random() * VISUAL_STYLES.length);
+    // ~90% glossy (the clean default), ~10% chance of a fun variant as a subtle surprise
+    const styleRoll = random();
+    const styleIndex = styleRoll > 0.9
+      ? 1 + Math.floor(random() * (VISUAL_STYLES.length - 1)) // polka, striped, metallic, or sparkle
+      : 0; // glossy
 
     // Most stars: very subtle rotation (±2°) — neat, intentional placement
     let rotation = (random() - 0.5) * 4;
