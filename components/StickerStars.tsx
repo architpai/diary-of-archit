@@ -129,23 +129,29 @@ function MetallicStar({ color, uid }: { color: string; uid: string }) {
   );
 }
 
-function SparkleStar({ color }: { color: string }) {
-  // 4 small sparkle crosses scattered around the star
+function SparkleStar({ color, uid }: { color: string; uid: string }) {
+  const gradId = `${uid}-sparkle`;
+  const light = lightenColor(color, 0.3);
+  // Sparkle crosses positioned outside the star shape so they're visible
   const sparkles = [
-    { x: 3, y: 3 },
-    { x: 20, y: 5 },
-    { x: 19, y: 20 },
-    { x: 4, y: 18 },
+    { x: 2, y: 2 },
+    { x: 21, y: 3 },
+    { x: 22, y: 19 },
+    { x: 2, y: 18 },
   ];
   return (
     <svg viewBox="0 0 24 24" className="w-7 h-7 md:w-8 md:h-8" style={{ overflow: 'visible' }}>
-      <path d={STAR_PATH} fill={color} />
+      <defs>
+        <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor={light} />
+          <stop offset="100%" stopColor={color} />
+        </linearGradient>
+      </defs>
+      <path d={STAR_PATH} fill={`url(#${gradId})`} />
       {sparkles.map((sp, idx) => (
         <g key={idx} transform={`translate(${sp.x},${sp.y})`}>
-          {/* Horizontal line of sparkle cross */}
-          <line x1="-2" y1="0" x2="2" y2="0" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.9" />
-          {/* Vertical line of sparkle cross */}
-          <line x1="0" y1="-2" x2="0" y2="2" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.9" />
+          <line x1="-1.5" y1="0" x2="1.5" y2="0" stroke={darkenColor(color, 0.4)} strokeWidth="1" strokeLinecap="round" />
+          <line x1="0" y1="-1.5" x2="0" y2="1.5" stroke={darkenColor(color, 0.4)} strokeWidth="1" strokeLinecap="round" />
         </g>
       ))}
     </svg>
@@ -163,7 +169,7 @@ function FilledStar({ color, style, uid }: StarSVGProps) {
     case 'metallic':
       return <MetallicStar color={color} uid={uid} />;
     case 'sparkle':
-      return <SparkleStar color={color} />;
+      return <SparkleStar color={color} uid={uid} />;
   }
 }
 
@@ -184,20 +190,13 @@ export default function StickerStars({ rating, color, seed = 0 }: StickerStarsPr
     // Assign one of the 5 visual styles (deterministic per position)
     const styleIndex = Math.floor(random() * VISUAL_STYLES.length);
     const rotation = (random() - 0.5) * 16;
-    const imperfectionRoll = random();
 
-    let imperfection: 'none' | 'peel-right' | 'peel-top' | 'torn' | 'rotated' = 'none';
-    if (imperfectionRoll > 0.85) imperfection = 'peel-right';
-    else if (imperfectionRoll > 0.75) imperfection = 'peel-top';
-    else if (imperfectionRoll > 0.7 && !isFilled) imperfection = 'torn';
-    else if (imperfectionRoll > 0.5) imperfection = 'rotated';
-
+    // Use rotation and scale variation for personality (no clipPath imperfections — they cause artifacts at this size)
     return {
       isFilled,
       styleIndex,
-      rotation: imperfection === 'rotated' ? rotation * 2 : rotation,
-      imperfection,
-      scale: 0.9 + random() * 0.2,
+      rotation,
+      scale: 0.85 + random() * 0.25,
       uid: `star-${seed}-${i}`,
     };
   });
@@ -218,14 +217,7 @@ export default function StickerStars({ rating, color, seed = 0 }: StickerStarsPr
               : { type: 'spring', stiffness: 200, delay: i * 0.08 }
           }
         >
-          <div
-            style={{
-              filter: star.isFilled ? 'drop-shadow(1px 1px 2px rgba(0,0,0,0.25))' : 'none',
-              ...(star.imperfection === 'peel-right' ? { clipPath: 'polygon(0 0, 92% 0, 95% 5%, 100% 100%, 0 100%)' } : {}),
-              ...(star.imperfection === 'peel-top' ? { clipPath: 'polygon(5% 8%, 100% 0, 100% 100%, 0 100%)' } : {}),
-              ...(star.imperfection === 'torn' ? { clipPath: 'polygon(0 40%, 100% 35%, 100% 100%, 0 100%)' } : {}),
-            }}
-          >
+          <div style={{ filter: star.isFilled ? 'drop-shadow(1px 1px 2px rgba(0,0,0,0.25))' : 'none' }}>
             {star.isFilled ? (
               <FilledStar
                 color={color}
@@ -236,15 +228,6 @@ export default function StickerStars({ rating, color, seed = 0 }: StickerStarsPr
               <UnfilledStar />
             )}
           </div>
-          {star.imperfection === 'peel-right' && star.isFilled && (
-            <div
-              className="absolute -top-0.5 -right-0.5 w-2 h-2"
-              style={{
-                background: 'linear-gradient(135deg, transparent 50%, #d4c5a9 50%)',
-                borderRadius: '0 2px 0 0',
-              }}
-            />
-          )}
         </motion.div>
       ))}
     </div>
