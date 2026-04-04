@@ -442,24 +442,9 @@ export default function MapScrollNav() {
                   <Icon active={isActive} />
                 </g>
 
-                {/* Label */}
-                <text
-                  x={lm.x} y={lm.y + (isTreasure ? 26 : 21)}
-                  textAnchor="middle" fontSize="6.5"
-                  fill={isActive ? '#5C3D2E' : '#8B735570'}
-                  fontFamily="Patrick Hand, serif" fontStyle="italic"
-                  transform={`rotate(${index % 2 === 0 ? -2 : 2}, ${lm.x}, ${lm.y + 21})`}
-                >
-                  {sections[index]?.label}
-                </text>
               </g>
             );
           })}
-
-          {/* "Here be dragons" */}
-          <text x="70" y="406" textAnchor="middle" fontSize="5.5" fill="#8B735535" fontFamily="serif" fontStyle="italic">
-            Here be dragons
-          </text>
         </svg>
 
         {/* Walking avatar */}
