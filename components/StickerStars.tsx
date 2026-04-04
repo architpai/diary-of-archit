@@ -2,21 +2,8 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 
-// Three different star path designs (5-point variations)
-const starVariants = [
-  // Classic 5-point
-  (fill: string) => (
-    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill={fill} />
-  ),
-  // Rounder, softer
-  (fill: string) => (
-    <path d="M12 1c.5 0 1 .3 1.2.8l2.5 5.5 6 .8c.7.1 1 1 .5 1.5l-4.4 4.2 1 6c.1.7-.6 1.2-1.2.9L12 18l-5.6 3c-.6.3-1.3-.2-1.2-.9l1-6L1.8 9.6c-.5-.5-.2-1.4.5-1.5l6-.8L10.8 1.8c.2-.5.7-.8 1.2-.8z" fill={fill} />
-  ),
-  // Chunky
-  (fill: string) => (
-    <path d="M12 0l4 7.5 8 1.5-5.5 5.5 1 8L12 19l-7.5 3.5 1-8L0 9l8-1.5z" fill={fill} />
-  ),
-];
+// Single consistent star path for all variants
+const STAR_PATH = 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z';
 
 interface StickerStarsProps {
   rating: number;  // 1-5
@@ -42,13 +29,160 @@ function seededRandom(seed: number): () => number {
   };
 }
 
+// Lighten a hex color by mixing with white
+function lightenColor(hex: string, amount: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const nr = Math.round(r + (255 - r) * amount);
+  const ng = Math.round(g + (255 - g) * amount);
+  const nb = Math.round(b + (255 - b) * amount);
+  return `rgb(${nr},${ng},${nb})`;
+}
+
+// Darken a hex color by scaling toward black
+function darkenColor(hex: string, amount: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const nr = Math.round(r * (1 - amount));
+  const ng = Math.round(g * (1 - amount));
+  const nb = Math.round(b * (1 - amount));
+  return `rgb(${nr},${ng},${nb})`;
+}
+
+type VisualStyle = 'glossy' | 'polka' | 'striped' | 'metallic' | 'sparkle';
+const VISUAL_STYLES: VisualStyle[] = ['glossy', 'polka', 'striped', 'metallic', 'sparkle'];
+
+interface StarSVGProps {
+  color: string;
+  style: VisualStyle;
+  uid: string; // unique id prefix for gradients/patterns
+}
+
+function GlossyStar({ color, uid }: { color: string; uid: string }) {
+  const glossId = `${uid}-gloss`;
+  return (
+    <svg viewBox="0 0 24 24" className="w-7 h-7 md:w-8 md:h-8" style={{ overflow: 'visible' }}>
+      <defs>
+        <linearGradient id={glossId} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="white" stopOpacity="0.45" />
+          <stop offset="50%" stopColor="white" stopOpacity="0.1" />
+          <stop offset="100%" stopColor="black" stopOpacity="0.12" />
+        </linearGradient>
+      </defs>
+      {/* Base fill */}
+      <path d={STAR_PATH} fill={color} />
+      {/* Gloss overlay */}
+      <path d={STAR_PATH} fill={`url(#${glossId})`} />
+    </svg>
+  );
+}
+
+function PolkaStar({ color, uid }: { color: string; uid: string }) {
+  const patId = `${uid}-polka`;
+  return (
+    <svg viewBox="0 0 24 24" className="w-7 h-7 md:w-8 md:h-8" style={{ overflow: 'visible' }}>
+      <defs>
+        <pattern id={patId} width="6" height="6" patternUnits="userSpaceOnUse">
+          <circle cx="3" cy="3" r="1.2" fill="white" opacity="0.4" />
+        </pattern>
+      </defs>
+      <path d={STAR_PATH} fill={color} />
+      <path d={STAR_PATH} fill={`url(#${patId})`} />
+    </svg>
+  );
+}
+
+function StripedStar({ color, uid }: { color: string; uid: string }) {
+  const patId = `${uid}-stripes`;
+  return (
+    <svg viewBox="0 0 24 24" className="w-7 h-7 md:w-8 md:h-8" style={{ overflow: 'visible' }}>
+      <defs>
+        <pattern id={patId} width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <rect width="2" height="4" fill="white" opacity="0.3" />
+        </pattern>
+      </defs>
+      <path d={STAR_PATH} fill={color} />
+      <path d={STAR_PATH} fill={`url(#${patId})`} />
+    </svg>
+  );
+}
+
+function MetallicStar({ color, uid }: { color: string; uid: string }) {
+  const gradId = `${uid}-metallic`;
+  const light = lightenColor(color, 0.45);
+  const dark = darkenColor(color, 0.3);
+  return (
+    <svg viewBox="0 0 24 24" className="w-7 h-7 md:w-8 md:h-8" style={{ overflow: 'visible' }}>
+      <defs>
+        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={light} />
+          <stop offset="45%" stopColor={color} />
+          <stop offset="52%" stopColor="white" stopOpacity="0.5" />
+          <stop offset="55%" stopColor={color} />
+          <stop offset="100%" stopColor={dark} />
+        </linearGradient>
+      </defs>
+      <path d={STAR_PATH} fill={`url(#${gradId})`} />
+    </svg>
+  );
+}
+
+function SparkleStar({ color }: { color: string }) {
+  // 4 small sparkle crosses scattered around the star
+  const sparkles = [
+    { x: 3, y: 3 },
+    { x: 20, y: 5 },
+    { x: 19, y: 20 },
+    { x: 4, y: 18 },
+  ];
+  return (
+    <svg viewBox="0 0 24 24" className="w-7 h-7 md:w-8 md:h-8" style={{ overflow: 'visible' }}>
+      <path d={STAR_PATH} fill={color} />
+      {sparkles.map((sp, idx) => (
+        <g key={idx} transform={`translate(${sp.x},${sp.y})`}>
+          {/* Horizontal line of sparkle cross */}
+          <line x1="-2" y1="0" x2="2" y2="0" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.9" />
+          {/* Vertical line of sparkle cross */}
+          <line x1="0" y1="-2" x2="0" y2="2" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.9" />
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+function FilledStar({ color, style, uid }: StarSVGProps) {
+  switch (style) {
+    case 'glossy':
+      return <GlossyStar color={color} uid={uid} />;
+    case 'polka':
+      return <PolkaStar color={color} uid={uid} />;
+    case 'striped':
+      return <StripedStar color={color} uid={uid} />;
+    case 'metallic':
+      return <MetallicStar color={color} uid={uid} />;
+    case 'sparkle':
+      return <SparkleStar color={color} />;
+  }
+}
+
+function UnfilledStar() {
+  return (
+    <svg viewBox="0 0 24 24" className="w-7 h-7 md:w-8 md:h-8">
+      <path d={STAR_PATH} fill="#e0d5c0" />
+    </svg>
+  );
+}
+
 export default function StickerStars({ rating, color, seed = 0 }: StickerStarsProps) {
   const shouldReduceMotion = useReducedMotion();
   const random = seededRandom(seed + 42);
 
   const stars = Array.from({ length: 5 }, (_, i) => {
     const isFilled = i < rating;
-    const variantIndex = Math.floor(random() * starVariants.length);
+    // Assign one of the 5 visual styles (deterministic per position)
+    const styleIndex = Math.floor(random() * VISUAL_STYLES.length);
     const rotation = (random() - 0.5) * 16;
     const imperfectionRoll = random();
 
@@ -60,10 +194,11 @@ export default function StickerStars({ rating, color, seed = 0 }: StickerStarsPr
 
     return {
       isFilled,
-      variantIndex,
+      styleIndex,
       rotation: imperfection === 'rotated' ? rotation * 2 : rotation,
       imperfection,
       scale: 0.9 + random() * 0.2,
+      uid: `star-${seed}-${i}`,
     };
   });
 
@@ -83,18 +218,24 @@ export default function StickerStars({ rating, color, seed = 0 }: StickerStarsPr
               : { type: 'spring', stiffness: 200, delay: i * 0.08 }
           }
         >
-          <svg
-            viewBox="0 0 24 24"
-            className="w-6 h-6 md:w-7 md:h-7"
+          <div
             style={{
-              filter: star.isFilled ? 'drop-shadow(1px 1px 1px rgba(0,0,0,0.2))' : 'none',
+              filter: star.isFilled ? 'drop-shadow(1px 1px 2px rgba(0,0,0,0.25))' : 'none',
               ...(star.imperfection === 'peel-right' ? { clipPath: 'polygon(0 0, 92% 0, 95% 5%, 100% 100%, 0 100%)' } : {}),
               ...(star.imperfection === 'peel-top' ? { clipPath: 'polygon(5% 8%, 100% 0, 100% 100%, 0 100%)' } : {}),
               ...(star.imperfection === 'torn' ? { clipPath: 'polygon(0 40%, 100% 35%, 100% 100%, 0 100%)' } : {}),
             }}
           >
-            {starVariants[star.variantIndex](star.isFilled ? color : '#e0d5c0')}
-          </svg>
+            {star.isFilled ? (
+              <FilledStar
+                color={color}
+                style={VISUAL_STYLES[star.styleIndex]}
+                uid={star.uid}
+              />
+            ) : (
+              <UnfilledStar />
+            )}
+          </div>
           {star.imperfection === 'peel-right' && star.isFilled && (
             <div
               className="absolute -top-0.5 -right-0.5 w-2 h-2"
