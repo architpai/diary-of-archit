@@ -210,7 +210,6 @@ export default function Skills() {
                           <StickerStars
                             rating={levelToStars(skill.level)}
                             color={categoryColors[skill.category]}
-                            seed={skill.name.charCodeAt(0) * 100 + skill.level}
                           />
                         </div>
 

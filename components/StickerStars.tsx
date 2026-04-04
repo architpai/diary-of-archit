@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 
 // Single consistent star path for all variants
@@ -8,7 +9,6 @@ const STAR_PATH = 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25
 interface StickerStarsProps {
   rating: number;  // 1-5
   color: string;
-  seed?: number;   // deterministic randomness
 }
 
 // Convert skill level (0-100) to stars (1-5)
@@ -20,14 +20,6 @@ export function levelToStars(level: number): number {
   return 1;
 }
 
-// Deterministic pseudo-random
-function seededRandom(seed: number): () => number {
-  let s = seed;
-  return () => {
-    s = (s * 16807) % 2147483647;
-    return (s - 1) / 2147483646;
-  };
-}
 
 // Lighten a hex color by mixing with white
 function lightenColor(hex: string, amount: number): string {
@@ -185,40 +177,45 @@ function UnfilledStar() {
   );
 }
 
-export default function StickerStars({ rating, color, seed = 0 }: StickerStarsProps) {
-  const shouldReduceMotion = useReducedMotion();
-  const random = seededRandom(seed + 42);
-
-  // Determine if THIS skill row gets a subtle trailing-star imperfection.
-  // Only ~15% of rows get one, making it rare and realistic.
-  const imperfectionRoll = random();
-  const hasTrailingImperfection = imperfectionRoll > 0.85;
-
-  const stars = Array.from({ length: 5 }, (_, i) => {
+function generateStars(rating: number) {
+  const hasTrailingImperfection = Math.random() > 0.85;
+  return Array.from({ length: 5 }, (_, i) => {
     const isFilled = i < rating;
-    // ~96% glossy, ~4% chance of a fun variant — very rare surprise
-    const styleIndex = random() > 0.96
-      ? 1 + Math.floor(random() * (VISUAL_STYLES.length - 1))
+    const styleIndex = Math.random() > 0.96
+      ? 1 + Math.floor(Math.random() * (VISUAL_STYLES.length - 1))
       : 0;
-
-    // More tilt variation: ±6° base, each star feels hand-placed
-    let rotation = (random() - 0.5) * 12;
-    let scale = 0.93 + random() * 0.1;
-
-    // Trailing star in qualifying rows gets a bigger tilt
+    let rotation = (Math.random() - 0.5) * 12;
+    let scale = 0.93 + Math.random() * 0.1;
     if (hasTrailingImperfection && i === 4) {
-      rotation = 12 + random() * 8; // 12-20°
-      scale = 0.87 + random() * 0.06;
+      rotation = 12 + Math.random() * 8;
+      scale = 0.87 + Math.random() * 0.06;
     }
-
-    return {
-      isFilled,
-      styleIndex,
-      rotation,
-      scale,
-      uid: `star-${seed}-${i}`,
-    };
+    return { isFilled, styleIndex, rotation, scale, uid: `star-${Date.now()}-${Math.random().toString(36).slice(2, 6)}-${i}` };
   });
+}
+
+export default function StickerStars({ rating, color }: Omit<StickerStarsProps, 'seed'>) {
+  const shouldReduceMotion = useReducedMotion();
+  const [stars, setStars] = useState<ReturnType<typeof generateStars> | null>(null);
+
+  useEffect(() => {
+    setStars(generateStars(rating));
+  }, [rating]);
+
+  // SSR / first render: show plain stars to avoid hydration mismatch
+  if (!stars) {
+    return (
+      <div className="flex items-center gap-0.5">
+        {Array.from({ length: 5 }, (_, i) => (
+          <div key={i}>
+            <svg viewBox="0 0 24 24" className="w-7 h-7 md:w-8 md:h-8">
+              <path d={STAR_PATH} fill={i < rating ? color : '#e0d5c0'} />
+            </svg>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center gap-0.5">
