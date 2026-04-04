@@ -196,21 +196,19 @@ export default function StickerStars({ rating, color, seed = 0 }: StickerStarsPr
 
   const stars = Array.from({ length: 5 }, (_, i) => {
     const isFilled = i < rating;
-    // ~90% glossy (the clean default), ~10% chance of a fun variant as a subtle surprise
-    const styleRoll = random();
-    const styleIndex = styleRoll > 0.9
-      ? 1 + Math.floor(random() * (VISUAL_STYLES.length - 1)) // polka, striped, metallic, or sparkle
-      : 0; // glossy
+    // ~96% glossy, ~4% chance of a fun variant — very rare surprise
+    const styleIndex = random() > 0.96
+      ? 1 + Math.floor(random() * (VISUAL_STYLES.length - 1))
+      : 0;
 
-    // Most stars: very subtle rotation (±2°) — neat, intentional placement
-    let rotation = (random() - 0.5) * 4;
-    let scale = 0.95 + random() * 0.08; // 0.95-1.03 — barely noticeable
+    // More tilt variation: ±6° base, each star feels hand-placed
+    let rotation = (random() - 0.5) * 12;
+    let scale = 0.93 + random() * 0.1;
 
-    // Only the last or second-to-last star in qualifying rows gets a subtle offset
-    const isTrailingStar = i >= 3; // 4th or 5th star
-    if (hasTrailingImperfection && isTrailingStar && i === 4) {
-      rotation = 8 + random() * 6; // 8-14° — noticeable but not wild
-      scale = 0.88 + random() * 0.05; // slightly smaller, like it was stuck carelessly
+    // Trailing star in qualifying rows gets a bigger tilt
+    if (hasTrailingImperfection && i === 4) {
+      rotation = 12 + random() * 8; // 12-20°
+      scale = 0.87 + random() * 0.06;
     }
 
     return {
