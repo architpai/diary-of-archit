@@ -3,17 +3,19 @@
     "diary": "アーチット",
     "of": "の",
     "name": "日記",
-    "subtitle": "一つずつバグを潰して、面白いもの作ってます！",
+    "subtitle": "作って、壊して、たまに直す。",
+    "subtitle_role": "フルスタックエンジニア | 地理空間システム",
     "scroll": "↓ スクロールして続きを見る ↓"
   },
   "timeline": {
     "title_diary": "📅 これまでの道のり...",
-    "title_serious": "職務経歴"
+    "title_serious": "職務経歴",
+    "expand_cta": "...公式バージョン →"
   },
   "skills": {
     "title_diary": "💪 俺のスキル ⚡",
     "title_serious": "技術スキル",
-    "disclaimer": "※ この数値は完全に科学的です（ということにしておいてください）"
+    "disclaimer": "※ 星の数は100%科学的です（たぶん）"
   },
   "sneakpeek": {
     "title": "👀 ここだけの話",
@@ -23,7 +25,8 @@
   "contact": {
     "title_diary": "📬 気軽に連絡して！",
     "title_serious": "連絡先",
-    "message": "コードの話でも、ポケモンカードでも、人生の意味でも... なんでも話そう！👂",
+    "message": "ここまで読んでくれたなら、きっと話が合うはず。",
+    "signoff": "以上！さあ、何か面白いもの作ろう。",
     "thanks": "日記を読んでくれてありがとう！✨"
   },
   "nav": {

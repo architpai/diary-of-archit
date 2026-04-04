@@ -3,17 +3,19 @@
     "diary": "DIARY",
     "of": "of a",
     "name": "ARCHIT",
-    "subtitle": "Building cool stuff, one bug at a time!",
+    "subtitle": "I build things, break things, and occasionally fix them.",
+    "subtitle_role": "Full-Stack Engineer | Geospatial Systems",
     "scroll": "↓ scroll for more ↓"
   },
   "timeline": {
     "title_diary": "📅 The Journey So Far...",
-    "title_serious": "Professional Experience"
+    "title_serious": "Professional Experience",
+    "expand_cta": "...the official version →"
   },
   "skills": {
     "title_diary": "💪 My Superpowers ⚡",
     "title_serious": "Technical Skills",
-    "disclaimer": "* These percentages are totally scientific and not made up at all"
+    "disclaimer": "* Star ratings are 100% scientific and not at all made up"
   },
   "sneakpeek": {
     "title": "👀 The \"Sneak Peek\" Section",
@@ -23,7 +25,8 @@
   "contact": {
     "title_diary": "📬 Let's Talk!",
     "title_serious": "Contact Information",
-    "message": "Whether you want to talk about code, Pokémon cards, or the meaning of life... I'm all ears! 👂",
+    "message": "If you made it this far, we should probably talk.",
+    "signoff": "That's all folks. Now go build something cool.",
     "thanks": "Thanks for reading my diary! ✨"
   },
   "nav": {
