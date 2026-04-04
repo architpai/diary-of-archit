@@ -138,57 +138,81 @@ function SpyglassIcon({ active }: { active: boolean }) {
 function StrawHatSkull({ active }: { active: boolean }) {
   return (
     <g className={active ? 'treasure-glow' : ''} opacity={active ? 1 : 0.7}>
-      {/* ── CROSSBONES ── proper bone shapes, not flat lines */}
+      {/* ── CROSSBONES — behind skull, curving outward with bulbous ends ── */}
       {/* Bone 1: top-left to bottom-right */}
-      <g transform="rotate(-30)">
-        <rect x="-14" y="-1.8" width="28" height="3.6" rx="1.8" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="1" />
-        {/* Knuckle ends */}
-        <circle cx="-13" cy="-1.5" r="2" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="0.8" />
-        <circle cx="-13" cy="1.5" r="2" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="0.8" />
-        <circle cx="13" cy="-1.5" r="2" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="0.8" />
-        <circle cx="13" cy="1.5" r="2" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="0.8" />
-      </g>
-      {/* Bone 2: top-right to bottom-left */}
-      <g transform="rotate(30)">
-        <rect x="-14" y="-1.8" width="28" height="3.6" rx="1.8" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="1" />
-        <circle cx="-13" cy="-1.5" r="2" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="0.8" />
-        <circle cx="-13" cy="1.5" r="2" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="0.8" />
-        <circle cx="13" cy="-1.5" r="2" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="0.8" />
-        <circle cx="13" cy="1.5" r="2" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="0.8" />
-      </g>
-
-      {/* ── SKULL ── single smooth shape with integrated jaw */}
       <path
-        d="M-8 -2 C-8 -9 -5 -12 0 -12 C5 -12 8 -9 8 -2 C8 2 6 4 5 5 L5 7 C5 9 3 10 0 10 C-3 10 -5 9 -5 7 L-5 5 C-6 4 -8 2 -8 -2Z"
-        fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="1.6" strokeLinejoin="round"
+        d="M-14 -8 C-10 -5 -4 -2 0 0 C4 2 10 5 14 10"
+        stroke="#2D2D2D" strokeWidth="4" fill="none" strokeLinecap="round"
       />
+      <path
+        d="M-14 -8 C-10 -5 -4 -2 0 0 C4 2 10 5 14 10"
+        stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round"
+      />
+      {/* Bulbous ends — bone 1 */}
+      <circle cx="-14.5" cy="-9" r="2.5" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
+      <circle cx="-12.5" cy="-6.5" r="2.2" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
+      <circle cx="14.5" cy="11" r="2.5" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
+      <circle cx="12.5" cy="8.5" r="2.2" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
 
-      {/* X-mark eyes — Luffy's iconic style */}
-      <line x1="-5" y1="-5" x2="-2" y2="-2" stroke="#2D2D2D" strokeWidth="1.8" strokeLinecap="round" />
-      <line x1="-2" y1="-5" x2="-5" y2="-2" stroke="#2D2D2D" strokeWidth="1.8" strokeLinecap="round" />
-      <line x1="2" y1="-5" x2="5" y2="-2" stroke="#2D2D2D" strokeWidth="1.8" strokeLinecap="round" />
-      <line x1="5" y1="-5" x2="2" y2="-2" stroke="#2D2D2D" strokeWidth="1.8" strokeLinecap="round" />
+      {/* Bone 2: top-right to bottom-left */}
+      <path
+        d="M14 -8 C10 -5 4 -2 0 0 C-4 2 -10 5 -14 10"
+        stroke="#2D2D2D" strokeWidth="4" fill="none" strokeLinecap="round"
+      />
+      <path
+        d="M14 -8 C10 -5 4 -2 0 0 C-4 2 -10 5 -14 10"
+        stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round"
+      />
+      {/* Bulbous ends — bone 2 */}
+      <circle cx="14.5" cy="-9" r="2.5" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
+      <circle cx="12.5" cy="-6.5" r="2.2" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
+      <circle cx="-14.5" cy="11" r="2.5" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
+      <circle cx="-12.5" cy="8.5" r="2.2" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
 
-      {/* Nose — tiny triangle */}
-      <path d="M-0.8 0.5 L0 -0.5 L0.8 0.5" stroke="#5C3D2E" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+      {/* ── SKULL — round with connected jaw ── */}
+      {/* Main head — big circle */}
+      <circle cx="0" cy="-2" r="10" fill="white" stroke="#2D2D2D" strokeWidth="1.8" />
+      {/* Jaw — connected oval below */}
+      <path
+        d="M-6 4 C-6 12 6 12 6 4"
+        fill="white" stroke="#2D2D2D" strokeWidth="1.8"
+      />
+      {/* Cover the seam between head and jaw */}
+      <rect x="-6" y="2" width="12" height="4" fill="white" />
 
-      {/* Wide grin with teeth */}
-      <path d="M-4 3.5 Q0 7.5 4 3.5" stroke="#2D2D2D" strokeWidth="1.2" fill="none" strokeLinecap="round" />
-      <line x1="-2" y1="4.2" x2="-2" y2="5.5" stroke="#2D2D2D" strokeWidth="0.7" />
-      <line x1="0" y1="4.8" x2="0" y2="6.2" stroke="#2D2D2D" strokeWidth="0.7" />
-      <line x1="2" y1="4.2" x2="2" y2="5.5" stroke="#2D2D2D" strokeWidth="0.7" />
+      {/* Big oval eyes — solid black like the reference */}
+      <ellipse cx="-4" cy="-3" rx="3" ry="3.5" fill="#2D2D2D" />
+      <ellipse cx="4" cy="-3" rx="3" ry="3.5" fill="#2D2D2D" />
 
-      {/* ── THE STRAW HAT ── (keeping as-is — user said it's perfect) */}
-      <path d="M-7.5 -7 Q-8 -16 0 -17 Q8 -16 7.5 -7" fill="#F0D48A" stroke="#5C3D2E" strokeWidth="1.5" />
-      <ellipse cx="0" cy="-7.5" rx="12" ry="3.2" fill="#F0D48A" stroke="#5C3D2E" strokeWidth="1.5" />
-      {/* Red ribbon */}
-      <rect x="-8" y="-10" width="16" height="2.8" rx="1" fill="#E63946" />
-      <circle cx="-4" cy="-8.6" r="0.6" fill="#C0392B" />
+      {/* Small nose */}
+      <ellipse cx="0" cy="2" rx="1" ry="0.8" fill="#2D2D2D" />
+
+      {/* Wide grin — grid teeth like the reference */}
+      <path d="M-5 5 C-5 10 5 10 5 5" stroke="#2D2D2D" strokeWidth="1.3" fill="none" />
+      <path d="M-5 5 L5 5" stroke="#2D2D2D" strokeWidth="1" />
+      {/* Vertical tooth lines */}
+      {[-3, -1, 1, 3].map((tx) => (
+        <line key={tx} x1={tx} y1="5" x2={tx} y2="9" stroke="#2D2D2D" strokeWidth="0.7" />
+      ))}
+      {/* Horizontal tooth line */}
+      <path d="M-4.5 7 C-4 7.5 4 7.5 4.5 7" stroke="#2D2D2D" strokeWidth="0.7" fill="none" />
+
+      {/* ── STRAW HAT ── golden dome, red ribbon, wide brim */}
+      {/* Hat dome */}
+      <path d="M-7 -8 C-7 -17 7 -17 7 -8" fill="#FFC107" stroke="#2D2D2D" strokeWidth="1.5" />
+      {/* Dome stitch lines */}
+      <path d="M-3 -14 C-2.5 -11 -2 -9 -2 -8" stroke="#2D2D2D" strokeWidth="0.6" fill="none" />
+      <path d="M1 -15 C1 -12 1 -10 1 -8" stroke="#2D2D2D" strokeWidth="0.6" fill="none" />
+      <path d="M4 -14 C3.5 -11 3 -9 3 -8" stroke="#2D2D2D" strokeWidth="0.6" fill="none" />
+      {/* Red ribbon band */}
+      <rect x="-7.5" y="-9.5" width="15" height="2.5" rx="0.5" fill="#E63946" stroke="#2D2D2D" strokeWidth="0.8" />
+      {/* Hat brim — wide, slightly curved */}
+      <ellipse cx="0" cy="-7.5" rx="13" ry="2.8" fill="#FFC107" stroke="#2D2D2D" strokeWidth="1.5" />
 
       {/* Golden sparkles — animated */}
       {[
-        { x: -16, y: -16, d: '0s' }, { x: 15, y: -14, d: '0.6s' },
-        { x: -15, y: 11, d: '1.2s' }, { x: 14, y: 10, d: '0.3s' },
+        { x: -17, y: -16, d: '0s' }, { x: 16, y: -14, d: '0.6s' },
+        { x: -16, y: 13, d: '1.2s' }, { x: 15, y: 12, d: '0.3s' },
         { x: 0, y: -22, d: '0.9s' },
       ].map((sp, i) => (
         <g key={i} transform={`translate(${sp.x},${sp.y})`} className="sparkle-twinkle" style={{ animationDelay: sp.d }}>
