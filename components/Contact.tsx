@@ -10,6 +10,97 @@ import WindEffect from './WindEffect';
 import { DiaryMailIcon, DiaryGitHubIcon, DiaryLinkedInIcon } from './icons/ContactIcons';
 import { GitHubIcon, LinkedInIcon, MailIcon } from './icons/SocialIcons';
 
+// Thumbtack SVG used on each card
+function Thumbtack() {
+  return (
+    <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20 drop-shadow-md">
+      <svg width="26" height="30" viewBox="0 0 28 32" aria-hidden="true">
+        <circle cx="14" cy="10" r="9" fill="#C0392B" stroke="#922B21" strokeWidth="1" />
+        <circle cx="11" cy="8" r="3" fill="#E74C3C" opacity="0.6" />
+        <line x1="14" y1="19" x2="14" y2="32" stroke="#7F8C8D" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    </div>
+  );
+}
+
+interface ContactCardProps {
+  href: string;
+  isExternal?: boolean;
+  gradient: [string, string];
+  rotation: number;
+  delay: number;
+  icon: React.ReactNode;
+  label: string;
+  labelColor: string;
+  shouldReduceMotion: boolean | null;
+}
+
+function ContactCard({
+  href,
+  isExternal,
+  gradient,
+  rotation,
+  delay,
+  icon,
+  label,
+  labelColor,
+  shouldReduceMotion,
+}: ContactCardProps) {
+  return (
+    <motion.div
+      className="relative"
+      style={{ rotate: `${rotation}deg` }}
+      initial={shouldReduceMotion ? false : { opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay }}
+    >
+      <motion.a
+        href={href}
+        target={isExternal ? '_blank' : undefined}
+        rel={isExternal ? 'noopener noreferrer' : undefined}
+        className="p-6 flex flex-col items-center relative tape-corner"
+        style={{
+          background: `linear-gradient(135deg, ${gradient[0]} 0%, ${gradient[1]} 100%)`,
+          boxShadow: '4px 4px 12px rgba(0,0,0,0.25), inset 0 -2px 4px rgba(0,0,0,0.1)',
+          textDecoration: 'none',
+        }}
+        whileHover={
+          shouldReduceMotion
+            ? undefined
+            : {
+                scale: 1.08,
+                rotate: 0,
+                boxShadow: '8px 8px 20px rgba(0,0,0,0.35)',
+                zIndex: 20,
+              }
+        }
+        transition={shouldReduceMotion ? undefined : { type: 'spring', stiffness: 300 }}
+      >
+        <Thumbtack />
+
+        {/* Icon */}
+        <div className="mt-4 mb-3 flex items-center justify-center" style={{ color: labelColor }}>
+          {icon}
+        </div>
+
+        {/* Label */}
+        <span
+          className="handwritten text-sm font-bold text-center break-all leading-snug"
+          style={{
+            color: labelColor,
+            textDecoration: 'underline wavy',
+            textDecorationColor: labelColor,
+            textUnderlineOffset: '3px',
+          }}
+        >
+          {label}
+        </span>
+      </motion.a>
+    </motion.div>
+  );
+}
+
 export default function Contact() {
   const { isSerious } = useSeriousMode();
   const { t, content, isJapanese } = useTranslation();
@@ -39,10 +130,9 @@ export default function Contact() {
       </motion.h2>
 
       {isSerious ? (
-        /* Serious mode: clean minimal layout */
+        /* ── Serious mode: clean minimal layout (unchanged) ── */
         <div className="max-w-2xl mx-auto px-4 relative z-10">
           <div className="space-y-4 text-left">
-            {/* Email */}
             <a
               href={`mailto:${content.contact.email}`}
               className="block font-sans text-blue-600 hover:underline"
@@ -53,7 +143,6 @@ export default function Contact() {
               </span>
             </a>
 
-            {/* GitHub */}
             <a
               href={content.contact.github}
               target="_blank"
@@ -66,7 +155,6 @@ export default function Contact() {
               </span>
             </a>
 
-            {/* LinkedIn */}
             <a
               href={content.contact.linkedin}
               target="_blank"
@@ -81,139 +169,85 @@ export default function Contact() {
           </div>
         </div>
       ) : (
-        /* Diary mode: Avatar + Flapping Post-it */
-        <div className="max-w-4xl mx-auto px-4 flex flex-col md:flex-row items-center gap-8 relative z-10">
-          {/* Namaste Avatar */}
-          <motion.div
-            className="flex-shrink-0"
-            initial={shouldReduceMotion ? false : { opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
+        /* ── Diary mode: Avatar + 3 colorful post-it cards ── */
+        <div className="max-w-5xl mx-auto px-4 relative z-10">
+          {/* Sign-off message above cards */}
+          <motion.p
+            className="handwritten text-lg text-center mb-10 text-ink"
+            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            initial={shouldReduceMotion ? false : { opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8, ease: 'easeOut' }}
+            transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.2 }}
           >
-            <Avatar pose="namaste" width={200} height={260} className="drop-shadow-lg" />
-          </motion.div>
+            {t('contact.message')}
+          </motion.p>
 
-          {/* Flapping Post-it with thumbtack */}
-          <motion.div
-            className="flex-1 relative"
-            initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: 'easeOut', delay: 0.2 }}
-          >
-            {/* Thumbtack SVG */}
-            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
-              <svg width="28" height="32" viewBox="0 0 28 32">
-                <circle cx="14" cy="10" r="9" fill="#C0392B" stroke="#922B21" strokeWidth="1" />
-                <circle cx="11" cy="8" r="3" fill="#E74C3C" opacity="0.6" />
-                <line x1="14" y1="19" x2="14" y2="32" stroke="#7F8C8D" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            </div>
-
-            {/* Post-it card */}
-            <div
-              className={`p-8 relative ${shouldReduceMotion ? '' : 'postit-flap'}`}
-              style={{
-                background: 'linear-gradient(135deg, #FFEB3B 0%, #FDD835 100%)',
-                boxShadow: '4px 6px 16px rgba(0,0,0,0.25), inset 0 -2px 4px rgba(0,0,0,0.1)',
-              }}
+          <div className="flex flex-col md:flex-row items-start gap-8">
+            {/* Namaste Avatar */}
+            <motion.div
+              className="flex-shrink-0 self-center md:self-auto"
+              initial={shouldReduceMotion ? false : { opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8, ease: 'easeOut' }}
             >
-              {/* Sign-off message */}
-              <motion.p
-                className="handwritten text-lg mb-6 text-ink"
-                style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-                initial={shouldReduceMotion ? false : { opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.4 }}
-              >
-                {t('contact.message')}
-              </motion.p>
+              <Avatar pose="namaste" width={180} height={235} className="drop-shadow-lg" />
+            </motion.div>
 
-              {/* Contact links with diary icons */}
-              <div className="space-y-3">
-                {/* Email */}
-                <a
-                  href={`mailto:${content.contact.email}`}
-                  className="flex items-center gap-3 group"
-                >
-                  <DiaryMailIcon
-                    className="h-6 w-6 shrink-0 transition-transform group-hover:scale-110"
-                    style={{ color: '#B8860B' }}
-                  />
-                  <span
-                    className="handwritten text-base font-bold"
-                    style={{
-                      color: '#B8860B',
-                      textDecoration: 'underline wavy #B8860B',
-                      textUnderlineOffset: '3px',
-                    }}
-                  >
-                    {content.contact.email}
-                  </span>
-                </a>
+            {/* 3 Contact Cards Grid */}
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Email — yellow */}
+              <ContactCard
+                href={`mailto:${content.contact.email}`}
+                gradient={['#FFEB3B', '#FDD835']}
+                rotation={-2}
+                delay={0.15}
+                icon={<DiaryMailIcon className="h-10 w-10" />}
+                label={content.contact.email}
+                labelColor="#B8860B"
+                shouldReduceMotion={shouldReduceMotion}
+              />
 
-                {/* GitHub */}
-                <a
-                  href={content.contact.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 group"
-                >
-                  <DiaryGitHubIcon
-                    className="h-6 w-6 shrink-0 transition-transform group-hover:scale-110"
-                    style={{ color: '#2D2D2D' }}
-                  />
-                  <span
-                    className="handwritten text-base font-bold"
-                    style={{
-                      color: '#2D2D2D',
-                      textDecoration: 'underline wavy #2D2D2D',
-                      textUnderlineOffset: '3px',
-                    }}
-                  >
-                    {content.contact.github}
-                  </span>
-                </a>
+              {/* GitHub — light blue */}
+              <ContactCard
+                href={content.contact.github}
+                isExternal
+                gradient={['#87CEEB', '#4682B4']}
+                rotation={1}
+                delay={0.30}
+                icon={<DiaryGitHubIcon className="h-10 w-10" />}
+                label={content.contact.github}
+                labelColor="#1A3A5C"
+                shouldReduceMotion={shouldReduceMotion}
+              />
 
-                {/* LinkedIn */}
-                <a
-                  href={content.contact.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 group"
-                >
-                  <DiaryLinkedInIcon
-                    className="h-6 w-6 shrink-0 transition-transform group-hover:scale-110"
-                    style={{ color: '#1A5276' }}
-                  />
-                  <span
-                    className="handwritten text-base font-bold"
-                    style={{
-                      color: '#1A5276',
-                      textDecoration: 'underline wavy #1A5276',
-                      textUnderlineOffset: '3px',
-                    }}
-                  >
-                    {content.contact.linkedin}
-                  </span>
-                </a>
-              </div>
-
-              {/* Sign-off */}
-              <motion.p
-                className="handwritten text-sm text-ink/50 mt-6 italic"
-                style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-                initial={shouldReduceMotion ? false : { opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.6 }}
-              >
-                {t('contact.signoff')}
-              </motion.p>
+              {/* LinkedIn — green */}
+              <ContactCard
+                href={content.contact.linkedin}
+                isExternal
+                gradient={['#98FB98', '#32CD32']}
+                rotation={-1}
+                delay={0.45}
+                icon={<DiaryLinkedInIcon className="h-10 w-10" />}
+                label={content.contact.linkedin}
+                labelColor="#155724"
+                shouldReduceMotion={shouldReduceMotion}
+              />
             </div>
-          </motion.div>
+          </div>
+
+          {/* Sign-off below cards */}
+          <motion.p
+            className="handwritten text-sm text-ink/50 mt-10 text-center italic"
+            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            initial={shouldReduceMotion ? false : { opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.6 }}
+          >
+            {t('contact.signoff')}
+          </motion.p>
         </div>
       )}
 

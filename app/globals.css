@@ -951,6 +951,27 @@ body.serious-mode .diary-title {
   }
 }
 
+.wind-ltr {
+  animation: wind-blow-ltr 2.5s ease-in-out infinite;
+}
+.wind-rtl {
+  animation: wind-blow-rtl 2.5s ease-in-out infinite;
+}
+
+@keyframes wind-blow-ltr {
+  0%   { opacity: 0; transform: translateX(-30px); }
+  20%  { opacity: 1; }
+  80%  { opacity: 0.8; }
+  100% { opacity: 0; transform: translateX(100px); }
+}
+
+@keyframes wind-blow-rtl {
+  0%   { opacity: 0; transform: translateX(30px); }
+  20%  { opacity: 1; }
+  80%  { opacity: 0.8; }
+  100% { opacity: 0; transform: translateX(-100px); }
+}
+
 /* ============================================
    REDUCED MOTION PREFERENCES
    ============================================ */
