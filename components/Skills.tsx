@@ -5,6 +5,7 @@ import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import BlobDivider from './BlobDivider';
 import FloatingDoodles from './FloatingDoodles';
+import StickerStars, { levelToStars } from './StickerStars';
 
 interface Skill {
   name: string;
@@ -204,45 +205,13 @@ export default function Skills() {
                           </h4>
                         </div>
 
-                        {/* Segmented Stamina Bar */}
+                        {/* Sticker Stars */}
                         <div className="relative z-10">
-                          <div className="flex items-center justify-end mb-1">
-                            <span 
-                              className="handwritten text-sm font-bold"
-                              style={{ color: categoryColors[skill.category] }}
-                            >
-                              {skill.level}%
-                            </span>
-                          </div>
-                          
-                          {/* Continuous scribble bar */}
-                          <div className="relative h-4 rounded-sm border-2 border-ink/40 overflow-hidden bg-white/50 wobbly-border-light">
-                            <motion.div
-                              className="h-full scribble-texture absolute left-0 top-0"
-                              style={{ 
-                                backgroundColor: categoryColors[skill.category],
-                                opacity: 0.8,
-                              }}
-                              initial={shouldReduceMotion ? false : { width: 0 }}
-                              whileInView={{ width: `${skill.level}%` }}
-                              viewport={{ once: true }}
-                              transition={
-                                shouldReduceMotion
-                                  ? { duration: 0 }
-                                  : {
-                                      duration: 1,
-                                      delay: categoryIndex * 0.1 + index * 0.05,
-                                      ease: "easeOut",
-                                    }
-                              }
-                            />
-                            {/* Hand-drawn marker lines */}
-                            <div className="absolute inset-0 flex justify-between px-1 pointer-events-none">
-                              {[25, 50, 75].map(marker => (
-                                <div key={marker} className="h-full w-[1px] bg-ink/20" style={{ marginLeft: `${marker}%` }} />
-                              ))}
-                            </div>
-                          </div>
+                          <StickerStars
+                            rating={levelToStars(skill.level)}
+                            color={categoryColors[skill.category]}
+                            seed={skill.name.charCodeAt(0) * 100 + skill.level}
+                          />
                         </div>
 
 
