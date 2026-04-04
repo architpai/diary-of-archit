@@ -189,20 +189,31 @@ export default function StickerStars({ rating, color, seed = 0 }: StickerStarsPr
   const shouldReduceMotion = useReducedMotion();
   const random = seededRandom(seed + 42);
 
+  // Determine if THIS skill row gets a subtle trailing-star imperfection.
+  // Only ~15% of rows get one, making it rare and realistic.
+  const imperfectionRoll = random();
+  const hasTrailingImperfection = imperfectionRoll > 0.85;
+
   const stars = Array.from({ length: 5 }, (_, i) => {
     const isFilled = i < rating;
-    // Assign one of the 5 visual styles (deterministic per position)
     const styleIndex = Math.floor(random() * VISUAL_STYLES.length);
-    // Wider rotation range + occasional big offset for imperfect sticker placement
-    const baseRotation = (random() - 0.5) * 24; // ±12 degrees base
-    const bigOffset = random() > 0.7 ? (random() - 0.5) * 30 : 0; // 30% chance of a wild ±15° extra
-    const rotation = baseRotation + bigOffset;
+
+    // Most stars: very subtle rotation (±2°) — neat, intentional placement
+    let rotation = (random() - 0.5) * 4;
+    let scale = 0.95 + random() * 0.08; // 0.95-1.03 — barely noticeable
+
+    // Only the last or second-to-last star in qualifying rows gets a subtle offset
+    const isTrailingStar = i >= 3; // 4th or 5th star
+    if (hasTrailingImperfection && isTrailingStar && i === 4) {
+      rotation = 8 + random() * 6; // 8-14° — noticeable but not wild
+      scale = 0.88 + random() * 0.05; // slightly smaller, like it was stuck carelessly
+    }
 
     return {
       isFilled,
       styleIndex,
       rotation,
-      scale: 0.8 + random() * 0.3,
+      scale,
       uid: `star-${seed}-${i}`,
     };
   });
