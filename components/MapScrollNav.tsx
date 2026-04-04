@@ -138,44 +138,58 @@ function SpyglassIcon({ active }: { active: boolean }) {
 function StrawHatSkull({ active }: { active: boolean }) {
   return (
     <g className={active ? 'treasure-glow' : ''} opacity={active ? 1 : 0.7}>
-      {/* Crossbones — thick with bone-ends */}
-      <line x1="-12" y1="-5" x2="12" y2="8" stroke="#F5E6C8" strokeWidth="3.5" strokeLinecap="round" />
-      <line x1="12" y1="-5" x2="-12" y2="8" stroke="#F5E6C8" strokeWidth="3.5" strokeLinecap="round" />
-      <line x1="-12" y1="-5" x2="12" y2="8" stroke="#5C3D2E" strokeWidth="2" strokeLinecap="round" />
-      <line x1="12" y1="-5" x2="-12" y2="8" stroke="#5C3D2E" strokeWidth="2" strokeLinecap="round" />
-      {[[-12, -5], [12, -5], [-12, 8], [12, 8]].map(([cx, cy], i) => (
-        <circle key={i} cx={cx} cy={cy} r="2.2" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="1" />
-      ))}
+      {/* ── CROSSBONES ── proper bone shapes, not flat lines */}
+      {/* Bone 1: top-left to bottom-right */}
+      <g transform="rotate(-30)">
+        <rect x="-14" y="-1.8" width="28" height="3.6" rx="1.8" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="1" />
+        {/* Knuckle ends */}
+        <circle cx="-13" cy="-1.5" r="2" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="0.8" />
+        <circle cx="-13" cy="1.5" r="2" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="0.8" />
+        <circle cx="13" cy="-1.5" r="2" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="0.8" />
+        <circle cx="13" cy="1.5" r="2" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="0.8" />
+      </g>
+      {/* Bone 2: top-right to bottom-left */}
+      <g transform="rotate(30)">
+        <rect x="-14" y="-1.8" width="28" height="3.6" rx="1.8" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="1" />
+        <circle cx="-13" cy="-1.5" r="2" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="0.8" />
+        <circle cx="-13" cy="1.5" r="2" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="0.8" />
+        <circle cx="13" cy="-1.5" r="2" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="0.8" />
+        <circle cx="13" cy="1.5" r="2" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="0.8" />
+      </g>
 
-      {/* Skull head */}
-      <ellipse cx="0" cy="1" rx="8.5" ry="8" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="1.8" />
-      {/* Jaw */}
-      <ellipse cx="0" cy="6" rx="6" ry="3.5" fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="1.2" />
+      {/* ── SKULL ── single smooth shape with integrated jaw */}
+      <path
+        d="M-8 -2 C-8 -9 -5 -12 0 -12 C5 -12 8 -9 8 -2 C8 2 6 4 5 5 L5 7 C5 9 3 10 0 10 C-3 10 -5 9 -5 7 L-5 5 C-6 4 -8 2 -8 -2Z"
+        fill="#F5E6C8" stroke="#5C3D2E" strokeWidth="1.6" strokeLinejoin="round"
+      />
 
-      {/* X-mark eyes — Luffy's Jolly Roger */}
-      <line x1="-5" y1="-3" x2="-2" y2="0" stroke="#2D2D2D" strokeWidth="2" strokeLinecap="round" />
-      <line x1="-2" y1="-3" x2="-5" y2="0" stroke="#2D2D2D" strokeWidth="2" strokeLinecap="round" />
-      <line x1="2" y1="-3" x2="5" y2="0" stroke="#2D2D2D" strokeWidth="2" strokeLinecap="round" />
-      <line x1="5" y1="-3" x2="2" y2="0" stroke="#2D2D2D" strokeWidth="2" strokeLinecap="round" />
+      {/* X-mark eyes — Luffy's iconic style */}
+      <line x1="-5" y1="-5" x2="-2" y2="-2" stroke="#2D2D2D" strokeWidth="1.8" strokeLinecap="round" />
+      <line x1="-2" y1="-5" x2="-5" y2="-2" stroke="#2D2D2D" strokeWidth="1.8" strokeLinecap="round" />
+      <line x1="2" y1="-5" x2="5" y2="-2" stroke="#2D2D2D" strokeWidth="1.8" strokeLinecap="round" />
+      <line x1="5" y1="-5" x2="2" y2="-2" stroke="#2D2D2D" strokeWidth="1.8" strokeLinecap="round" />
 
-      {/* Wide grin */}
-      <path d="M-5 4 Q-2 8 0 8 Q2 8 5 4" stroke="#2D2D2D" strokeWidth="1.3" fill="none" />
-      {[-2.5, 0, 2.5].map((tx, i) => (
-        <line key={i} x1={tx} y1={5} x2={tx} y2={7} stroke="#2D2D2D" strokeWidth="0.8" />
-      ))}
+      {/* Nose — tiny triangle */}
+      <path d="M-0.8 0.5 L0 -0.5 L0.8 0.5" stroke="#5C3D2E" strokeWidth="0.8" fill="none" strokeLinecap="round" />
 
-      {/* ── THE STRAW HAT ── */}
-      <path d="M-7.5 -5 Q-8 -14 0 -15 Q8 -14 7.5 -5" fill="#F0D48A" stroke="#5C3D2E" strokeWidth="1.5" />
-      <ellipse cx="0" cy="-5.5" rx="12" ry="3.2" fill="#F0D48A" stroke="#5C3D2E" strokeWidth="1.5" />
-      {/* Red ribbon — the iconic detail */}
-      <rect x="-8" y="-8" width="16" height="2.8" rx="1" fill="#E63946" />
-      <circle cx="-4" cy="-6.6" r="0.6" fill="#C0392B" />
+      {/* Wide grin with teeth */}
+      <path d="M-4 3.5 Q0 7.5 4 3.5" stroke="#2D2D2D" strokeWidth="1.2" fill="none" strokeLinecap="round" />
+      <line x1="-2" y1="4.2" x2="-2" y2="5.5" stroke="#2D2D2D" strokeWidth="0.7" />
+      <line x1="0" y1="4.8" x2="0" y2="6.2" stroke="#2D2D2D" strokeWidth="0.7" />
+      <line x1="2" y1="4.2" x2="2" y2="5.5" stroke="#2D2D2D" strokeWidth="0.7" />
+
+      {/* ── THE STRAW HAT ── (keeping as-is — user said it's perfect) */}
+      <path d="M-7.5 -7 Q-8 -16 0 -17 Q8 -16 7.5 -7" fill="#F0D48A" stroke="#5C3D2E" strokeWidth="1.5" />
+      <ellipse cx="0" cy="-7.5" rx="12" ry="3.2" fill="#F0D48A" stroke="#5C3D2E" strokeWidth="1.5" />
+      {/* Red ribbon */}
+      <rect x="-8" y="-10" width="16" height="2.8" rx="1" fill="#E63946" />
+      <circle cx="-4" cy="-8.6" r="0.6" fill="#C0392B" />
 
       {/* Golden sparkles — animated */}
       {[
-        { x: -16, y: -14, d: '0s' }, { x: 15, y: -12, d: '0.6s' },
+        { x: -16, y: -16, d: '0s' }, { x: 15, y: -14, d: '0.6s' },
         { x: -15, y: 11, d: '1.2s' }, { x: 14, y: 10, d: '0.3s' },
-        { x: 0, y: -20, d: '0.9s' },
+        { x: 0, y: -22, d: '0.9s' },
       ].map((sp, i) => (
         <g key={i} transform={`translate(${sp.x},${sp.y})`} className="sparkle-twinkle" style={{ animationDelay: sp.d }}>
           <line x1="-1.8" y1="0" x2="1.8" y2="0" stroke="#FFD700" strokeWidth="1.3" strokeLinecap="round" />
