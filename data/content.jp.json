@@ -15,6 +15,12 @@
         "title": "ローカルLLM実験",
         "narrative": "ローカルでLLMを動かしながら、ファインチューニングやRAGパイプライン、自作の「Claude風」コーディングアシスタントを試行中。M4がそろそろ反乱を企てている気がする。",
         "icon": "🤖"
+      },
+      {
+        "id": "agents",
+        "title": "自律エージェント実験",
+        "narrative": "OpenClawやZeroClawのような完全自律エージェントに夢中。特定の目標に特化したシンプル版を自作中。次の目標：世界征服。（冗談です…たぶん。）",
+        "icon": "🦞"
       }
     ],
     "currentSetup": "MacBook Pro M4 Pro"

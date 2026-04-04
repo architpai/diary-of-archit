@@ -148,11 +148,13 @@ function StrawHatSkull({ active }: { active: boolean }) {
         d="M-14 -8 C-10 -5 -4 -2 0 0 C4 2 10 5 14 10"
         stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round"
       />
-      {/* Bulbous ends — bone 1 */}
-      <circle cx="-14.5" cy="-9" r="2.5" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
-      <circle cx="-12.5" cy="-6.5" r="2.2" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
-      <circle cx="14.5" cy="11" r="2.5" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
-      <circle cx="12.5" cy="8.5" r="2.2" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
+      {/* Bulbous ends — bone 1, pairs perpendicular to bone direction */}
+      {/* Top-left end: bone goes ↘, so knuckles spread ↗↙ (perpendicular) */}
+      <circle cx="-15.5" cy="-6.5" r="2.4" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
+      <circle cx="-12.5" cy="-10" r="2.4" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
+      {/* Bottom-right end: knuckles spread perpendicular */}
+      <circle cx="15.5" cy="8.5" r="2.4" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
+      <circle cx="12.5" cy="12" r="2.4" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
 
       {/* Bone 2: top-right to bottom-left */}
       <path
@@ -163,11 +165,13 @@ function StrawHatSkull({ active }: { active: boolean }) {
         d="M14 -8 C10 -5 4 -2 0 0 C-4 2 -10 5 -14 10"
         stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round"
       />
-      {/* Bulbous ends — bone 2 */}
-      <circle cx="14.5" cy="-9" r="2.5" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
-      <circle cx="12.5" cy="-6.5" r="2.2" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
-      <circle cx="-14.5" cy="11" r="2.5" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
-      <circle cx="-12.5" cy="8.5" r="2.2" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
+      {/* Bulbous ends — bone 2, pairs perpendicular to bone direction */}
+      {/* Top-right end: bone goes ↙, so knuckles spread ↖↘ (perpendicular) */}
+      <circle cx="12.5" cy="-10" r="2.4" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
+      <circle cx="15.5" cy="-6.5" r="2.4" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
+      {/* Bottom-left end: knuckles spread perpendicular */}
+      <circle cx="-15.5" cy="8.5" r="2.4" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
+      <circle cx="-12.5" cy="12" r="2.4" fill="white" stroke="#2D2D2D" strokeWidth="1.3" />
 
       {/* ── SKULL — round with connected jaw ── */}
       {/* Main head — big circle */}

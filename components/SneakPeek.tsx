@@ -19,6 +19,7 @@ const hobbyPoses: Record<string, string> = {
   pokemon: '/avatar/waving_pose.webp',
   gym: '/avatar/flexing_pose.webp',
   llm: '/avatar/coding_pose.webp',
+  agents: '/avatar/victory_pose.webp',
 };
 
 // Hobby card colors
@@ -26,6 +27,7 @@ const hobbyColors: Record<string, { bg: string; accent: string }> = {
   pokemon: { bg: '#FFEB3B', accent: '#FDD835' },
   gym: { bg: '#FF69B4', accent: '#FF1493' },
   llm: { bg: '#87CEEB', accent: '#4682B4' },
+  agents: { bg: '#B39DDB', accent: '#7E57C2' },
 };
 
 export default function SneakPeek() {
