@@ -132,12 +132,12 @@ function MetallicStar({ color, uid }: { color: string; uid: string }) {
 function SparkleStar({ color, uid }: { color: string; uid: string }) {
   const gradId = `${uid}-sparkle`;
   const light = lightenColor(color, 0.3);
-  // Sparkle crosses positioned outside the star shape so they're visible
+  const sparkleColor = darkenColor(color, 0.5);
   const sparkles = [
-    { x: 2, y: 2 },
-    { x: 21, y: 3 },
-    { x: 22, y: 19 },
-    { x: 2, y: 18 },
+    { x: 1, y: 1, delay: '0s' },
+    { x: 22, y: 2, delay: '0.4s' },
+    { x: 23, y: 20, delay: '0.8s' },
+    { x: 1, y: 19, delay: '1.2s' },
   ];
   return (
     <svg viewBox="0 0 24 24" className="w-7 h-7 md:w-8 md:h-8" style={{ overflow: 'visible' }}>
@@ -150,8 +150,12 @@ function SparkleStar({ color, uid }: { color: string; uid: string }) {
       <path d={STAR_PATH} fill={`url(#${gradId})`} />
       {sparkles.map((sp, idx) => (
         <g key={idx} transform={`translate(${sp.x},${sp.y})`}>
-          <line x1="-1.5" y1="0" x2="1.5" y2="0" stroke={darkenColor(color, 0.4)} strokeWidth="1" strokeLinecap="round" />
-          <line x1="0" y1="-1.5" x2="0" y2="1.5" stroke={darkenColor(color, 0.4)} strokeWidth="1" strokeLinecap="round" />
+          <g className="sparkle-twinkle" style={{ animationDelay: sp.delay }}>
+            <line x1="-2" y1="0" x2="2" y2="0" stroke={sparkleColor} strokeWidth="1.2" strokeLinecap="round" />
+            <line x1="0" y1="-2" x2="0" y2="2" stroke={sparkleColor} strokeWidth="1.2" strokeLinecap="round" />
+            <line x1="-1.2" y1="-1.2" x2="1.2" y2="1.2" stroke={sparkleColor} strokeWidth="0.7" strokeLinecap="round" />
+            <line x1="1.2" y1="-1.2" x2="-1.2" y2="1.2" stroke={sparkleColor} strokeWidth="0.7" strokeLinecap="round" />
+          </g>
         </g>
       ))}
     </svg>
@@ -189,14 +193,16 @@ export default function StickerStars({ rating, color, seed = 0 }: StickerStarsPr
     const isFilled = i < rating;
     // Assign one of the 5 visual styles (deterministic per position)
     const styleIndex = Math.floor(random() * VISUAL_STYLES.length);
-    const rotation = (random() - 0.5) * 16;
+    // Wider rotation range + occasional big offset for imperfect sticker placement
+    const baseRotation = (random() - 0.5) * 24; // ±12 degrees base
+    const bigOffset = random() > 0.7 ? (random() - 0.5) * 30 : 0; // 30% chance of a wild ±15° extra
+    const rotation = baseRotation + bigOffset;
 
-    // Use rotation and scale variation for personality (no clipPath imperfections — they cause artifacts at this size)
     return {
       isFilled,
       styleIndex,
       rotation,
-      scale: 0.85 + random() * 0.25,
+      scale: 0.8 + random() * 0.3,
       uid: `star-${seed}-${i}`,
     };
   });
