@@ -906,6 +906,52 @@ body.serious-mode .diary-title {
 }
 
 /* ============================================
+   POST-IT FLAP ANIMATION (Wind effect)
+   ============================================ */
+@keyframes postit-flap {
+  0%, 100% {
+    transform: perspective(800px) rotateY(0deg) rotateX(0deg);
+  }
+  15% {
+    transform: perspective(800px) rotateY(2deg) rotateX(-1deg);
+  }
+  30% {
+    transform: perspective(800px) rotateY(-3deg) rotateX(1.5deg);
+  }
+  50% {
+    transform: perspective(800px) rotateY(4deg) rotateX(-2deg);
+  }
+  70% {
+    transform: perspective(800px) rotateY(-2deg) rotateX(1deg);
+  }
+  85% {
+    transform: perspective(800px) rotateY(1.5deg) rotateX(-0.5deg);
+  }
+}
+
+.postit-flap {
+  transform-origin: top center;
+  animation: postit-flap 4s ease-in-out infinite;
+}
+
+@keyframes wind-blow {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px) scaleX(0.3);
+  }
+  20% {
+    opacity: 0.6;
+  }
+  80% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(60px) scaleX(1);
+  }
+}
+
+/* ============================================
    REDUCED MOTION PREFERENCES
    ============================================ */
 @media (prefers-reduced-motion: reduce) {
