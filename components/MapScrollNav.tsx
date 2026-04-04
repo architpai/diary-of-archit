@@ -364,14 +364,6 @@ export default function MapScrollNav() {
             transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
           />
 
-          {/* Red X behind treasure */}
-          <g opacity="0.4">
-            <line x1={LANDMARKS[4].x - 14} y1={LANDMARKS[4].y - 14} x2={LANDMARKS[4].x + 14} y2={LANDMARKS[4].y + 14}
-              stroke="#E63946" strokeWidth="3" strokeLinecap="round" />
-            <line x1={LANDMARKS[4].x + 14} y1={LANDMARKS[4].y - 14} x2={LANDMARKS[4].x - 14} y2={LANDMARKS[4].y + 14}
-              stroke="#E63946" strokeWidth="3" strokeLinecap="round" />
-          </g>
-
           {/* Landmarks */}
           {LANDMARKS.map((lm, index) => {
             const isActive = activeSection === index;
