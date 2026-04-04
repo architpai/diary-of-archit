@@ -14,7 +14,7 @@ export default function Hero() {
 
   return (
     <section
-      className={`min-h-screen flex flex-col items-center justify-center px-4 py-20 relative overflow-hidden ${!isSerious ? "section-yellow" : ""}`}
+      className={`min-h-[70vh] md:min-h-screen flex flex-col items-center justify-center px-4 py-12 md:py-20 relative overflow-hidden ${!isSerious ? "section-yellow" : ""}`}
     >
       {/* Floating Background Doodles */}
       {!isSerious && <FloatingDoodles variant="code" density="normal" />}
@@ -107,36 +107,23 @@ export default function Hero() {
       )}
 
       {/* Main Content */}
-        <motion.div
-          className="text-center z-10 relative"
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 50 }}
-          animate={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
-          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8 }}
-        >
-        {/* Title with enhanced hand-drawn style */}
-          <motion.div
-            className="mb-8"
-            initial={shouldReduceMotion ? false : { scale: 0.8 }}
-            animate={shouldReduceMotion ? { scale: 1 } : { scale: 1 }}
-            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: 0.3 }}
-          >
+      <motion.div
+        className="text-center z-10 relative"
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 50 }}
+        animate={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
+        transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8 }}
+      >
+        {/* Title with CSS handwriting animation */}
+        <div className="mb-8">
           <h1
             className={`diary-title ${!isSerious ? 'text-ink drop-shadow-lg' : 'text-ink'}`}
             style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
           >
-            <motion.span
-              className="block"
-              initial={shouldReduceMotion ? false : { x: -50, opacity: 0 }}
-              animate={shouldReduceMotion ? { x: 0, opacity: 1 } : { x: 0, opacity: 1 }}
-              transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.2 }}
-            >
+            <span className={`block${shouldReduceMotion ? '' : ' handwrite-reveal'}`}>
               {t('hero.diary')}
-            </motion.span>
-            <motion.span
-              className={`block ${!isSerious ? 'text-white text-shadow-outline' : 'text-margin-blue'}`}
-              initial={shouldReduceMotion ? false : { x: 50, opacity: 0 }}
-              animate={shouldReduceMotion ? { x: 0, opacity: 1 } : { x: 0, opacity: 1 }}
-              transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.4 }}
+            </span>
+            <span
+              className={`block ${!isSerious ? 'text-white text-shadow-outline' : 'text-margin-blue'}${shouldReduceMotion ? '' : ' handwrite-reveal-delay-1'}`}
               style={
                 !isSerious
                   ? {
@@ -147,21 +134,18 @@ export default function Hero() {
               }
             >
               {t('hero.of')}
-            </motion.span>
-            <motion.span
-              className={`block ${!isSerious ? 'scribble-underline' : 'underline-sketch'}`}
-              initial={shouldReduceMotion ? false : { y: 30, opacity: 0 }}
-              animate={shouldReduceMotion ? { y: 0, opacity: 1 } : { y: 0, opacity: 1 }}
-              transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.6 }}
+            </span>
+            <span
+              className={`block ${!isSerious ? 'scribble-underline-animated relative' : 'underline-sketch'}${shouldReduceMotion ? '' : ' handwrite-reveal-delay-2'}`}
             >
               {t('hero.name')}
-            </motion.span>
+            </span>
           </h1>
-        </motion.div>
+        </div>
 
-        {/* Avatar - larger and more prominent */}
+        {/* Avatar - slightly reduced sizes for better above-fold fit */}
         <motion.div
-          className="my-8 flex justify-center relative"
+          className="my-4 md:my-6 flex justify-center relative"
           initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.5 }}
           animate={shouldReduceMotion ? { opacity: 1, scale: 1 } : { opacity: 1, scale: 1 }}
           transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 0.5 }}
@@ -177,34 +161,51 @@ export default function Hero() {
                   : { duration: 30, repeat: Infinity, ease: "linear" }
               }
             >
-              <div className="w-96 h-96 rounded-full border-4 border-dashed border-white/30" />
+              <div className="w-72 md:w-96 h-72 md:h-96 rounded-full border-4 border-dashed border-white/30" />
             </motion.div>
           )}
           <HeroAvatarTransition
             width={800}
             height={1080}
-            className="w-[240px] sm:w-[300px] md:w-[360px] lg:w-[400px]"
+            className="w-[180px] sm:w-[220px] md:w-[300px] lg:w-[360px]"
           />
         </motion.div>
 
-        {/* Subtitle with enhanced styling */}
+        {/* Tagline and professional subtitle wrapped together */}
         <motion.div
-          className={`relative inline-block ${!isSerious ? "wobbly-border bg-paper/90 px-6 py-3" : ""}`}
           initial={shouldReduceMotion ? false : { opacity: 0 }}
-          animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1 }}
+          animate={{ opacity: 1 }}
           transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: 0.8 }}
         >
-          <p 
-            className={`diary-subtitle ${isSerious ? '' : 'shaky-pencil'} max-w-md mx-auto handwritten`}
-            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+          {/* Tagline box */}
+          <div
+            className={`relative inline-block ${!isSerious ? "wobbly-border bg-paper/90 px-6 py-3" : ""}`}
           >
-            {t('hero.subtitle')}
-          </p>
+            <p
+              className={`diary-subtitle ${isSerious ? '' : 'shaky-pencil'} max-w-md mx-auto handwritten`}
+              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            >
+              {t('hero.subtitle')}
+            </p>
+          </div>
+
+          {/* Professional subtitle */}
+          {!isSerious && (
+            <motion.p
+              className="mt-3 text-ink/60 handwritten text-base md:text-lg tracking-wide"
+              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+              initial={shouldReduceMotion ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={shouldReduceMotion ? { duration: 0 } : { delay: 1.6 }}
+            >
+              {t('hero.subtitle_role')}
+            </motion.p>
+          )}
         </motion.div>
 
         {/* Scroll Indicator */}
         <motion.div
-          className="mt-16"
+          className="mt-8 md:mt-12"
           animate={shouldReduceMotion ? undefined : { y: [0, 10, 0] }}
           transition={shouldReduceMotion ? undefined : { duration: 1.5, repeat: Infinity }}
         >
