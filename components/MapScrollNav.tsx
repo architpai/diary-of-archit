@@ -73,51 +73,77 @@ export default function MapScrollNav() {
   }
 
   return (
-    <div className="fixed right-0 top-1/2 -translate-y-1/2 z-50 hidden md:flex flex-col gap-1.5">
-      {sections.map((s, i) => {
-        const isActive = activeSection === i;
-        const color = TAB_COLORS[i];
-        const tilt = [1.5, -1, 2, -1.5, 0.5][i]; // slight imperfect tilts
+    <>
+      {/* Desktop: bookmark tabs on right edge */}
+      <div className="fixed right-0 top-1/2 -translate-y-1/2 z-50 hidden md:flex flex-col gap-1.5">
+        {sections.map((s, i) => {
+          const isActive = activeSection === i;
+          const color = TAB_COLORS[i];
+          const tilt = [1.5, -1, 2, -1.5, 0.5][i];
 
-        return (
-          <motion.button
-            key={s.id}
-            onClick={() => scrollToSection(i)}
-            className="relative cursor-pointer block text-right"
-            style={{
-              transformOrigin: 'right center',
-            }}
-            animate={{
-              x: isActive ? 0 : 55,
-              rotate: isActive ? 0 : tilt,
-            }}
-            whileHover={{ x: 0, rotate: 0 }}
-            transition={
-              shouldReduceMotion
-                ? { duration: 0 }
-                : { type: 'spring', stiffness: 300, damping: 25 }
-            }
-            aria-label={s.label}
-            title={s.label}
-          >
-            <div
-              className="px-4 py-2.5 handwritten text-sm font-bold whitespace-nowrap shadow-md"
-              style={{
-                backgroundColor: color.bg,
-                color: color.text,
-                opacity: isActive ? 1 : 0.7,
-                borderRadius: '8px 0 0 8px',
-                boxShadow: isActive
-                  ? '-3px 3px 8px rgba(0,0,0,0.25)'
-                  : '-2px 2px 4px rgba(0,0,0,0.15)',
-                minWidth: '80px',
+          return (
+            <motion.button
+              key={s.id}
+              onClick={() => scrollToSection(i)}
+              className="relative cursor-pointer block text-right"
+              style={{ transformOrigin: 'right center' }}
+              animate={{
+                x: isActive ? 0 : 55,
+                rotate: isActive ? 0 : tilt,
               }}
+              whileHover={{ x: 0, rotate: 0 }}
+              transition={
+                shouldReduceMotion
+                  ? { duration: 0 }
+                  : { type: 'spring', stiffness: 300, damping: 25 }
+              }
+              aria-label={s.label}
+              title={s.label}
             >
-              {s.label}
-            </div>
-          </motion.button>
-        );
-      })}
-    </div>
+              <div
+                className="px-4 py-2.5 handwritten text-sm font-bold whitespace-nowrap shadow-md"
+                style={{
+                  backgroundColor: color.bg,
+                  color: color.text,
+                  opacity: isActive ? 1 : 0.7,
+                  borderRadius: '8px 0 0 8px',
+                  boxShadow: isActive
+                    ? '-3px 3px 8px rgba(0,0,0,0.25)'
+                    : '-2px 2px 4px rgba(0,0,0,0.15)',
+                  minWidth: '80px',
+                }}
+              >
+                {s.label}
+              </div>
+            </motion.button>
+          );
+        })}
+      </div>
+
+      {/* Mobile: colored dots at bottom */}
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex md:hidden gap-2.5 px-4 py-2 rounded-full"
+        style={{ backgroundColor: 'rgba(255,249,229,0.85)', boxShadow: '0 2px 10px rgba(0,0,0,0.15)' }}
+      >
+        {sections.map((s, i) => {
+          const isActive = activeSection === i;
+          const color = TAB_COLORS[i];
+          return (
+            <button
+              key={s.id}
+              onClick={() => scrollToSection(i)}
+              className="transition-all duration-300"
+              style={{
+                width: isActive ? '24px' : '10px',
+                height: '10px',
+                borderRadius: '5px',
+                backgroundColor: color.bg,
+                opacity: isActive ? 1 : 0.5,
+              }}
+              aria-label={s.label}
+            />
+          );
+        })}
+      </div>
+    </>
   );
 }

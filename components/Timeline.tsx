@@ -84,7 +84,7 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
         transition={shouldReduceMotion ? undefined : { type: "spring", stiffness: 300 }}
       >
         <div
-          className="relative cursor-pointer"
+          className="relative cursor-pointer overflow-hidden"
           style={{ perspective: '1200px' }}
           onClick={() => setIsExpanded(!isExpanded)}
         >
@@ -121,7 +121,7 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
               <span className="block mt-3 text-xs text-ink/40 handwritten text-center"
                 style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
               >
-                {isJapanese ? '開く' : 'tap to unfold'}
+                {isJapanese ? '開く' : <><span className="md:hidden">tap</span><span className="hidden md:inline">click</span> to unfold</>}
               </span>
             )}
           </div>
@@ -231,19 +231,6 @@ export default function Timeline() {
         ) : (
           // Fun diary-style timeline
           <div className="relative">
-            {/* Simple vertical connecting line */}
-            <div className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 w-1 hidden md:block" style={{ zIndex: 0 }}>
-              {/* Background dashed line */}
-              <div
-                className="w-full h-full"
-                style={{
-                  backgroundImage: 'repeating-linear-gradient(to bottom, #D4A373 0, #D4A373 12px, transparent 12px, transparent 22px)',
-                  opacity: 0.35,
-                  borderRadius: '2px',
-                }}
-              />
-            </div>
-
             {/* Experience Cards */}
             <div className="relative z-10 space-y-10">
               {experiences.map((exp, index) => (

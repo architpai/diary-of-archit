@@ -99,7 +99,7 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese }: {
             {hobby.narrative}
           </p>
 
-          <span className="mt-3 text-xs text-ink/50 handwritten">tap to flip</span>
+          <span className="mt-3 text-xs text-ink/50 handwritten"><span className="md:hidden">tap</span><span className="hidden md:inline">click</span> to flip</span>
         </div>
 
         {/* ── BACK — positioned via inset-0 inside the preserve-3d container ── */}
@@ -130,7 +130,7 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese }: {
             {hobby.details || hobby.narrative}
           </p>
 
-          <span className="mt-4 text-xs text-ink/50 handwritten">tap to flip back</span>
+          <span className="mt-4 text-xs text-ink/50 handwritten"><span className="md:hidden">tap</span><span className="hidden md:inline">click</span> to flip back</span>
         </div>
       </motion.div>
     </motion.div>

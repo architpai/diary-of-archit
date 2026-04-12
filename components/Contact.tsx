@@ -200,7 +200,7 @@ export default function Contact() {
               {/* Email — yellow */}
               <ContactCard
                 href={`mailto:${content.contact.email}`}
-                gradient={['#FFEB3B', '#FDD835']}
+                gradient={['#FFD54F', '#F9A825']}
                 rotation={-2}
                 delay={0.15}
                 icon={<DiaryMailIcon className="h-10 w-10" />}
@@ -226,7 +226,7 @@ export default function Contact() {
               <ContactCard
                 href={content.contact.linkedin}
                 isExternal
-                gradient={['#98FB98', '#32CD32']}
+                gradient={['#81C784', '#2E7D32']}
                 rotation={-1}
                 delay={0.45}
                 icon={<DiaryLinkedInIcon className="h-10 w-10" />}
@@ -251,18 +251,7 @@ export default function Contact() {
         </div>
       )}
 
-      {/* Fun footer in diary mode */}
-      {!isSerious && (
-        <motion.p
-          className="handwritten text-center mt-12 text-ink/80 text-lg relative z-10"
-          style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-          initial={shouldReduceMotion ? false : { opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-        >
-          {t('contact.thanks')}
-        </motion.p>
-      )}
+      {/* Sign-off moved to DiaryFooter */}
     </section>
   );
 }
