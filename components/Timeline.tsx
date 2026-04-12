@@ -83,73 +83,79 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
         whileHover={shouldReduceMotion ? undefined : { scale: 1.02, rotate: index % 2 === 0 ? 1 : -1 }}
         transition={shouldReduceMotion ? undefined : { type: "spring", stiffness: 300 }}
       >
-        <div className="relative p-6 wobbly-border bg-paper/95 tape-corner shadow-xl">
-          {/* Header */}
-          <div className="mb-4">
-            <h3
-              className="handwritten text-xl md:text-2xl font-bold text-ink"
-              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+        <div
+          className="relative cursor-pointer"
+          style={{ perspective: '1200px' }}
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          {/* ── TOP HALF — always visible (diary side) ── */}
+          <div className="relative p-6 wobbly-border bg-paper/95 tape-corner shadow-xl">
+            {/* Header */}
+            <div className="mb-4">
+              <h3
+                className="handwritten text-xl md:text-2xl font-bold text-ink"
+                style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+              >
+                {exp.professionalTitle}
+              </h3>
+              <p
+                className="handwritten text-gray-600"
+                style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+              >
+                @ {exp.company}
+              </p>
+            </div>
+
+            {/* Diary Narrative */}
+            <motion.p
+              className="diary-narrative handwritten text-lg text-ink italic bg-yellow-100/50 p-3 rounded-lg"
+              initial={shouldReduceMotion ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.3 }}
             >
-              {exp.professionalTitle}
-            </h3>
-            <p
-              className="handwritten text-gray-600"
-              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-            >
-              @ {exp.company}
-            </p>
+              &ldquo;{exp.diaryNarrative}&rdquo;
+            </motion.p>
+
+            {/* Tap to unfold hint */}
+            {!isExpanded && (
+              <span className="block mt-3 text-xs text-ink/40 handwritten text-center"
+                style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+              >
+                {isJapanese ? '開く' : 'tap to unfold'}
+              </span>
+            )}
           </div>
 
-          {/* Diary Narrative */}
-          <motion.p
-            className="diary-narrative handwritten text-lg text-ink mb-4 italic bg-yellow-100/50 p-3 rounded-lg"
-            initial={shouldReduceMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.3 }}
-          >
-            &ldquo;{exp.diaryNarrative}&rdquo;
-          </motion.p>
-
-          {/* Expand CTA */}
-          {!isExpanded && (
-            <motion.button
-              onClick={() => setIsExpanded(true)}
-              className="handwritten text-ink/50 text-sm hover:text-ink/80 transition-colors cursor-pointer flex items-center gap-1"
-              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-              whileHover={shouldReduceMotion ? undefined : { x: 5 }}
-            >
-              {t('timeline.expand_cta')}
-              <motion.span
-                animate={shouldReduceMotion ? undefined : { x: [0, 4, 0] }}
-                transition={shouldReduceMotion ? undefined : { duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
-                className="inline-block"
-              >
-              </motion.span>
-            </motion.button>
-          )}
-
-          {/* Resume Bullet Points (expand on click) */}
+          {/* ── BOTTOM HALF — unfolds to reveal resume bullets ── */}
           <motion.div
             initial={false}
-            animate={
-              isExpanded
-                ? { height: 'auto', opacity: 1 }
-                : { height: 0, opacity: 0 }
-            }
+            animate={{
+              rotateX: isExpanded ? 0 : -90,
+              opacity: isExpanded ? 1 : 0,
+            }}
             transition={
               shouldReduceMotion
                 ? { duration: 0 }
                 : { duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }
             }
-            style={{ overflow: 'hidden' }}
+            style={{
+              transformOrigin: 'top center',
+            }}
           >
-              <div className="pt-3 border-t border-ink/10">
-                <ul className="list-disc list-inside space-y-1 handwritten text-sm text-ink/70">
-                  {exp.resumeBulletPoints.map((point: string, i: number) => (
-                    <li key={i}>{point}</li>
-                  ))}
-                </ul>
-              </div>
+            <div
+              className="p-6 pt-5 wobbly-border shadow-lg"
+              style={{
+                background: 'linear-gradient(to bottom, #F0E8D8 0%, var(--paper) 8%)',
+                marginTop: '-2px',
+                borderTop: '1px dashed rgba(0,0,0,0.1)',
+              }}
+            >
+              <ul className="list-disc list-inside space-y-2 handwritten text-sm text-ink/70">
+                {exp.resumeBulletPoints.map((point: string, i: number) => (
+                  <li key={i}>{point}</li>
+                ))}
+              </ul>
+            </div>
           </motion.div>
         </div>
       </motion.div>

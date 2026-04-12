@@ -8,18 +8,21 @@
         "id": "gym",
         "title": "Gym & Fitness",
         "narrative": "Started training to be the next Mr. Olympia. Now I'm addicted to the pain. Send help.",
+        "details": "Current split: Push/Pull/Legs, 6 days a week. PR deadlift: 315 lbs. Still can't do a muscle-up though. Working on it.",
         "icon": "💪"
       },
       {
         "id": "llm",
         "title": "Local LLM Experiments",
         "narrative": "Running LLMs locally and experimenting with fine-tuning, RAG pipelines, and my own \"Claude-like\" coding assistant. Pretty sure my M4 is plotting revenge at this point.",
+        "details": "Stack: Ollama + llama.cpp on M4 Pro. Built a RAG pipeline over my own codebase. Fine-tuned a 7B model on geospatial Q&A. Inference at 40 tok/s.",
         "icon": "🤖"
       },
       {
         "id": "agents",
         "title": "Autonomous Agent Tinkering",
         "narrative": "Obsessed with fully autonomous agents like OpenClaw and ZeroClaw. Currently building simple versions for very specific goals. Next on the list: world domination. (Just kidding... unless?)",
+        "details": "Building task-specific agents with tool use and memory. Current project: an agent that monitors deployments and auto-fixes common failures. Uses Claude as the brain.",
         "icon": "🦞"
       }
     ],

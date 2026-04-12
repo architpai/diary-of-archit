@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
@@ -11,6 +12,7 @@ interface Hobby {
   id: string;
   title: string;
   narrative: string;
+  details?: string;
   icon: string;
 }
 
@@ -29,6 +31,111 @@ const hobbyColors: Record<string, { bg: string; accent: string }> = {
   llm: { bg: '#87CEEB', accent: '#4682B4' },
   agents: { bg: '#B39DDB', accent: '#7E57C2' },
 };
+
+function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese }: {
+  hobby: Hobby;
+  index: number;
+  shouldReduceMotion: boolean | null;
+  isJapanese: boolean;
+}) {
+  const [isFlipped, setIsFlipped] = useState(false);
+  const colors = hobbyColors[hobby.id] || { bg: '#FFEB3B', accent: '#FDD835' };
+  const rotation = (index - 1) * 3;
+
+  const cardShadow = '4px 4px 12px rgba(0,0,0,0.25), inset 0 -2px 4px rgba(0,0,0,0.1)';
+
+  return (
+    <motion.div
+      className="relative cursor-pointer"
+      style={{ perspective: '1000px', transform: `rotate(${rotation}deg)` }}
+      initial={shouldReduceMotion ? false : { opacity: 0, y: 50, rotate: rotation }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: index * 0.15 }}
+      onClick={() => setIsFlipped(!isFlipped)}
+    >
+      <motion.div
+        className="relative w-full"
+        style={{ transformStyle: 'preserve-3d' }}
+        animate={{ rotateY: isFlipped ? 180 : 0 }}
+        transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, type: 'spring', stiffness: 200, damping: 25 }}
+      >
+        {/* ── FRONT — stays in normal flow so it sizes the container ── */}
+        <div
+          className="p-6 flex flex-col items-center relative tape-corner"
+          style={{
+            background: `linear-gradient(135deg, ${colors.bg} 0%, ${colors.accent} 100%)`,
+            boxShadow: cardShadow,
+            backfaceVisibility: 'hidden',
+          }}
+        >
+          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 text-2xl drop-shadow-md">📌</div>
+
+          <motion.div
+            className="mb-4 flex justify-center"
+            animate={shouldReduceMotion ? undefined : { y: [0, -8, 0] }}
+            transition={shouldReduceMotion ? undefined : { duration: 2, repeat: Infinity, delay: index * 0.3, ease: 'easeInOut' }}
+          >
+            <Image
+              src={hobbyPoses[hobby.id] || '/avatar/waving_pose.webp'}
+              alt={`${hobby.title} pose`}
+              width={140}
+              height={175}
+              className="object-contain drop-shadow-lg"
+            />
+          </motion.div>
+
+          <h3
+            className="handwritten text-xl font-bold text-ink text-center mb-3"
+            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+          >
+            {hobby.icon} {hobby.title}
+          </h3>
+
+          <p
+            className="handwritten text-ink text-center leading-relaxed text-sm"
+            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+          >
+            {hobby.narrative}
+          </p>
+
+          <span className="mt-3 text-xs text-ink/50 handwritten">tap to flip</span>
+        </div>
+
+        {/* ── BACK — positioned via inset-0 inside the preserve-3d container ── */}
+        <div
+          className="p-6 flex flex-col items-center justify-center tape-corner"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            transform: 'rotateY(180deg)',
+            backfaceVisibility: 'hidden',
+            background: `linear-gradient(135deg, ${colors.accent} 0%, ${colors.bg} 100%)`,
+            boxShadow: cardShadow,
+          }}
+        >
+          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 text-2xl drop-shadow-md">📌</div>
+
+          <h3
+            className="handwritten text-xl font-bold text-ink text-center mb-4"
+            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+          >
+            {hobby.icon} The Details
+          </h3>
+
+          <p
+            className="handwritten text-ink text-center leading-relaxed text-sm"
+            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+          >
+            {hobby.details || hobby.narrative}
+          </p>
+
+          <span className="mt-4 text-xs text-ink/50 handwritten">tap to flip back</span>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
 
 export default function SneakPeek() {
   const { isSerious } = useSeriousMode();
@@ -71,80 +178,13 @@ export default function SneakPeek() {
       {/* Hobbies Grid */}
       <div className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
         {hobbies.map((hobby, index) => (
-          <motion.div
+          <HobbyCard
             key={hobby.id}
-            className="relative"
-            style={{ transform: `rotate(${(index - 1) * 3}deg)` }}
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 50, rotate: (index - 1) * 3 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: index * 0.15 }}
-          >
-            {/* Post-it Card */}
-            <motion.div
-              className="p-6 flex flex-col items-center relative tape-corner"
-              style={{
-                background: `linear-gradient(135deg, ${hobbyColors[hobby.id]?.bg || '#FFEB3B'} 0%, ${hobbyColors[hobby.id]?.accent || '#FDD835'} 100%)`,
-                boxShadow: '4px 4px 12px rgba(0,0,0,0.25), inset 0 -2px 4px rgba(0,0,0,0.1)',
-              }}
-              whileHover={
-                shouldReduceMotion
-                  ? undefined
-                  : {
-                      scale: 1.08,
-                      rotate: 0,
-                      boxShadow: '8px 8px 20px rgba(0,0,0,0.35)',
-                      zIndex: 20,
-                    }
-              }
-              transition={shouldReduceMotion ? undefined : { type: "spring", stiffness: 300 }}
-            >
-              {/* Pin decoration */}
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 text-2xl drop-shadow-md">
-                📌
-              </div>
-
-              {/* Avatar Pose */}
-              <motion.div
-                className="mb-4 flex justify-center"
-                animate={shouldReduceMotion ? undefined : { y: [0, -8, 0] }}
-                transition={
-                  shouldReduceMotion
-                    ? undefined
-                    : {
-                        duration: 2,
-                        repeat: Infinity,
-                        delay: index * 0.3,
-                        ease: "easeInOut",
-                      }
-                }
-              >
-                <Image
-                  src={hobbyPoses[hobby.id] || '/avatar/waving_pose.webp'}
-                  alt={`${hobby.title} pose`}
-                  width={140}
-                  height={175}
-                  className="object-contain drop-shadow-lg"
-                />
-              </motion.div>
-
-              {/* Title */}
-              <h3 
-                className="handwritten text-xl font-bold text-ink text-center mb-3"
-                style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-              >
-                {hobby.icon} {hobby.title}
-              </h3>
-
-              {/* Narrative */}
-              <p 
-                className="handwritten text-ink text-center leading-relaxed text-sm"
-                style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-              >
-                {hobby.narrative}
-              </p>
-            </motion.div>
-          </motion.div>
+            hobby={hobby}
+            index={index}
+            shouldReduceMotion={shouldReduceMotion}
+            isJapanese={isJapanese}
+          />
         ))}
       </div>
 
