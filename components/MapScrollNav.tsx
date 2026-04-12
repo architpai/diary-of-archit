@@ -121,7 +121,7 @@ export default function MapScrollNav() {
       </div>
 
       {/* Mobile: colored dots at bottom */}
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex md:hidden gap-2.5 px-4 py-2 rounded-full"
+      <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 flex md:hidden gap-2.5 px-4 py-2 rounded-full"
         style={{ backgroundColor: 'rgba(255,249,229,0.85)', boxShadow: '0 2px 10px rgba(0,0,0,0.15)' }}
       >
         {sections.map((s, i) => {

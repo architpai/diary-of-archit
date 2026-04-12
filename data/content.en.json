@@ -21,8 +21,8 @@
       {
         "id": "agents",
         "title": "Autonomous Agent Tinkering",
-        "narrative": "Obsessed with fully autonomous agents like OpenClaw and ZeroClaw. Currently building simple versions for very specific goals. Next on the list: world domination. (Just kidding... unless?)",
-        "details": "Building task-specific agents with tool use and memory. Current project: an agent that monitors deployments and auto-fixes common failures. Uses Claude as the brain.",
+        "narrative": "Obsessed with fully autonomous agents like OpenClaw, ZeroClaw, and Hermes Agents. Currently building simple versions for very specific goals. Next on the list: world domination. (Just kidding... unless?)",
+        "details": "Building task-specific agents with tool use and memory. Exploring Hermes Agents for multi-agent orchestration. Current project: an agent that monitors deployments and auto-fixes common failures. Uses Claude as the brain.",
         "icon": "🦞"
       }
     ],
