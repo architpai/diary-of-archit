@@ -15,6 +15,7 @@
   --correction: #E63946;
 
   /* Typography */
+  --font-display: 'Caveat Brush', cursive;
   --font-handwritten: 'Patrick Hand', cursive;
   --font-clean: 'Inter', system-ui, sans-serif;
   --font-jp-handwritten: 'Zen Kurenaido', sans-serif;
@@ -561,7 +562,7 @@ body {
 }
 
 .diary-title {
-  font-family: var(--font-handwritten);
+  font-family: var(--font-display);
   font-size: clamp(2rem, 8vw, 5rem);
   line-height: 1.1;
   letter-spacing: -0.02em;
