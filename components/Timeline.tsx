@@ -34,7 +34,7 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
 
   return (
       <motion.div
-        className={`flex flex-col md:flex-row items-center gap-8 ${
+        className={`flex flex-col md:flex-row items-center gap-4 md:gap-6 ${
           index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
         }`}
         initial={shouldReduceMotion ? false : { opacity: 0, y: 50 }}
@@ -180,7 +180,7 @@ export default function Timeline() {
       {!isSerious && <FloatingDoodles density="sparse" />}
       
       <motion.h2
-        className={`diary-title text-3xl md:text-4xl text-center mb-16 pt-16 ${!isSerious ? 'text-white drop-shadow-lg' : 'text-ink'}`}
+        className={`diary-title text-3xl md:text-4xl text-center mb-10 pt-16 ${!isSerious ? 'text-white drop-shadow-lg' : 'text-ink'}`}
         initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -229,97 +229,23 @@ export default function Timeline() {
             ))}
           </div>
         ) : (
-          // Fun winding map path for diary mode
+          // Fun diary-style timeline
           <div className="relative">
-            {/* Winding Path SVG */}
-            <svg
-              className="absolute left-1/2 top-0 -translate-x-1/2 pointer-events-none hidden md:block"
-              width="200"
-              height={`${experiences.length * 650 + 100}`}
-              viewBox={`0 0 200 ${experiences.length * 650 + 100}`}
-              style={{ zIndex: 0 }}
-            >
-              {/* Background path - using cubic Bezier for smooth curves */}
-              <path
-                d={(() => {
-                  const pathParts: string[] = [];
-                  const spacing = 650;
-                  for (let i = 0; i < experiences.length; i++) {
-                    const y = i * spacing + 150;
-                    const x = i % 2 === 0 ? 50 : 150;
-                    const nextY = (i + 1) * spacing + 150;
-                    const nextX = (i + 1) % 2 === 0 ? 50 : 150;
-                    
-                    // Use quadratic Bezier for curved joins at each checkpoint
-                    // Control point at midpoint horizontally to create smooth S-curve
-                    const midY = (y + nextY) / 2;
-                    const controlX = 100; // Center of path for smooth curve through midpoint
-                    
-                    if (i === 0) {
-                      pathParts.push(`M ${x} ${y}`);
-                    }
-                    if (i < experiences.length - 1) {
-                      // S-curve: first curve from current to center, then center to next
-                      const firstControlX = i % 2 === 0 ? 100 : 100;
-                      const firstControlY = y + spacing * 0.25;
-                      const midX = 100;
-                      const secondControlY = nextY - spacing * 0.25;
-                      pathParts.push(`C ${x} ${firstControlY} ${midX} ${midY - 50} ${midX} ${midY}`);
-                      pathParts.push(`C ${midX} ${midY + 50} ${nextX} ${secondControlY} ${nextX} ${nextY}`);
-                    }
-                  }
-                  return pathParts.join(' ');
-                })()}
-                stroke="#D4A373"
-                strokeWidth="8"
-                fill="none"
-                strokeLinecap="round"
-                strokeDasharray="15 10"
-                opacity="0.4"
+            {/* Simple vertical connecting line */}
+            <div className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 w-1 hidden md:block" style={{ zIndex: 0 }}>
+              {/* Background dashed line */}
+              <div
+                className="w-full h-full"
+                style={{
+                  backgroundImage: 'repeating-linear-gradient(to bottom, #D4A373 0, #D4A373 12px, transparent 12px, transparent 22px)',
+                  opacity: 0.35,
+                  borderRadius: '2px',
+                }}
               />
-
-              {/* Animated progress path - using cubic Bezier for smooth curves */}
-              <motion.path
-                d={(() => {
-                  const pathParts: string[] = [];
-                  const spacing = 650;
-                  for (let i = 0; i < experiences.length; i++) {
-                    const y = i * spacing + 150;
-                    const x = i % 2 === 0 ? 50 : 150;
-                    const nextY = (i + 1) * spacing + 150;
-                    const nextX = (i + 1) % 2 === 0 ? 50 : 150;
-                    
-                    // Use quadratic Bezier for curved joins at each checkpoint
-                    const midY = (y + nextY) / 2;
-                    
-                    if (i === 0) {
-                      pathParts.push(`M ${x} ${y}`);
-                    }
-                    if (i < experiences.length - 1) {
-                      // S-curve: first curve from current to center, then center to next
-                      const firstControlY = y + spacing * 0.25;
-                      const midX = 100;
-                      const secondControlY = nextY - spacing * 0.25;
-                      pathParts.push(`C ${x} ${firstControlY} ${midX} ${midY - 50} ${midX} ${midY}`);
-                      pathParts.push(`C ${midX} ${midY + 50} ${nextX} ${secondControlY} ${nextX} ${nextY}`);
-                    }
-                  }
-                  return pathParts.join(' ');
-                })()}
-                stroke="#FFCC33"
-                strokeWidth="8"
-                fill="none"
-                strokeLinecap="round"
-                strokeDasharray="15 10"
-                initial={{ pathLength: 0 }}
-                whileInView={{ pathLength: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: shouldReduceMotion ? 0 : 2, ease: "easeInOut" }}
-              />
-            </svg>
+            </div>
 
             {/* Experience Cards */}
-            <div className="relative z-10 space-y-32">
+            <div className="relative z-10 space-y-10">
               {experiences.map((exp, index) => (
                 <ExperienceCard key={exp.id} exp={exp} index={index} />
               ))}
