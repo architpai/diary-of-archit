@@ -27,7 +27,7 @@ export default function BlobDivider({
   return (
     <div 
       className={`blob-divider ${isTop ? 'blob-divider-top' : 'blob-divider-bottom'} ${className}`}
-      style={{ height: '80px' }}
+      style={{ height: '120px' }}
     >
       <motion.svg
         viewBox="0 0 1000 100"

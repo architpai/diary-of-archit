@@ -137,10 +137,43 @@ body {
   background: linear-gradient(135deg, #FFCC33 0%, #FFB700 100%);
   position: relative;
 }
+.section-yellow::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, rgba(255,249,229,0.25));
+  pointer-events: none;
+  z-index: 5;
+}
 
 .section-blue {
   background: linear-gradient(135deg, #4A90D9 0%, #2E5A8E 100%);
   position: relative;
+}
+.section-blue::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, rgba(255,249,229,0.2), transparent);
+  pointer-events: none;
+  z-index: 5;
+}
+.section-blue::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, rgba(255,249,229,0.25));
+  pointer-events: none;
+  z-index: 5;
 }
 
 .section-green {
@@ -184,7 +217,7 @@ body {
   position: absolute;
   left: 0;
   right: 0;
-  height: 100px;
+  height: 120px;
   overflow: hidden;
   pointer-events: none;
   z-index: 10;
