@@ -183,20 +183,20 @@ export default function Contact() {
             {t('contact.message')}
           </motion.p>
 
-          <div className="flex flex-col md:flex-row items-start gap-8">
+          <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-6 md:gap-10">
             {/* Namaste Avatar */}
             <motion.div
-              className="flex-shrink-0 self-center md:self-auto"
-              initial={shouldReduceMotion ? false : { opacity: 0, x: -50 }}
+              className="flex-shrink-0"
+              initial={shouldReduceMotion ? false : { opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8, ease: 'easeOut' }}
+              transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: 'easeOut' }}
             >
-              <Avatar pose="namaste" width={180} height={235} className="drop-shadow-lg" />
+              <Avatar pose="namaste" width={160} height={208} className="drop-shadow-lg" />
             </motion.div>
 
-            {/* 3 Contact Cards Grid */}
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* 3 Contact Cards — stacked vertically */}
+            <div className="w-full max-w-sm flex flex-col gap-4">
               {/* Email — yellow */}
               <ContactCard
                 href={`mailto:${content.contact.email}`}
