@@ -17,7 +17,7 @@ export default function Hero() {
       className={`min-h-[70vh] md:min-h-screen flex flex-col items-center justify-center px-4 py-12 md:py-20 relative overflow-hidden ${!isSerious ? "section-yellow" : ""}`}
     >
       {/* Floating Background Doodles */}
-      {!isSerious && <FloatingDoodles variant="code" density="normal" />}
+      {!isSerious && <FloatingDoodles density="normal" />}
 
       {/* Large corner doodles */}
       {!isSerious && (

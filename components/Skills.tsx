@@ -53,7 +53,7 @@ export default function Skills() {
       )}
       
       {/* Floating Background Doodles */}
-      {!isSerious && <FloatingDoodles variant="fun" density="sparse" />}
+      {!isSerious && <FloatingDoodles density="sparse" />}
       
       <motion.h2
         className={`text-3xl md:text-4xl text-center mb-16 pt-16 ${isSerious ? 'font-sans font-bold text-ink' : 'diary-title text-ink drop-shadow-lg'}`}

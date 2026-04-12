@@ -171,7 +171,7 @@ export default function Timeline() {
       )}
       
       {/* Floating Background Doodles */}
-      {!isSerious && <FloatingDoodles variant="tech" density="sparse" />}
+      {!isSerious && <FloatingDoodles density="sparse" />}
       
       <motion.h2
         className={`diary-title text-3xl md:text-4xl text-center mb-16 pt-16 ${!isSerious ? 'text-white drop-shadow-lg' : 'text-ink'}`}

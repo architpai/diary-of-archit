@@ -45,7 +45,7 @@ export default function SneakPeek() {
       <BlobDivider position="top" fillColor="var(--paper)" variant={3} />
       
       {/* Floating Background Doodles */}
-      <FloatingDoodles variant="fun" density="normal" />
+      <FloatingDoodles density="normal" />
 
       {/* Section Title */}
       <motion.div

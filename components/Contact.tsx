@@ -114,7 +114,7 @@ export default function Contact() {
       )}
 
       {/* Floating Background Doodles */}
-      {!isSerious && <FloatingDoodles variant="mixed" density="sparse" />}
+      {!isSerious && <FloatingDoodles density="sparse" />}
 
       {/* Wind Effect */}
       {!isSerious && <WindEffect />}

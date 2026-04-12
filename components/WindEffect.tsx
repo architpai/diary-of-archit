@@ -55,15 +55,17 @@ export default function WindEffect() {
           line.direction === 'ltr'
             ? { left: `${line.x}%` }
             : { right: `${line.x}%` };
+        // Hide every other line on mobile to reduce visual noise
+        const mobileHidden = i % 2 === 1 ? 'hidden md:block' : '';
 
         return (
           <svg
             key={i}
-            className={`absolute ${animClass}`}
+            className={`absolute ${animClass} ${mobileHidden}`}
             style={{
               top: `${line.y}%`,
               ...posStyle,
-              width: `${line.width}px`,
+              width: `clamp(${line.width * 0.6}px, ${line.width / 14.4}vw, ${line.width}px)`,
               height: '14px',
               transform: `rotate(${line.angle}deg)`,
               animationDuration: `${line.duration}s`,

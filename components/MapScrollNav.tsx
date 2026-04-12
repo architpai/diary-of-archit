@@ -21,31 +21,48 @@ interface Section {
    Jolly Roger marking the treasure (contact section).
    ═══════════════════════════════════════════════════════════════ */
 
-// Landmark coordinates in 140×410 SVG space
+// ── Map layout constants ──
+// All coordinates are in SVG viewBox space (140 x 410)
+const SVG_WIDTH = 140;
+const SVG_HEIGHT = 410;
+// Container adds padding around the SVG; these offsets position the avatar
+// in CSS pixels relative to the container's top-left corner.
+const CONTAINER_PAD_LEFT = 8;   // px padding before SVG
+const CONTAINER_PAD_TOP = 48;   // px offset for compass rose + padding above SVG
+const AVATAR_HALF_W = 22;       // half the avatar image width, for centering
+const CSS_TO_SVG_X = 155 / SVG_WIDTH; // container content width / viewBox width
+
+// Landmark coordinates in SVG space
 const LANDMARKS = [
-  { x: 70, y: 40 },   // Home — top center
-  { x: 108, y: 130 }, // Journey — right
-  { x: 32, y: 215 },  // Skills — left
-  { x: 102, y: 295 }, // Peek — right
-  { x: 70, y: 378 },  // Treasure — bottom center
+  { x: 70,  y: 40,  key: 'home'     },  // top center
+  { x: 108, y: 130, key: 'journey'  },  // right
+  { x: 32,  y: 215, key: 'skills'   },  // left
+  { x: 102, y: 295, key: 'peek'     },  // right
+  { x: 70,  y: 378, key: 'treasure' },  // bottom center
 ];
 
-// Hand-drawn path — irregular curves with personality
+// Derive interpolation segments from consecutive landmark pairs
+const SEGMENTS = LANDMARKS.slice(0, -1).map((lm, i) => {
+  const next = LANDMARKS[i + 1];
+  return [lm.x, lm.y, next.x, next.y] as [number, number, number, number];
+});
+
+// Hand-drawn path connecting landmarks with irregular curves
 const MAP_PATH = [
-  'M 70 40',
-  'C 72 60, 85 75, 92 90',     // gentle right drift
+  `M ${LANDMARKS[0].x} ${LANDMARKS[0].y}`,
+  'C 72 60, 85 75, 92 90',       // gentle right drift
   'C 100 105, 112 115, 108 130', // arrive at journey
-  'C 104 148, 75 165, 58 180', // sweep left
-  'C 42 195, 30 205, 32 215',  // arrive at skills
-  'C 34 230, 50 248, 68 260',  // curve back right
-  'C 88 274, 104 285, 102 295', // arrive at peek
-  'C 100 310, 90 330, 82 348', // descend
-  'C 76 360, 72 370, 70 378',  // arrive at treasure
+  'C 104 148, 75 165, 58 180',   // sweep left
+  'C 42 195, 30 205, 32 215',    // arrive at skills
+  'C 34 230, 50 248, 68 260',    // curve back right
+  'C 88 274, 104 285, 102 295',  // arrive at peek
+  'C 100 310, 90 330, 82 348',   // descend
+  'C 76 360, 72 370, 70 378',    // arrive at treasure
 ].join(' ');
 
-// Ghost path — slightly offset for double-stroke hand-drawn effect
+// Ghost path — ~2px offset for double-stroke hand-drawn effect
 const MAP_PATH_GHOST = [
-  'M 72 41',
+  `M ${LANDMARKS[0].x + 2} ${LANDMARKS[0].y + 1}`,
   'C 74 61, 87 76, 94 91',
   'C 102 106, 113 117, 110 131',
   'C 106 149, 77 166, 60 181',
@@ -55,14 +72,6 @@ const MAP_PATH_GHOST = [
   'C 102 311, 92 331, 84 349',
   'C 78 361, 74 371, 72 379',
 ].join(' ');
-
-// Avatar path interpolation segments
-const SEGMENTS: [number, number, number, number][] = [
-  [70, 40, 108, 130],
-  [108, 130, 32, 215],
-  [32, 215, 102, 295],
-  [102, 295, 70, 378],
-];
 
 function getAvatarPosition(progress: number) {
   const p = Math.max(0, Math.min(1, progress));
@@ -233,15 +242,14 @@ const ICON_MAP: Record<string, LandmarkIconComponent> = {
   home: HomeIcon, journey: ScrollIcon, skills: BoltIcon,
   peek: SpyglassIcon, treasure: StrawHatSkull,
 };
-const ICON_KEYS = ['home', 'journey', 'skills', 'peek', 'treasure'];
 
 /* ── Compass Rose ── */
 function CompassRose({ rm }: { rm: boolean | null }) {
   return (
     <motion.svg
       width="34" height="34" viewBox="0 0 34 34" className="mx-auto mb-1"
-      animate={rm ? undefined : { rotate: 360 }}
-      transition={rm ? undefined : { duration: 30, repeat: Infinity, ease: 'linear' }}
+      animate={rm === false ? { rotate: 360 } : undefined}
+      transition={rm === false ? { duration: 30, repeat: Infinity, ease: 'linear' } : undefined}
     >
       <g transform="translate(17,17)">
         <circle r="15" fill="none" stroke="#8B735530" strokeWidth="0.5" />
@@ -386,7 +394,7 @@ export default function MapScrollNav() {
 
         <CompassRose rm={shouldReduceMotion} />
 
-        <svg width="140" height="410" viewBox="0 0 140 410" className="mx-auto" style={{ overflow: 'visible' }}>
+        <svg width={SVG_WIDTH} height={SVG_HEIGHT} viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`} className="mx-auto" style={{ overflow: 'visible' }}>
           <MapDecorations />
 
           {/* Ghost path — slightly offset for double-stroke hand-drawn effect */}
@@ -410,11 +418,10 @@ export default function MapScrollNav() {
           {LANDMARKS.map((lm, index) => {
             const isActive = activeSection === index;
             const isTreasure = index === 4;
-            const key = ICON_KEYS[index];
-            const Icon = ICON_MAP[key];
+            const Icon = ICON_MAP[lm.key];
 
             return (
-              <g key={key}>
+              <g key={lm.key}>
                 {/* Hit area */}
                 <circle cx={lm.x} cy={lm.y} r={22} fill="transparent" className="cursor-pointer" onClick={() => scrollToSection(index)} />
 
@@ -451,8 +458,8 @@ export default function MapScrollNav() {
         <motion.div
           className="absolute pointer-events-none"
           style={{
-            left: `${8 + avatar.x * (155 / 140) - 22}px`,
-            top: `${48 + avatar.y}px`,
+            left: `${CONTAINER_PAD_LEFT + avatar.x * CSS_TO_SVG_X - AVATAR_HALF_W}px`,
+            top: `${CONTAINER_PAD_TOP + avatar.y}px`,
           }}
           animate={shouldReduceMotion ? undefined : { rotate: ['-3deg', '3deg', '-3deg'] }}
           transition={shouldReduceMotion ? undefined : { duration: 0.5, repeat: Infinity, ease: 'easeInOut' }}

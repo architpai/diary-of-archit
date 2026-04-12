@@ -19,7 +19,6 @@ interface Doodle {
 }
 
 interface FloatingDoodlesProps {
-  variant?: 'code' | 'tech' | 'fun' | 'mixed';
   density?: 'sparse' | 'normal' | 'dense';
   className?: string;
 }
@@ -40,13 +39,9 @@ function generateDoodles(density: 'sparse' | 'normal' | 'dense'): Doodle[] {
 }
 
 export default function FloatingDoodles({
-  variant = 'mixed',
   density = 'normal',
   className = '',
 }: FloatingDoodlesProps) {
-  // variant is kept for API compatibility but all variants now render tech stickers
-  void variant;
-
   const { isSerious } = useSeriousMode();
   const shouldReduceMotion = useReducedMotion();
   const [doodles, setDoodles] = useState<Doodle[]>([]);

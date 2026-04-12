@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 
 // Single consistent star path for all variants
@@ -11,7 +11,8 @@ interface StickerStarsProps {
   color: string;
 }
 
-// Convert skill level (0-100) to stars (1-5)
+// Intentionally coarse mapping: stars convey general proficiency, not false precision.
+// 5★ = expert (90+), 4★ = strong (80+), 3★ = proficient (70+), 2★ = familiar (50+), 1★ = learning
 export function levelToStars(level: number): number {
   if (level >= 90) return 5;
   if (level >= 80) return 4;
@@ -21,26 +22,18 @@ export function levelToStars(level: number): number {
 }
 
 
-// Lighten a hex color by mixing with white
-function lightenColor(hex: string, amount: number): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  const nr = Math.round(r + (255 - r) * amount);
-  const ng = Math.round(g + (255 - g) * amount);
-  const nb = Math.round(b + (255 - b) * amount);
-  return `rgb(${nr},${ng},${nb})`;
+function parseHex(hex: string): [number, number, number] {
+  return [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
 }
 
-// Darken a hex color by scaling toward black
+function lightenColor(hex: string, amount: number): string {
+  const [r, g, b] = parseHex(hex);
+  return `rgb(${Math.round(r + (255 - r) * amount)},${Math.round(g + (255 - g) * amount)},${Math.round(b + (255 - b) * amount)})`;
+}
+
 function darkenColor(hex: string, amount: number): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  const nr = Math.round(r * (1 - amount));
-  const ng = Math.round(g * (1 - amount));
-  const nb = Math.round(b * (1 - amount));
-  return `rgb(${nr},${ng},${nb})`;
+  const [r, g, b] = parseHex(hex);
+  return `rgb(${Math.round(r * (1 - amount))},${Math.round(g * (1 - amount))},${Math.round(b * (1 - amount))})`;
 }
 
 type VisualStyle = 'glossy' | 'polka' | 'striped' | 'metallic' | 'sparkle';
@@ -177,6 +170,7 @@ function UnfilledStar() {
   );
 }
 
+// 96% glossy, 4% fun variant. 15% chance the last star is extra tilted/small (hand-placed feel).
 function generateStars(rating: number) {
   const hasTrailingImperfection = Math.random() > 0.85;
   return Array.from({ length: 5 }, (_, i) => {
