@@ -20,17 +20,19 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   // Load from localStorage on mount
   useEffect(() => {
-    const stored = localStorage.getItem('diary-language');
-    if (stored === 'jp') {
-      setLanguageState('ja');
-      setTargetLanguage('ja');
-      localStorage.setItem('diary-language', 'ja');
-      return;
-    }
-    if (stored === 'ja' || stored === 'en') {
-      setLanguageState(stored as Language);
-      setTargetLanguage(stored as Language);
-    }
+    queueMicrotask(() => {
+      const stored = localStorage.getItem('diary-language');
+      if (stored === 'jp') {
+        setLanguageState('ja');
+        setTargetLanguage('ja');
+        localStorage.setItem('diary-language', 'ja');
+        return;
+      }
+      if (stored === 'ja' || stored === 'en') {
+        setLanguageState(stored);
+        setTargetLanguage(stored);
+      }
+    });
   }, []);
 
   const setLanguage = (lang: Language) => {

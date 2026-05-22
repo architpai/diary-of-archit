@@ -1,17 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { useState } from 'react';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
-
-interface NavItem {
-  id: string;
-  label: string;
-  icon: string;
-  color: string;
-  splashColor: string;
-}
 
 const getNavItems = (t: (key: string) => string) => [
   { id: 'hero', label: t('nav.home'), icon: '🏠', color: '#FFEB3B', splashColor: '#FFD700' },
@@ -24,15 +14,12 @@ const getNavItems = (t: (key: string) => string) => [
 export default function PostItNav() {
   const { isSerious } = useSeriousMode();
   const { t, content } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false);
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const navItems = getNavItems(t);
 
   const scrollTo = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
-      setIsOpen(false);
     }
   };
 
@@ -61,4 +48,3 @@ export default function PostItNav() {
       </nav>
     );
 }
-

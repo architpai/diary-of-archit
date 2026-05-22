@@ -41,18 +41,30 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese }: {
   const [isFlipped, setIsFlipped] = useState(false);
   const colors = hobbyColors[hobby.id] || { bg: '#FFEB3B', accent: '#FDD835' };
   const rotation = (index - 1) * 3;
+  const toggleFlipped = () => setIsFlipped((current) => !current);
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      toggleFlipped();
+    }
+  };
 
   const cardShadow = '4px 4px 12px rgba(0,0,0,0.25), inset 0 -2px 4px rgba(0,0,0,0.1)';
 
   return (
     <motion.div
-      className="relative cursor-pointer"
+      className="relative cursor-pointer rounded-lg focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-white"
       style={{ perspective: '1000px', transform: `rotate(${rotation}deg)` }}
       initial={shouldReduceMotion ? false : { opacity: 0, y: 50, rotate: rotation }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: index * 0.15 }}
-      onClick={() => setIsFlipped(!isFlipped)}
+      onClick={toggleFlipped}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+      aria-pressed={isFlipped}
+      aria-label={`${hobby.title}: ${isFlipped ? 'show summary' : 'show details'}`}
     >
       <motion.div
         className="relative w-full"

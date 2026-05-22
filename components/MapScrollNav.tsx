@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -32,13 +32,13 @@ export default function MapScrollNav() {
   const shouldReduceMotion = useReducedMotion();
   const [activeSection, setActiveSection] = useState(0);
 
-  const sections: Section[] = [
+  const sections: Section[] = useMemo(() => [
     { id: 'hero', label: t('nav.home') },
     { id: 'timeline', label: t('nav.journey') },
     { id: 'skills', label: t('nav.skills') },
     { id: 'sneakpeek', label: t('nav.peek') },
     { id: 'contact', label: t('nav.contact') },
-  ];
+  ], [t]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -51,7 +51,7 @@ export default function MapScrollNav() {
     handleScroll();
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [sections]);
 
   const scrollToSection = (i: number) => {
     const el = document.getElementById(sections[i].id);
@@ -64,7 +64,7 @@ export default function MapScrollNav() {
         <div className="flex flex-col gap-3">
           {sections.map((s, i) => (
             <button key={s.id} onClick={() => scrollToSection(i)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${activeSection === i ? 'bg-gray-800 w-10' : 'bg-gray-300 hover:bg-gray-500'}`}
+              className={`h-3 rounded-full transition-[width,background-color] duration-300 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ink ${activeSection === i ? 'bg-gray-800 w-10' : 'bg-gray-300 hover:bg-gray-500 w-3'}`}
               title={s.label} aria-label={s.label} />
           ))}
         </div>
@@ -121,7 +121,7 @@ export default function MapScrollNav() {
       </div>
 
       {/* Mobile: colored dots at bottom */}
-      <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 flex md:hidden gap-2.5 px-4 py-2 rounded-full"
+      <div className="fixed top-3 left-1/2 -translate-x-1/2 z-50 flex md:hidden gap-2.5 px-4 py-2 rounded-full"
         style={{ backgroundColor: 'rgba(255,249,229,0.85)', boxShadow: '0 2px 10px rgba(0,0,0,0.15)' }}
       >
         {sections.map((s, i) => {
@@ -131,7 +131,7 @@ export default function MapScrollNav() {
             <button
               key={s.id}
               onClick={() => scrollToSection(i)}
-              className="transition-all duration-300"
+              className="transition-[width,opacity,background-color] duration-300 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ink"
               style={{
                 width: isActive ? '24px' : '10px',
                 height: '10px',

@@ -11,11 +11,9 @@ import MapScrollNav from "@/components/MapScrollNav";
 import LanguageToggle from "@/components/LanguageToggle";
 import DiaryFooter from "@/components/DiaryFooter";
 import { useSeriousMode } from "@/contexts/SeriousModeContext";
-import { useTranslation } from "@/hooks/useTranslation";
 
 export default function Home() {
   const { isSerious } = useSeriousMode();
-  const { t, isJapanese } = useTranslation();
 
   return (
     <main className={`notebook-paper min-h-screen ${isSerious ? 'pt-16' : ''}`}>

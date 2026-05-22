@@ -20,7 +20,7 @@ export default function SeriousModeToggle() {
   return (
     <button
       onClick={handleToggle}
-      className={`print:hidden fixed bottom-6 right-6 z-[9999] px-4 py-3 rounded-lg transition-all duration-300 font-sans text-sm font-medium shadow-lg isolate ${
+      className={`print:hidden fixed top-14 right-4 md:top-auto md:bottom-6 md:right-6 z-[9999] px-3 py-2 md:px-4 md:py-3 rounded-lg transition-[background-color,color,border-color,box-shadow,transform] duration-300 font-sans text-sm font-medium shadow-lg isolate focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ink ${
         isOnResume ? '' : 'wobble-hover'
       }`}
       style={{
@@ -36,14 +36,16 @@ export default function SeriousModeToggle() {
           className="flex items-center gap-2"
           style={isJapanese ? { fontFamily: 'var(--font-jp-clean)' } : {}}
         >
-          {t('mode.fun')}
+          <span aria-hidden="true" className="md:hidden">🎨</span>
+          <span className="hidden md:inline">{t('mode.fun')}</span>
         </span>
       ) : (
         <span 
           className="flex items-center gap-2 text-lg" 
           style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : { fontFamily: "'Patrick Hand', cursive" }}
         >
-          {t('mode.serious')}
+          <span aria-hidden="true" className="md:hidden">👔</span>
+          <span className="hidden md:inline">{t('mode.serious')}</span>
         </span>
       )}
     </button>

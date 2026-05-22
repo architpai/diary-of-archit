@@ -1,7 +1,7 @@
 {
   "personal": {
     "name": "Archit Pai",
-    "title": "Full-Stack Engineer | Geospatial Systems",
+    "title": "Full-Stack Engineer | Maps, Backend & Cloud",
     "tagline": "Building scalable systems through steady experimentation",
     "hobbies": [
       {
@@ -36,9 +36,9 @@
       "company": "Stealth Startup",
       "diaryNarrative": "Finally got promoted. Mom was so proud she called all the relatives. All of them. My phone didn't stop ringing for a week. Worth it.",
       "resumeBulletPoints": [
-        "First engineering hire; built and scaled the company's geospatial stack from zero to production, spanning map rendering, routing, analytics, positioning, and data pipelines",
+        "First engineering hire; helped build and scale the company's core geospatial product stack from early implementation to production across map rendering, routing, analytics, positioning, and data pipelines",
         "Architected and owned the hybrid map tile delivery system, balancing real-time updates, database load, and infrastructure cost for high-density geospatial datasets",
-        "Led the evolution from static to dynamic to hybrid tile generation, benchmarking each approach and pivoting mid-implementation to a cache-layered architecture to avoid long-term scalability failures",
+        "Drove the implementation from static to dynamic to hybrid tile generation, benchmarking each approach and pivoting mid-implementation to a cache-layered architecture to avoid long-term scalability failures",
         "Designed trigger-based tile regeneration and cache invalidation across cold storage and Redis hot cache, enabling near-real-time updates while preventing low-zoom regeneration cascades",
         "Solved low-zoom performance bottlenecks involving millions of features by introducing category-aware zoom visibility and locality-based invalidation strategies",
         "Served as technical lead for the tile pipeline, defining architectural conventions, reviewing PRs, and mentoring two mid-level engineers end-to-end"
@@ -54,10 +54,10 @@
       "diaryNarrative": "Discovered the magic of PostGIS. Spent way too many late nights debugging polygons with holes in all the wrong places. Geometry broke me before I learned to tame it.",
       "resumeBulletPoints": [
         "Founding member of a new geospatial platform team, building systems from early proof-of-concept to production deployments serving enterprise clients",
-        "Designed and implemented core GIS infrastructure using PostgreSQL/PostGIS, vector tiles, and OSM data, developing deep expertise in spatial data modeling and querying",
+        "Designed and implemented core GIS infrastructure using PostgreSQL/PostGIS, vector tiles, and OSM data, building strong practical experience in spatial data modeling and querying",
         "Built end-to-end web mapping applications delivering POI search, indoor wayfinding, and location data management",
-        "Transitioned toward backend and infrastructure ownership as the team scaled, leading API design, database architecture, and Azure deployments while reviewing frontend contributions",
-        "Led development of an indoor geofencing system for a major automotive client PoC under production-grade timelines and constraints"
+        "Transitioned toward backend and infrastructure ownership as the team scaled, contributing to API design, database architecture, and Azure deployments while reviewing frontend contributions",
+        "Built key parts of an indoor geofencing system for a major automotive client PoC under production-grade timelines and constraints"
       ],
       "isResumeWorthy": true,
       "doodleType": "coding"
@@ -98,7 +98,7 @@
   "skills": [
     {
       "name": "Geospatial Systems & Mapping",
-      "level": 92,
+      "level": 88,
       "category": "domain"
     },
     {
@@ -113,12 +113,12 @@
     },
     {
       "name": "MapLibre",
-      "level": 92,
+      "level": 88,
       "category": "mapping"
     },
     {
       "name": "PostgreSQL (PostGIS)",
-      "level": 90,
+      "level": 86,
       "category": "database"
     },
     {
@@ -128,7 +128,7 @@
     },
     {
       "name": "React",
-      "level": 92,
+      "level": 88,
       "category": "frontend"
     },
     {
@@ -173,7 +173,7 @@
     },
     {
       "name": "System Design & Microservices",
-      "level": 90,
+      "level": 82,
       "category": "architecture"
     }
   ],

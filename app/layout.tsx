@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Caveat_Brush, Inter, Noto_Sans_JP, Patrick_Hand, Zen_Kurenaido } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -9,6 +9,29 @@ import LanguageHtmlWrapper from "@/components/LanguageHtmlWrapper";
 
 const inter = Inter({
   variable: "--font-clean",
+  subsets: ["latin"],
+});
+
+const caveatBrush = Caveat_Brush({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const patrickHand = Patrick_Hand({
+  variable: "--font-handwritten",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const zenKurenaido = Zen_Kurenaido({
+  variable: "--font-jp-handwritten",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const notoSansJP = Noto_Sans_JP({
+  variable: "--font-jp-clean",
   subsets: ["latin"],
 });
 
@@ -31,15 +54,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link 
-          href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Patrick+Hand&family=Zen+Kurenaido&family=Noto+Sans+JP:wght@400;500;700&display=swap" 
-          rel="stylesheet" 
-        />
-      </head>
-      <body className={`${inter.variable} antialiased`}>
+      <body className={`${inter.variable} ${caveatBrush.variable} ${patrickHand.variable} ${zenKurenaido.variable} ${notoSansJP.variable} antialiased`}>
         <LanguageProvider>
           <LanguageHtmlWrapper />
           <SeriousModeProvider>

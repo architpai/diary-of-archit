@@ -1,7 +1,6 @@
 'use client';
 
 import { useReducedMotion } from 'framer-motion';
-import { useEffect, useState } from 'react';
 
 interface WindLine {
   id: number;
@@ -38,13 +37,8 @@ const PATHS: [string, string][] = [
 
 export default function WindEffect() {
   const shouldReduceMotion = useReducedMotion();
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (shouldReduceMotion || !mounted) return null;
+  if (shouldReduceMotion) return null;
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">

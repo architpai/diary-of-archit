@@ -1,9 +1,10 @@
 import type { SVGProps } from 'react';
+import { useId } from 'react';
 
 type StickerProps = SVGProps<SVGSVGElement> & { size?: number };
 
 function StickerWrap({ children, size = 48, className = '', ...props }: StickerProps & { children: React.ReactNode }) {
-  const id = `sticker-${Math.random().toString(36).slice(2, 8)}`;
+  const id = `sticker-${useId().replace(/:/g, '')}`;
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" className={className} {...props}>
       <defs>

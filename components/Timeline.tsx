@@ -30,7 +30,14 @@ interface Experience {
 function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
   const shouldReduceMotion = useReducedMotion();
   const [isExpanded, setIsExpanded] = useState(false);
-  const { t, isJapanese } = useTranslation();
+  const { isJapanese } = useTranslation();
+  const toggleExpanded = () => setIsExpanded((current) => !current);
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      toggleExpanded();
+    }
+  };
 
   return (
       <motion.div
@@ -84,9 +91,14 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
         transition={shouldReduceMotion ? undefined : { type: "spring", stiffness: 300 }}
       >
         <div
-          className="relative cursor-pointer overflow-hidden"
+          className="relative cursor-pointer overflow-hidden rounded-lg focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ink"
           style={{ perspective: '1200px' }}
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={toggleExpanded}
+          onKeyDown={handleKeyDown}
+          role="button"
+          tabIndex={0}
+          aria-expanded={isExpanded}
+          aria-label={`${exp.professionalTitle} at ${exp.company}`}
         >
           {/* ── TOP HALF — always visible (diary side) ── */}
           <div className="relative p-6 wobbly-border bg-paper/95 tape-corner shadow-xl">
@@ -130,6 +142,7 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
           <motion.div
             initial={false}
             animate={{
+              height: isExpanded ? 'auto' : 0,
               rotateX: isExpanded ? 0 : -90,
               opacity: isExpanded ? 1 : 0,
             }}
@@ -140,6 +153,7 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
             }
             style={{
               transformOrigin: 'top center',
+              overflow: 'hidden',
             }}
           >
             <div

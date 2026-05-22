@@ -4,7 +4,7 @@
     "of": "の",
     "name": "日記",
     "subtitle": "作って、壊して、たまに直す。",
-    "subtitle_role": "フルスタックエンジニア | 地理空間システム",
+    "subtitle_role": "地図・バックエンドシステム・クラウドアプリを横断して作るフルスタックエンジニア",
     "scroll": "↓ スクロールして続きを見る ↓"
   },
   "timeline": {
@@ -48,7 +48,7 @@
   },
   "resume": {
     "summary_title": "職務要約",
-    "summary_text": "地理空間アプリケーション、クラウドネイティブソリューション、最新のWeb技術を専門とするエンジニア。Azure、PostGIS、MapLibre、React/Next.jsを活用したエンタープライズグレードのアプリケーション開発において実績があります。",
+    "summary_text": "地理空間Webアプリケーション、バックエンドサービス、クラウドデプロイの開発経験を持つフルスタックエンジニア。React/Next.js、PostGIS、MapLibre、Node.js、Azureを強みとし、アーキテクチャ、パフォーマンス、本番運用の信頼性に関する担当領域を広げています。",
     "experience_title": "職務経歴",
     "skills_title": "技術スキル",
     "print_button": "🖨️ 印刷 / PDFで保存",

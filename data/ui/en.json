@@ -4,7 +4,7 @@
     "of": "of a",
     "name": "ARCHIT",
     "subtitle": "I build things, break things, and occasionally fix them.",
-    "subtitle_role": "Full-Stack Engineer | Geospatial Systems",
+    "subtitle_role": "Full-Stack Engineer working across maps, backend systems, and cloud apps",
     "scroll": "↓ scroll for more ↓"
   },
   "timeline": {
@@ -48,7 +48,7 @@
   },
   "resume": {
     "summary_title": "PROFESSIONAL SUMMARY",
-    "summary_text": "Experienced developer specializing in geospatial applications, cloud-native solutions, and modern web technologies. Proven track record of delivering enterprise-grade applications using Azure, PostGIS, MapLibre, and React/Next.js stack.",
+    "summary_text": "Full-stack engineer with hands-on experience building geospatial web applications, backend services, and cloud deployments. Strong in React/Next.js, PostGIS, MapLibre, Node.js, and Azure, with growing ownership across architecture, performance, and production reliability.",
     "experience_title": "PROFESSIONAL EXPERIENCE",
     "skills_title": "TECHNICAL SKILLS",
     "print_button": "🖨️ Print / Save as PDF",

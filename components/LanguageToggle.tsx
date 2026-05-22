@@ -15,9 +15,10 @@ export default function LanguageToggle() {
       <button
         onClick={toggleLanguage}
         disabled={isTransitioning}
-        className={`wobbly-border bg-paper/95 backdrop-blur-sm px-2 py-1 md:px-4 md:py-2 shadow-lg transition-all ${
+        className={`wobbly-border bg-paper/95 backdrop-blur-sm px-2 py-1 md:px-4 md:py-2 shadow-lg transition-[opacity,transform,box-shadow] focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ink ${
           isTransitioning ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 cursor-pointer'
         }`}
+        aria-label={`Switch language to ${language === 'en' ? 'Japanese' : 'English'}`}
       >
         <div className="flex items-center gap-1 md:gap-2">
           <span 
