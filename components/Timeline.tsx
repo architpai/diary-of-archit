@@ -45,53 +45,18 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
         id={exp.id}
         data-map-waypoint={EXPERIENCE_PIN[exp.id]}
         data-waypoint-side={index % 2 === 0 ? 'right' : 'left'}
-        className={`flex flex-col md:flex-row items-center gap-4 md:gap-6 pointer-events-auto ${
-          index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
+        className={`flex flex-col items-center md:flex-row pointer-events-auto ${
+          index % 2 === 0 ? 'md:justify-end' : 'md:justify-start'
         }`}
         initial={shouldReduceMotion ? false : { opacity: 0, y: 50 }}
         whileInView={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 0.2 }}
       >
-      {/* Map Pin Landmark */}
+      {/* Experience Card — narrow and docked to the edge so the map
+          (and the marker we just flew to) stays visible beside it */}
       <motion.div
-        className="relative flex-shrink-0"
-        whileHover={shouldReduceMotion ? undefined : { scale: 1.1, rotate: 10 }}
-        transition={shouldReduceMotion ? undefined : { type: "spring", stiffness: 300 }}
-      >
-        {/* Pin shadow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-20 bg-yellow-400/20 rounded-full blur-xl" />
-    
-        {/* Pin with avatar */}
-        <div className="relative w-24 h-24 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full border-4 border-white shadow-2xl flex items-center justify-center overflow-hidden">
-          <div className="w-full h-full flex items-center justify-center scale-75">
-            <Image
-              src={doodlePoses[exp.doodleType] || doodlePoses.coding}
-              alt={`${exp.doodleType} doodle`}
-              width={80}
-              height={104}
-              className="object-contain"
-            />
-          </div>
-        </div>
-    
-        {/* Pin pointer */}
-        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[20px] border-l-transparent border-r-transparent border-t-yellow-600" />
-    
-        {/* Year badge */}
-        <motion.div
-          className="absolute -top-2 -right-2 text-white px-3 py-1 rounded-full shadow-lg"
-          style={{ backgroundColor: pinColor }}
-          animate={shouldReduceMotion ? undefined : { rotate: [0, -5, 5, 0] }}
-          transition={shouldReduceMotion ? undefined : { duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <span className="handwritten text-sm font-bold">{exp.date}</span>
-        </motion.div>
-      </motion.div>
-
-      {/* Experience Card */}
-      <motion.div
-        className="flex-1 max-w-xl"
+        className="w-full md:w-[26rem] lg:w-[30rem] flex-none"
         whileHover={shouldReduceMotion ? undefined : { scale: 1.02, rotate: index % 2 === 0 ? 1 : -1 }}
         transition={shouldReduceMotion ? undefined : { type: "spring", stiffness: 300 }}
       >
@@ -107,8 +72,28 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
         >
           {/* ── TOP HALF — always visible (diary side) ── */}
           <div className="relative p-6 wobbly-border bg-paper/95 tape-corner shadow-xl">
-            {/* Header */}
-            <div className="mb-4">
+            {/* Header — avatar pose + year tucked into the corner */}
+            <div className="mb-4 relative pr-20">
+              <div className="absolute top-0 right-0 flex flex-col items-center">
+                <div
+                  className="w-14 h-14 rounded-full border-[3px] bg-gradient-to-br from-yellow-300 to-yellow-500 overflow-hidden flex items-center justify-center"
+                  style={{ borderColor: pinColor }}
+                >
+                  <Image
+                    src={doodlePoses[exp.doodleType] || doodlePoses.coding}
+                    alt={`${exp.doodleType} doodle`}
+                    width={44}
+                    height={57}
+                    className="object-contain mt-2"
+                  />
+                </div>
+                <span
+                  className="handwritten text-xs font-bold text-white px-2 py-0.5 rounded-full -mt-2 shadow"
+                  style={{ backgroundColor: pinColor }}
+                >
+                  {exp.date}
+                </span>
+              </div>
               <h3
                 className="handwritten text-xl md:text-2xl font-bold text-ink"
                 style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
@@ -237,7 +222,7 @@ export default function Timeline() {
         </motion.h2>
       )}
 
-      <div className="relative max-w-5xl mx-auto px-4">
+      <div className="relative max-w-7xl mx-auto px-4 md:px-10">
         {isSerious ? (
           // Clean vertical timeline for serious mode
           <div className="timeline max-w-4xl">
@@ -284,7 +269,7 @@ export default function Timeline() {
               <div key={exp.id}>
                 {index > 0 && (
                   <div
-                    className="route-leg py-10 md:py-16 text-base md:text-lg"
+                    className="route-leg py-16 md:py-28 text-base md:text-lg"
                     style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
                   >
                     {t(`timeline.leg_${index}`)}

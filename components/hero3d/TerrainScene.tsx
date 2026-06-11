@@ -77,8 +77,9 @@ function Terrain({ reduceMotion }: { reduceMotion: boolean }) {
 // Camera framing when a pin's timeline card is centred in the viewport:
 // low and close so the flight between cities really pans across the map.
 const PIN_VIEW_OFFSET = new THREE.Vector3(0, 1.35, 1.75);
-// How far the look-at point shifts so the pin isn't hidden under the card.
-const SIDE_SHIFT = 0.7;
+// Slight look-at shift away from the card's side — the card is docked to
+// the screen edge, so the marker only needs a nudge to sit clear of it.
+const SIDE_SHIFT = 0.3;
 
 function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
   const { camera } = useThree();
@@ -176,7 +177,9 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
         if (!view) continue;
         const rect = el.getBoundingClientRect();
         const center = rect.top + rect.height / 2;
-        let w = 1 - Math.abs(center - vh * 0.5) / (vh * 0.85);
+        // Narrow window: only the card actually near the viewport centre
+        // drives the camera, so neighbouring cards can't drag the frame.
+        let w = 1 - Math.abs(center - vh * 0.5) / (vh * 0.55);
         if (w <= 0) continue;
         w = w * w * (3 - 2 * w); // smoothstep
 
@@ -186,7 +189,7 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
           // Shift the look-at point so the marker shows beside the card,
           // not underneath it (cards alternate sides on desktop).
           if (portrait) {
-            scratch.tgt.z += 0.6 * w;
+            scratch.tgt.z += 0.95 * w;
           } else {
             // Card on the right → look-at point east of the pin → the pin
             // lands on the left half of the screen (and vice versa).
@@ -243,6 +246,7 @@ function PinMarker({
 }) {
   const { content, t, isJapanese } = useTranslation();
   const [hovered, setHovered] = useState(false);
+  const hoveredRef = useRef(false);
   const markerRef = useRef<THREE.Group>(null);
   const labelRef = useRef<HTMLButtonElement>(null);
 
@@ -258,20 +262,42 @@ function PinMarker({
   const position = lonLatToWorld(pin.lon, pin.lat, pin.elevation);
   const interactive = pin.kind === "job";
   const phase = useMemo(() => position[0] * 7.3 + position[2] * 3.1, [position]);
+  const worldPos = useMemo(
+    () => new THREE.Vector3(...position),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   useFrame((state) => {
     const w = sceneState.pinWeights[pin.id] ?? 0;
-    // Markers grow when their card is focused; labels hand over to the card.
+    // Markers grow when their card is focused. Landmark markers (Fuji)
+    // shrink away during closeups — at low altitude they read as floating
+    // balls rather than pins.
     if (markerRef.current) {
       const bob =
         Math.sin(state.clock.elapsedTime * 1.6 + phase) * 0.018 * (1 + w);
       markerRef.current.position.y = bob + w * 0.05;
-      const s = 1 + w * 0.9;
-      markerRef.current.scale.setScalar(s);
+      const landmarkShrink =
+        pin.kind === "landmark"
+          ? 1 - Math.max(sceneState.closeup, sceneState.network) * 0.9
+          : 1;
+      markerRef.current.scale.setScalar((1 + w * 0.9) * landmarkShrink);
     }
     if (labelRef.current) {
+      // Unfocused labels fade during closeups; the focused pin's pill stays,
+      // glides to sit directly above its marker, and counter-scales against
+      // the distanceFactor growth so it keeps a readable size.
       const fade = Math.max(sceneState.closeup, sceneState.network);
-      labelRef.current.style.opacity = String(1 - fade * 0.92);
+      const opacity = (1 - fade * 0.92) * (1 - w) + w;
+      const baseX = pin.labelOffset?.[0] ?? 0;
+      const baseY = pin.labelOffset?.[1] ?? 0;
+      const ox = baseX * (1 - w);
+      const oy = baseY * (1 - w) - 95 * w;
+      const dist = state.camera.position.distanceTo(worldPos);
+      const counter = Math.min(1, Math.max(0.22, dist / 8));
+      const s = (1 - w + counter * w) * (hoveredRef.current ? 1.08 : 1);
+      labelRef.current.style.opacity = String(opacity);
+      labelRef.current.style.transform = `translate(${ox}px, ${oy}px) scale(${s})`;
     }
   });
 
@@ -281,26 +307,31 @@ function PinMarker({
         center
         distanceFactor={5}
         zIndexRange={[20, 0]}
-        style={{
-          pointerEvents: "none",
-          transform: pin.labelOffset
-            ? `translate(${pin.labelOffset[0]}px, ${pin.labelOffset[1]}px)`
-            : undefined,
-        }}
+        style={{ pointerEvents: "none" }}
       >
         <button
           ref={labelRef}
           type="button"
           onClick={interactive ? () => onSelect(pin) : undefined}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
+          onMouseEnter={() => {
+            setHovered(true);
+            hoveredRef.current = true;
+          }}
+          onMouseLeave={() => {
+            setHovered(false);
+            hoveredRef.current = false;
+          }}
           aria-label={label}
           className="terrain-pin"
           data-kind={pin.kind}
+          data-hovered={hovered}
           style={{
             pointerEvents: interactive ? "auto" : "none",
             cursor: interactive ? "pointer" : "default",
-            transform: hovered ? "scale(1.08) rotate(-1deg)" : undefined,
+            transition: "none",
+            transform: pin.labelOffset
+              ? `translate(${pin.labelOffset[0]}px, ${pin.labelOffset[1]}px)`
+              : undefined,
             fontFamily: isJapanese
               ? "var(--font-jp-handwritten)"
               : "var(--font-handwritten)",
