@@ -25,7 +25,7 @@ const PIN_COLORS: Record<MapPin["kind"], string> = {
 };
 
 function Terrain({ reduceMotion }: { reduceMotion: boolean }) {
-  const heightmap = useTexture("/terrain/kanto-heightmap.png");
+  const heightmap = useTexture("/terrain/tokaido-heightmap.png");
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
   const uniforms = useMemo(() => {
@@ -83,7 +83,7 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
   const { camera } = useThree();
   const pointer = useRef({ x: 0, y: 0 });
   const targetPointer = useRef({ x: 0, y: 0 });
-  const target = useMemo(() => new THREE.Vector3(0.3, 0, -1.1), []);
+  const target = useMemo(() => new THREE.Vector3(0, 0, -0.45), []);
 
   // Track the pointer on window so parallax works even when DOM overlays
   // (title, avatar, post-its) sit above the canvas.
@@ -114,11 +114,11 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
     // Portrait screens see a narrower slice, so back the camera off until
     // the whole map fits.
     const aspect = state.size.width / state.size.height;
-    const fit = Math.max(1, Math.min(1.9, 1.45 / aspect));
+    const fit = Math.max(1, Math.min(2.5, 1.45 / aspect));
     camera.position.set(
-      0.3 + pointer.current.x * 0.45 + drift,
-      (5.6 - ease * 2.3 - pointer.current.y * 0.3) * fit,
-      (3.4 + ease * 0.5) * fit
+      0.2 + pointer.current.x * 0.45 + drift,
+      (6.2 - ease * 2.6 - pointer.current.y * 0.3) * fit,
+      (4.6 + ease * 0.7) * fit
     );
     camera.lookAt(target);
   });

@@ -68,8 +68,8 @@ void main() {
   float grain = noise(vUv * 700.0);
   vec3 paper = uPaper * (0.972 + 0.028 * grain);
 
-  float band = abs(fract(vUv.y * 36.0) - 0.5);
-  float bandW = fwidth(vUv.y * 36.0) + 1e-4;
+  float band = abs(fract(vUv.y * 18.0) - 0.5);
+  float bandW = fwidth(vUv.y * 18.0) + 1e-4;
   float ruled = smoothstep(0.5 - bandW * 1.6, 0.5 - bandW * 0.4, band);
   vec3 page = mix(paper, uPaperLine, ruled * 0.5);
 

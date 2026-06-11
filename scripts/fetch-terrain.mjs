@@ -9,9 +9,10 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
-const ZOOM = 10;
-// Mt. Fuji (138.73) to the far side of Tokyo Bay, Izu peninsula up past Tokyo.
-const BOUNDS = { west: 138.35, east: 140.55, south: 34.85, north: 36.05 };
+const ZOOM = 9;
+// The Tokaido corridor: Kobe and Osaka Bay in the west, past Mt. Fuji, to
+// Tokyo Bay and the Boso peninsula in the east.
+const BOUNDS = { west: 134.65, east: 140.55, south: 34.2, north: 35.95 };
 const TILE_SIZE = 256;
 const TILE_URL = (z, x, y) =>
   `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/${z}/${x}/${y}.png`;
@@ -104,7 +105,7 @@ for (let oy = 0; oy < oh; oy++) {
 }
 await sharp(out, { raw: { width: ow, height: oh, channels: 3 } })
   .png({ compressionLevel: 9 })
-  .toFile(path.join(OUT_DIR, "kanto-heightmap.png"));
+  .toFile(path.join(OUT_DIR, "tokaido-heightmap.png"));
 
 // Actual geographic bounds of the stitched image (snapped to the tile grid).
 const meta = {
@@ -117,7 +118,7 @@ const meta = {
   south: tileYToLat(y1 + 1, ZOOM),
 };
 await writeFile(
-  path.join(OUT_DIR, "kanto-heightmap.json"),
+  path.join(OUT_DIR, "tokaido-heightmap.json"),
   JSON.stringify(meta, null, 2)
 );
 console.log("Done:", meta);

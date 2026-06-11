@@ -1,13 +1,16 @@
-import bounds from "@/public/terrain/kanto-heightmap.json";
+import bounds from "@/public/terrain/tokaido-heightmap.json";
 
 // World-space size of the terrain plane (three.js units).
 export const WORLD_WIDTH = 10;
 export const WORLD_DEPTH = WORLD_WIDTH * (bounds.height / bounds.width);
 
-// Ground meters represented by the plane width (~223km across Kanto at z10),
-// with vertical exaggeration so the relief reads at a glance.
-const GROUND_METERS = 223000;
-export const VERTICAL_EXAGGERATION = 2.2;
+// Ground meters represented by the plane width, derived from the heightmap
+// bounds, with vertical exaggeration so the relief reads at a glance.
+const GROUND_METERS =
+  (bounds.east - bounds.west) *
+  111320 *
+  Math.cos((((bounds.north + bounds.south) / 2) * Math.PI) / 180);
+export const VERTICAL_EXAGGERATION = 3.2;
 export const HEIGHT_SCALE =
   (WORLD_WIDTH / GROUND_METERS) * VERTICAL_EXAGGERATION;
 
@@ -56,12 +59,12 @@ export const MAP_PINS: MapPin[] = [
   {
     id: "pin-stealth",
     experienceId: "exp-1",
-    lon: 139.777,
-    lat: 35.713,
-    elevation: 20,
+    lon: 135.502,
+    lat: 34.694,
+    elevation: 15,
     kind: "job",
     labelKey: "hero.pin_stealth",
-    labelOffset: [85, -48],
+    labelOffset: [95, -45],
   },
   {
     id: "pin-softbank",
@@ -71,17 +74,17 @@ export const MAP_PINS: MapPin[] = [
     elevation: 10,
     kind: "job",
     labelKey: "hero.pin_softbank",
-    labelOffset: [92, 14],
+    labelOffset: [-95, -30],
   },
   {
     id: "pin-khi",
     experienceId: "exp-3",
-    lon: 139.7029,
-    lat: 35.5308,
-    elevation: 8,
+    lon: 135.175,
+    lat: 34.665,
+    elevation: 5,
     kind: "job",
     labelKey: "hero.pin_khi",
-    labelOffset: [-110, 55],
+    labelOffset: [-15, 62],
   },
   {
     id: "pin-fuji",
@@ -90,12 +93,12 @@ export const MAP_PINS: MapPin[] = [
     elevation: 3776,
     labelKey: "hero.pin_fuji",
     kind: "landmark",
-    labelOffset: [135, -55],
+    labelOffset: [0, -62],
   },
   {
     id: "pin-mumbai",
-    lon: 139.1,
-    lat: 35.26,
+    lon: 136.15,
+    lat: 34.05,
     elevation: 0,
     labelKey: "hero.pin_mumbai",
     kind: "offmap",
