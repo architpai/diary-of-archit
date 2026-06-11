@@ -55,6 +55,14 @@ export interface MapPin {
   labelOffset?: [number, number];
 }
 
+/** Which map pin the camera flies to for each timeline experience. */
+export const EXPERIENCE_PIN: Record<string, string> = {
+  "exp-1": "pin-stealth",
+  "exp-2": "pin-softbank",
+  "exp-3": "pin-khi",
+  "exp-4": "pin-mumbai",
+};
+
 export const MAP_PINS: MapPin[] = [
   {
     id: "pin-stealth",

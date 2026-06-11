@@ -5,8 +5,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
-import BlobDivider from './BlobDivider';
-import FloatingDoodles from './FloatingDoodles';
+import { EXPERIENCE_PIN } from './hero3d/mapData';
 
 // Map doodle types to avatar poses
 const doodlePoses: Record<string, string> = {
@@ -30,7 +29,7 @@ interface Experience {
 function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
   const shouldReduceMotion = useReducedMotion();
   const [isExpanded, setIsExpanded] = useState(false);
-  const { isJapanese } = useTranslation();
+  const { t, isJapanese } = useTranslation();
   const toggleExpanded = () => setIsExpanded((current) => !current);
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter' || event.key === ' ') {
@@ -41,7 +40,9 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
 
   return (
       <motion.div
-        className={`flex flex-col md:flex-row items-center gap-4 md:gap-6 ${
+        id={exp.id}
+        data-map-waypoint={EXPERIENCE_PIN[exp.id]}
+        className={`flex flex-col md:flex-row items-center gap-4 md:gap-6 pointer-events-auto ${
           index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
         }`}
         initial={shouldReduceMotion ? false : { opacity: 0, y: 50 }}
@@ -116,6 +117,12 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
               >
                 @ {exp.company}
               </p>
+              <span
+                className="map-coords mt-2"
+                style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+              >
+                📍 {t(`timeline.loc_${exp.id}`)}
+              </span>
             </div>
 
             {/* Diary Narrative */}
@@ -184,24 +191,40 @@ export default function Timeline() {
   const experiences = content.experiences as Experience[];
 
   return (
-    <section className={`py-20 relative ${!isSerious ? 'section-blue' : ''}`}>
-      {/* Top Wave Divider */}
-      {!isSerious && (
-        <BlobDivider position="top" fillColor="var(--paper)" variant={1} />
+    <section className="py-20 relative">
+      {!isSerious ? (
+        <motion.div
+          className="text-center mb-24 px-4"
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <div className="map-cartouche inline-block px-8 py-4 pointer-events-auto">
+            <h2
+              className="diary-title text-3xl md:text-4xl text-ink"
+              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            >
+              {t('timeline.title_diary')}
+            </h2>
+            <p
+              className="handwritten text-ink/50 text-sm mt-1"
+              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            >
+              {t('timeline.map_hint')}
+            </p>
+          </div>
+        </motion.div>
+      ) : (
+        <motion.h2
+          className="diary-title text-3xl md:text-4xl text-center mb-10 pt-16 text-ink"
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+        >
+          {t('timeline.title_serious')}
+        </motion.h2>
       )}
-      
-      {/* Floating Background Doodles */}
-      {!isSerious && <FloatingDoodles density="sparse" />}
-      
-      <motion.h2
-        className={`diary-title text-3xl md:text-4xl text-center mb-10 pt-16 ${!isSerious ? 'text-white drop-shadow-lg' : 'text-ink'}`}
-        initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-      >
-        {!isSerious ? t('timeline.title_diary') : t('timeline.title_serious')}
-      </motion.h2>
 
       <div className="relative max-w-5xl mx-auto px-4">
         {isSerious ? (
@@ -243,22 +266,25 @@ export default function Timeline() {
             ))}
           </div>
         ) : (
-          // Fun diary-style timeline
+          // Journey waypoints — big gaps between cards let the map (and the
+          // camera flight) show through.
           <div className="relative">
-            {/* Experience Cards */}
-            <div className="relative z-10 space-y-10">
-              {experiences.map((exp, index) => (
-                <ExperienceCard key={exp.id} exp={exp} index={index} />
-              ))}
-            </div>
+            {experiences.map((exp, index) => (
+              <div key={exp.id}>
+                {index > 0 && (
+                  <div
+                    className="route-leg py-10 md:py-16 text-base md:text-lg"
+                    style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+                  >
+                    {t(`timeline.leg_${index}`)}
+                  </div>
+                )}
+                <ExperienceCard exp={exp} index={index} />
+              </div>
+            ))}
           </div>
         )}
       </div>
-
-      {/* Bottom Wave Divider */}
-      {!isSerious && (
-        <BlobDivider position="bottom" fillColor="var(--paper)" variant={2} />
-      )}
     </section>
   );
 }

@@ -19,24 +19,9 @@ export default function DiaryFooter() {
   }
 
   return (
-    <footer className="relative pt-4 pb-16 overflow-hidden section-yellow">
-      {/* Torn paper edge at top */}
-      <div className="absolute top-0 left-0 right-0" style={{ height: '20px', overflow: 'hidden' }}>
-        <svg
-          viewBox="0 0 1200 20"
-          preserveAspectRatio="none"
-          className="w-full h-full"
-          style={{ display: 'block' }}
-        >
-          <path
-            d="M0 20 L0 8 Q30 12 60 6 Q90 0 120 8 Q150 14 180 6 Q210 2 240 10 Q270 16 300 7 Q330 0 360 9 Q390 15 420 5 Q450 0 480 8 Q510 14 540 6 Q570 0 600 10 Q630 16 660 5 Q690 0 720 8 Q750 13 780 6 Q810 0 840 9 Q870 15 900 7 Q930 0 960 8 Q990 14 1020 6 Q1050 0 1080 10 Q1110 15 1140 7 Q1170 2 1200 8 L1200 20 Z"
-            fill="var(--paper)"
-          />
-        </svg>
-      </div>
-
+    <footer className="relative pt-4 pb-16 overflow-hidden">
       {/* Content */}
-      <div className="relative z-10 flex flex-col md:flex-row items-center md:items-center justify-center gap-4 md:gap-8 pt-12 px-4">
+      <div className="relative z-10 flex flex-col md:flex-row items-center md:items-center justify-center gap-4 md:gap-8 pt-12 px-4 pointer-events-auto">
         {/* Waving avatar — left side */}
         <div className="flex-shrink-0">
           <Image

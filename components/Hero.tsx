@@ -2,8 +2,6 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import HeroAvatarTransition from "./HeroAvatarTransition";
-import BlobDivider from "./BlobDivider";
-import TerrainHero from "./hero3d/TerrainHero";
 import { useSeriousMode } from "@/contexts/SeriousModeContext";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -49,12 +47,8 @@ function FieldNotebookHero() {
   const jpFont = isJapanese ? { fontFamily: "var(--font-jp-handwritten)" } : {};
 
   return (
-    <section className="relative min-h-screen overflow-hidden">
-      {/* The map: real Kanto elevation data, ink-and-pencil shader */}
-      <TerrainHero />
-      <div className="terrain-hero-vignette absolute inset-0 pointer-events-none" />
-
-      {/* Overlay content */}
+    <section className="relative min-h-screen overflow-hidden pointer-events-none">
+      {/* Overlay content — the map itself is the page-level MapBackdrop */}
       <div className="relative z-10 min-h-screen flex flex-col items-center pointer-events-none px-4 pt-14 md:pt-16 pb-10">
         {/* Field-notes annotation */}
         <motion.p
@@ -123,8 +117,6 @@ function FieldNotebookHero() {
           </div>
         </motion.div>
       </div>
-
-      <BlobDivider position="bottom" fillColor="var(--paper)" variant={1} />
     </section>
   );
 }

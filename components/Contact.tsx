@@ -3,8 +3,6 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
-import BlobDivider from './BlobDivider';
-import FloatingDoodles from './FloatingDoodles';
 import Avatar from './Avatar';
 import WindEffect from './WindEffect';
 import { DiaryMailIcon, DiaryGitHubIcon, DiaryLinkedInIcon } from './icons/ContactIcons';
@@ -107,27 +105,36 @@ export default function Contact() {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <section id="contact" className={`py-20 relative ${!isSerious ? 'section-yellow' : ''}`}>
-      {/* Top Wave Divider */}
-      {!isSerious && (
-        <BlobDivider position="top" fillColor="var(--paper)" variant={1} />
-      )}
-
-      {/* Floating Background Doodles */}
-      {!isSerious && <FloatingDoodles density="sparse" />}
-
+    <section id="contact" className="py-20 relative">
       {/* Wind Effect */}
       {!isSerious && <WindEffect />}
 
-      <motion.h2
-        className={`text-3xl md:text-4xl text-center mb-12 pt-16 ${isSerious ? 'font-sans font-bold text-ink' : 'diary-title text-ink drop-shadow-lg'}`}
-        style={isJapanese && !isSerious ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-        initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-      >
-        {isSerious ? t('contact.title_serious') : t('contact.title_diary')}
-      </motion.h2>
+      {!isSerious ? (
+        <motion.div
+          className="text-center mb-12 px-4"
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <div className="map-cartouche inline-block px-8 py-4 pointer-events-auto">
+            <h2
+              className="diary-title text-3xl md:text-4xl text-ink"
+              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            >
+              {t('contact.title_diary')}
+            </h2>
+          </div>
+        </motion.div>
+      ) : (
+        <motion.h2
+          className="text-3xl md:text-4xl text-center mb-12 pt-16 font-sans font-bold text-ink"
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          {t('contact.title_serious')}
+        </motion.h2>
+      )}
 
       {isSerious ? (
         /* ── Serious mode: clean minimal layout (unchanged) ── */
@@ -170,7 +177,7 @@ export default function Contact() {
         </div>
       ) : (
         /* ── Diary mode: Avatar + 3 colorful post-it cards ── */
-        <div className="max-w-5xl mx-auto px-4 relative z-10">
+        <div className="max-w-5xl mx-auto px-4 relative z-10 pointer-events-auto">
           {/* Sign-off message above cards */}
           <motion.p
             className="handwritten text-lg text-center mb-10 text-ink"
@@ -248,6 +255,22 @@ export default function Contact() {
           >
             {t('contact.signoff')}
           </motion.p>
+
+          {/* End-of-map marker */}
+          <motion.div
+            className="mt-12 text-center"
+            initial={shouldReduceMotion ? false : { opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.8 }}
+          >
+            <p
+              className="handwritten text-ink/40 tracking-[0.3em] text-sm uppercase"
+              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)', letterSpacing: '0.2em' } : {}}
+            >
+              ✦ — — {t('contact.end_of_map')} — — ✦
+            </p>
+          </motion.div>
         </div>
       )}
 

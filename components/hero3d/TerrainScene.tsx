@@ -79,11 +79,38 @@ function Terrain({ reduceMotion }: { reduceMotion: boolean }) {
   );
 }
 
+// Camera framing when a pin's timeline card is centred in the viewport:
+// hover a few units up and south of the pin, looking down at it.
+const PIN_VIEW_OFFSET = new THREE.Vector3(0.1, 2.3, 2.9);
+
 function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
   const { camera } = useThree();
   const pointer = useRef({ x: 0, y: 0 });
   const targetPointer = useRef({ x: 0, y: 0 });
-  const target = useMemo(() => new THREE.Vector3(0, 0, -0.45), []);
+  const waypointEls = useRef<HTMLElement[]>([]);
+  const frame = useRef(0);
+
+  const pinViews = useMemo(() => {
+    const views: Record<string, { pos: THREE.Vector3; tgt: THREE.Vector3 }> =
+      {};
+    for (const pin of MAP_PINS) {
+      const [x, y, z] = lonLatToWorld(pin.lon, pin.lat, pin.elevation);
+      const tgt = new THREE.Vector3(x, y, z);
+      views[pin.id] = { tgt, pos: tgt.clone().add(PIN_VIEW_OFFSET) };
+    }
+    return views;
+  }, []);
+
+  // Scratch vectors reused every frame to avoid GC churn.
+  const scratchRef = useRef({
+    pos: new THREE.Vector3(),
+    tgt: new THREE.Vector3(),
+    overviewPos: new THREE.Vector3(),
+    overviewTgt: new THREE.Vector3(0, 0, -0.45),
+    curPos: new THREE.Vector3(),
+    curTgt: new THREE.Vector3(),
+    initialized: false,
+  });
 
   // Track the pointer on window so parallax works even when DOM overlays
   // (title, avatar, post-its) sit above the canvas.
@@ -97,6 +124,7 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
   }, []);
 
   useFrame((state) => {
+    const scratch = scratchRef.current;
     const t = reduceMotion
       ? 1
       : Math.min(state.clock.elapsedTime / INTRO_SECONDS, 1);
@@ -107,7 +135,6 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
     pointer.current.y +=
       (targetPointer.current.y - pointer.current.y) * (reduceMotion ? 0 : 0.04);
 
-    // Drift from a high "page flat on the desk" view down to a low oblique.
     const drift = reduceMotion
       ? 0
       : Math.sin(state.clock.elapsedTime * 0.12) * 0.12;
@@ -115,12 +142,64 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
     // the whole map fits.
     const aspect = state.size.width / state.size.height;
     const fit = Math.max(1, Math.min(2.5, 1.45 / aspect));
-    camera.position.set(
+
+    // Overview pose (the hero framing) — intro drops from high to oblique.
+    scratch.overviewPos.set(
       0.2 + pointer.current.x * 0.45 + drift,
       (6.2 - ease * 2.6 - pointer.current.y * 0.3) * fit,
       (4.6 + ease * 0.7) * fit
     );
-    camera.lookAt(target);
+
+    // Blend toward pin views based on which [data-map-waypoint] element is
+    // nearest the viewport centre — scrolling the timeline flies the camera.
+    if (frame.current % 30 === 0) {
+      waypointEls.current = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-map-waypoint]")
+      );
+    }
+    frame.current++;
+
+    scratch.pos.set(0, 0, 0);
+    scratch.tgt.set(0, 0, 0);
+    let sum = 0;
+    if (!reduceMotion) {
+      const vh = window.innerHeight;
+      for (const el of waypointEls.current) {
+        const view = pinViews[el.dataset.mapWaypoint ?? ""];
+        if (!view) continue;
+        const rect = el.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        let w = 1 - Math.abs(center - vh * 0.5) / (vh * 0.85);
+        if (w <= 0) continue;
+        w = w * w * (3 - 2 * w); // smoothstep
+        scratch.pos.addScaledVector(view.pos, w);
+        // Back off further on portrait screens, same as the overview does.
+        scratch.pos.y += (fit - 1) * 1.4 * w;
+        scratch.pos.z += (fit - 1) * 1.6 * w;
+        scratch.tgt.addScaledVector(view.tgt, w);
+        sum += w;
+      }
+      if (sum > 1) {
+        scratch.pos.divideScalar(sum);
+        scratch.tgt.divideScalar(sum);
+        sum = 1;
+      }
+    }
+    const ow = 1 - sum;
+    scratch.pos.addScaledVector(scratch.overviewPos, ow);
+    scratch.tgt.addScaledVector(scratch.overviewTgt, ow);
+
+    // Smooth toward the blended pose so flights feel like flights.
+    if (!scratch.initialized || reduceMotion) {
+      scratch.curPos.copy(scratch.pos);
+      scratch.curTgt.copy(scratch.tgt);
+      scratch.initialized = true;
+    } else {
+      scratch.curPos.lerp(scratch.pos, 0.07);
+      scratch.curTgt.lerp(scratch.tgt, 0.07);
+    }
+    camera.position.copy(scratch.curPos);
+    camera.lookAt(scratch.curTgt);
   });
 
   return null;
@@ -195,10 +274,11 @@ function PinMarker({
 }
 
 function Pins() {
-  const handleSelect = () => {
-    document
-      .getElementById("timeline")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const handleSelect = (pin: MapPin) => {
+    const el =
+      (pin.experienceId && document.getElementById(pin.experienceId)) ||
+      document.getElementById("timeline");
+    el?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
   return (
     <>

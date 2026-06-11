@@ -5,8 +5,6 @@ import { motion, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
-import BlobDivider from './BlobDivider';
-import FloatingDoodles from './FloatingDoodles';
 
 interface Hobby {
   id: string;
@@ -159,36 +157,44 @@ export default function SneakPeek() {
   if (isSerious) return null;
 
   return (
-    <section className="py-20 relative section-blue">
-      {/* Top Wave Divider */}
-      <BlobDivider position="top" fillColor="var(--paper)" variant={3} />
-      
-      {/* Floating Background Doodles */}
-      <FloatingDoodles density="normal" />
-
-      {/* Section Title */}
+    <section className="py-20 relative">
+      {/* Section Title — uncharted territory cartouche */}
       <motion.div
-        className="text-center mb-16 pt-16 relative z-10"
+        className="text-center mb-16 relative z-10 px-4"
         initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
       >
-        <h2 
-          className="diary-title text-3xl md:text-4xl text-white drop-shadow-lg mb-2"
-          style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-        >
-          {t('sneakpeek.title')}
-        </h2>
-        <p 
-          className="diary-subtitle text-white/80 handwritten"
-          style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-        >
-          {t('sneakpeek.subtitle')}
-        </p>
+        <div className="map-cartouche relative inline-block px-8 py-4 pointer-events-auto">
+          <h2
+            className="diary-title text-3xl md:text-4xl text-ink mb-2"
+            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+          >
+            {t('sneakpeek.title')}
+          </h2>
+          <p
+            className="diary-subtitle text-ink/60 handwritten"
+            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+          >
+            {t('sneakpeek.subtitle')}
+          </p>
+          {/* Old-map warning stamp */}
+          <span
+            className="absolute -top-5 -right-8 rotate-12 handwritten text-sm font-bold px-3 py-1 border-[2.5px] rounded-md hidden sm:block"
+            style={{
+              color: '#C0392B',
+              borderColor: '#C0392B',
+              background: 'rgba(255,249,229,0.9)',
+              fontFamily: isJapanese ? 'var(--font-jp-handwritten)' : undefined,
+            }}
+          >
+            🐉 {t('sneakpeek.stamp')}
+          </span>
+        </div>
       </motion.div>
 
       {/* Hobbies Grid */}
-      <div className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+      <div className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10 pointer-events-auto">
         {hobbies.map((hobby, index) => (
           <HobbyCard
             key={hobby.id}
@@ -202,7 +208,7 @@ export default function SneakPeek() {
 
       {/* Current Setup Note */}
       <motion.div
-        className="mt-16 max-w-md mx-auto relative z-10"
+        className="mt-16 max-w-md mx-auto relative z-10 pointer-events-auto"
         initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.9 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
@@ -224,9 +230,6 @@ export default function SneakPeek() {
           </p>
         </div>
       </motion.div>
-
-      {/* Bottom Wave Divider */}
-      <BlobDivider position="bottom" fillColor="var(--paper)" variant={1} />
     </section>
   );
 }

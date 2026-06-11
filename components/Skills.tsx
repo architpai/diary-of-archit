@@ -3,9 +3,8 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
-import BlobDivider from './BlobDivider';
-import FloatingDoodles from './FloatingDoodles';
 import StickerStars, { levelToStars } from './StickerStars';
+import { LegendSymbol } from './icons/LegendSymbols';
 
 interface Skill {
   name: string;
@@ -26,19 +25,6 @@ const categoryColors: Record<string, string> = {
   devops: '#578D82',     // Desaturated Mint
 };
 
-// Category icons
-const categoryIcons: Record<string, string> = {
-  cloud: '☁️',
-  database: '🗃️',
-  mapping: '🗺️',
-  frontend: '🎨',
-  backend: '⚙️',
-  domain: '🎯',
-  graphics: '🧱',
-  architecture: '🏗️',
-  devops: '🛠️',
-};
-
 export default function Skills() {
   const { isSerious } = useSeriousMode();
   const { content, t, isJapanese } = useTranslation();
@@ -46,24 +32,39 @@ export default function Skills() {
   const skills = content.skills as Skill[];
 
   return (
-    <section className={`py-20 relative ${!isSerious ? 'section-yellow' : ''}`}>
-      {/* Top Wave Divider */}
-      {!isSerious && (
-        <BlobDivider position="top" fillColor="var(--paper)" variant={2} />
+    <section className="py-20 relative">
+      {!isSerious ? (
+        <motion.div
+          className="text-center mb-16 px-4"
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <div className="map-cartouche inline-block px-8 py-4 pointer-events-auto">
+            <h2
+              className="diary-title text-3xl md:text-4xl text-ink"
+              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            >
+              {t('skills.title_diary')}
+            </h2>
+            <p
+              className="handwritten text-ink/50 text-sm mt-1 tracking-widest uppercase"
+              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            >
+              {t('skills.legend_sub')}
+            </p>
+          </div>
+        </motion.div>
+      ) : (
+        <motion.h2
+          className="text-3xl md:text-4xl text-center mb-16 pt-16 font-sans font-bold text-ink"
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          {t('skills.title_serious')}
+        </motion.h2>
       )}
-      
-      {/* Floating Background Doodles */}
-      {!isSerious && <FloatingDoodles density="sparse" />}
-      
-      <motion.h2
-        className={`text-3xl md:text-4xl text-center mb-16 pt-16 ${isSerious ? 'font-sans font-bold text-ink' : 'diary-title text-ink drop-shadow-lg'}`}
-        initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        style={isJapanese && !isSerious ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-      >
-        {isSerious ? t('skills.title_serious') : t('skills.title_diary')}
-      </motion.h2>
 
       <div className="max-w-5xl mx-auto px-4 relative z-20">
         {isSerious ? (
@@ -118,109 +119,68 @@ export default function Skills() {
             ))}
           </div>
         ) : (
-          // RPG Card Style for Diary Mode
-          <>
-            {/* Group skills by category */}
-            {Object.entries(
-              skills.reduce((acc, skill) => {
-                if (!acc[skill.category]) acc[skill.category] = [];
-                acc[skill.category].push(skill);
-                return acc;
-              }, {} as Record<string, typeof skills>)
-            ).map(([category, categorySkills], categoryIndex) => (
-              <div key={category} className="mb-12">
-                {/* Category Header */}
+          // Map legend for diary mode — categories are legend groups with
+          // hand-drawn cartographic symbols; dotted leaders run to the stars.
+          <motion.div
+            className="map-panel max-w-4xl mx-auto p-6 md:p-10 pointer-events-auto"
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6 }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+              {Object.entries(
+                skills.reduce((acc, skill) => {
+                  if (!acc[skill.category]) acc[skill.category] = [];
+                  acc[skill.category].push(skill);
+                  return acc;
+                }, {} as Record<string, typeof skills>)
+              ).map(([category, categorySkills], categoryIndex) => (
                 <motion.div
-                  className="flex items-center gap-3 mb-6"
-                  initial={shouldReduceMotion ? false : { opacity: 0, x: -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+                  key={category}
+                  initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={shouldReduceMotion ? { duration: 0 } : { delay: categoryIndex * 0.1 }}
+                  transition={
+                    shouldReduceMotion ? { duration: 0 } : { delay: categoryIndex * 0.07 }
+                  }
                 >
-                  <span className="text-3xl">{categoryIcons[category] || '🔧'}</span>
-                  <h3 className="handwritten text-2xl font-bold capitalize" style={{ color: categoryColors[category] }}>
-                    {category}
-                  </h3>
-                  <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: categoryColors[category] + '30' }} />
-                </motion.div>
-
-                {/* Skills Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {categorySkills.map((skill, index) => (
-                    <motion.div
-                      key={skill.name}
-                      className="relative group"
-                      initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.9, y: 20 }}
-                      whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={
-                        shouldReduceMotion
-                          ? { duration: 0 }
-                          : {
-                              duration: 0.5,
-                              delay: index * 0.1,
-                              type: "spring",
-                              stiffness: 100,
-                            }
-                      }
-                      whileHover={
-                        shouldReduceMotion
-                          ? undefined
-                          : {
-                              scale: 1.05,
-                              rotateY: 5,
-                              rotateX: 5,
-                              z: 50,
-                            }
-                      }
-                      style={{ perspective: 1000 }}
+                  {/* Legend group header */}
+                  <div
+                    className="flex items-center gap-3 pb-2 mb-3"
+                    style={{ borderBottom: `2px solid ${categoryColors[category]}55` }}
+                  >
+                    <LegendSymbol category={category} color={categoryColors[category]} />
+                    <h3
+                      className="handwritten text-xl font-bold capitalize"
+                      style={{ color: categoryColors[category] }}
                     >
-                      {/* Card */}
-                      <div 
-                        className="relative p-5 rounded-xl shadow-lg wobbly-border bg-gradient-to-br from-paper/95 to-white/90 overflow-hidden"
-                        style={{
-                          borderColor: categoryColors[skill.category],
-                          borderWidth: '3px',
-                        }}
-                      >
-                        {/* Subtle paper-like shadow on hover, no digital glows */}
-                        <div 
-                          className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none"
-                          style={{ backgroundColor: 'black' }}
+                      {category}
+                    </h3>
+                  </div>
+
+                  {/* Legend entries: name … stars */}
+                  <ul className="space-y-2">
+                    {categorySkills.map((skill) => (
+                      <li key={skill.name} className="flex items-end gap-2">
+                        <span className="handwritten text-ink text-base whitespace-nowrap">
+                          {skill.name}
+                        </span>
+                        <span
+                          className="flex-1 mb-1.5 border-b-2 border-dotted"
+                          style={{ borderColor: 'rgba(45,45,45,0.25)' }}
                         />
-
-                        {/* Corner decoration (ink smudge style) */}
-                        <div 
-                          className="absolute top-0 right-0 w-12 h-12 opacity-5"
-                          style={{
-                            background: `radial-gradient(circle at top right, ${categoryColors[skill.category]}, transparent)`,
-                          }}
+                        <StickerStars
+                          rating={levelToStars(skill.level)}
+                          color={categoryColors[skill.category]}
                         />
-
-                        {/* Skill Name */}
-                        <div className="relative z-10 mb-3">
-                          <h4 className="handwritten text-lg font-bold text-ink flex items-center gap-2">
-                            <span className="text-2xl">{categoryIcons[skill.category] || '🔧'}</span>
-                            {skill.name}
-                          </h4>
-                        </div>
-
-                        {/* Sticker Stars */}
-                        <div className="relative z-10">
-                          <StickerStars
-                            rating={levelToStars(skill.level)}
-                            color={categoryColors[skill.category]}
-                          />
-                        </div>
-
-
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         )}
 
         {/* Fun disclaimer in diary mode */}
@@ -237,11 +197,6 @@ export default function Skills() {
           </motion.div>
         )}
       </div>
-
-      {/* Bottom Wave Divider */}
-      {!isSerious && (
-        <BlobDivider position="bottom" fillColor="var(--paper)" variant={3} />
-      )}
     </section>
   );
 }
