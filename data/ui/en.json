@@ -5,7 +5,14 @@
     "name": "ARCHIT",
     "subtitle": "I build things, break things, and occasionally fix them.",
     "subtitle_role": "Full-Stack Engineer working across maps, backend systems, and cloud apps",
-    "scroll": "↓ scroll for more ↓"
+    "scroll": "↓ scroll for more ↓",
+    "pin_stealth": "Stealth Startup ’25",
+    "pin_softbank": "SoftBank ’24",
+    "pin_khi": "Kawasaki Heavy Ind. ’22",
+    "pin_fuji": "Mt. Fuji — 3,776m of showing off",
+    "pin_mumbai": "← Mumbai internship, 6,700 km that way",
+    "map_note": "real elevation data, drawn by shaders — I make maps for a living, so of course this page is one",
+    "cartographer": "me, your cartographer"
   },
   "timeline": {
     "title_diary": "📅 The Journey So Far...",
