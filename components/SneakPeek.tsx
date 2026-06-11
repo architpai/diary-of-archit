@@ -193,8 +193,11 @@ export default function SneakPeek() {
         </div>
       </motion.div>
 
-      {/* Hobbies Grid */}
-      <div className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10 pointer-events-auto">
+      {/* Hobbies Grid — keeps the AI constellation overhead */}
+      <div
+        data-map-waypoint="view-network"
+        className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10 pointer-events-auto"
+      >
         {hobbies.map((hobby, index) => (
           <HobbyCard
             key={hobby.id}

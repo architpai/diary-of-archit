@@ -53,6 +53,14 @@ export interface MapPin {
   kind: "job" | "landmark" | "offmap";
   /** Pixel offset for the label so neighbouring labels don't collide */
   labelOffset?: [number, number];
+  /** Marker colour — also used for the company name on the timeline card */
+  color: string;
+}
+
+/** Marker colour for a timeline experience (falls back to margin blue). */
+export function experienceColor(expId: string): string {
+  const pinId = EXPERIENCE_PIN[expId];
+  return MAP_PINS.find((p) => p.id === pinId)?.color ?? "#3B5998";
 }
 
 /** Which map pin the camera flies to for each timeline experience. */
@@ -66,6 +74,7 @@ export const EXPERIENCE_PIN: Record<string, string> = {
 export const MAP_PINS: MapPin[] = [
   {
     id: "pin-stealth",
+    color: "#E63946",
     experienceId: "exp-1",
     lon: 135.502,
     lat: 34.694,
@@ -76,6 +85,7 @@ export const MAP_PINS: MapPin[] = [
   },
   {
     id: "pin-softbank",
+    color: "#B8860B",
     experienceId: "exp-2",
     lon: 139.7595,
     lat: 35.6554,
@@ -86,6 +96,7 @@ export const MAP_PINS: MapPin[] = [
   },
   {
     id: "pin-khi",
+    color: "#3B5998",
     experienceId: "exp-3",
     lon: 135.175,
     lat: 34.665,
@@ -96,6 +107,7 @@ export const MAP_PINS: MapPin[] = [
   },
   {
     id: "pin-fuji",
+    color: "#5A6B8D",
     lon: 138.7274,
     lat: 35.3606,
     elevation: 3776,
@@ -105,6 +117,7 @@ export const MAP_PINS: MapPin[] = [
   },
   {
     id: "pin-mumbai",
+    color: "#2E8B74",
     lon: 136.15,
     lat: 34.05,
     elevation: 0,

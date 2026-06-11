@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
-import { EXPERIENCE_PIN } from './hero3d/mapData';
+import { EXPERIENCE_PIN, experienceColor } from './hero3d/mapData';
 
 // Map doodle types to avatar poses
 const doodlePoses: Record<string, string> = {
@@ -38,10 +38,13 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
     }
   };
 
+  const pinColor = experienceColor(exp.id);
+
   return (
       <motion.div
         id={exp.id}
         data-map-waypoint={EXPERIENCE_PIN[exp.id]}
+        data-waypoint-side={index % 2 === 0 ? 'right' : 'left'}
         className={`flex flex-col md:flex-row items-center gap-4 md:gap-6 pointer-events-auto ${
           index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
         }`}
@@ -76,8 +79,9 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
         <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[20px] border-l-transparent border-r-transparent border-t-yellow-600" />
     
         {/* Year badge */}
-        <motion.div 
-          className="absolute -top-2 -right-2 bg-margin-blue text-white px-3 py-1 rounded-full shadow-lg"
+        <motion.div
+          className="absolute -top-2 -right-2 text-white px-3 py-1 rounded-full shadow-lg"
+          style={{ backgroundColor: pinColor }}
           animate={shouldReduceMotion ? undefined : { rotate: [0, -5, 5, 0] }}
           transition={shouldReduceMotion ? undefined : { duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
@@ -112,14 +116,21 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
                 {exp.professionalTitle}
               </h3>
               <p
-                className="handwritten text-gray-600"
-                style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+                className="handwritten font-bold"
+                style={{
+                  color: pinColor,
+                  ...(isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}),
+                }}
               >
                 @ {exp.company}
               </p>
               <span
                 className="map-coords mt-2"
-                style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+                style={{
+                  color: pinColor,
+                  borderColor: `${pinColor}77`,
+                  ...(isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}),
+                }}
               >
                 📍 {t(`timeline.loc_${exp.id}`)}
               </span>

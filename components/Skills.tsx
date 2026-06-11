@@ -122,6 +122,7 @@ export default function Skills() {
           // Map legend for diary mode — categories are legend groups with
           // hand-drawn cartographic symbols; dotted leaders run to the stars.
           <motion.div
+            data-map-waypoint="view-network"
             className="map-panel max-w-4xl mx-auto p-6 md:p-10 pointer-events-auto"
             initial={shouldReduceMotion ? false : { opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
