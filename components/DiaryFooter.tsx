@@ -9,6 +9,9 @@ export default function DiaryFooter() {
   const { isSerious } = useSeriousMode();
   const { t, isJapanese } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
+  const jpFont = isJapanese
+    ? ({ fontFamily: 'var(--font-jp-handwritten)' } as React.CSSProperties)
+    : ({} as React.CSSProperties);
 
   if (isSerious) {
     return (
@@ -19,53 +22,66 @@ export default function DiaryFooter() {
   }
 
   return (
-    <footer className="relative pt-4 pb-16 overflow-hidden">
-      {/* Content */}
-      <div className="relative z-10 flex flex-col md:flex-row items-center md:items-center justify-center gap-4 md:gap-8 pt-12 px-4 pointer-events-auto">
-        {/* Waving avatar — left side */}
-        <div className="flex-shrink-0">
-          <Image
-            src="/avatar/waving_pose.webp"
-            alt="Waving goodbye"
-            width={80}
-            height={104}
-            className="object-contain drop-shadow-lg"
-          />
+    <footer className="relative pt-4 pb-14 overflow-hidden">
+      {/* Colophon — the mapmaker's imprint at the foot of the chart */}
+      <motion.div
+        className="relative z-10 flex flex-col items-center gap-1.5 pt-10 px-4 pointer-events-auto text-center"
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 15 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+      >
+        <p className="colophon" style={jpFont}>
+          {t('footer.colophon')}
+        </p>
+        <p className="colophon opacity-75" style={jpFont}>
+          {t('footer.edition')}
+        </p>
+
+        {/* Wobbly rule */}
+        <div className="mt-3 mb-2" style={{ width: '170px', height: '4px' }}>
+          <svg viewBox="0 0 150 4" className="w-full">
+            <path
+              d="M0 2 Q20 0 40 2 Q60 4 80 2 Q100 0 120 2 Q140 4 150 2"
+              stroke="var(--ink)"
+              strokeWidth="1"
+              fill="none"
+              opacity="0.25"
+              strokeLinecap="round"
+            />
+          </svg>
         </div>
 
-        {/* Sign-off text — right side */}
-        <motion.div
-          className="text-center md:text-left"
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          <p
-            className="handwritten text-ink/70 text-lg mb-1"
-            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-          >
-            {t('footer.scribbled')}
-          </p>
+        {/* The engraver's mark — how the chart was actually made */}
+        <p className="handwritten text-ink/45 text-xs italic" style={jpFont}>
+          {t('footer.tech')}
+        </p>
+        <p className="handwritten text-ink/60 text-sm" style={jpFont}>
+          {t('footer.scribbled')}
+        </p>
 
-          {/* Notebook rule line under the text */}
-          <div className="mx-auto md:mx-0 mt-3 mb-2" style={{ width: '150px', height: '2px' }}>
-            <svg viewBox="0 0 150 4" className="w-full">
-              <path
-                d="M0 2 Q20 0 40 2 Q60 4 80 2 Q100 0 120 2 Q140 4 150 2"
-                stroke="var(--ink)"
-                strokeWidth="1"
-                fill="none"
-                opacity="0.2"
-                strokeLinecap="round"
-              />
-            </svg>
-          </div>
+        <p className="handwritten text-ink/30 text-xs mt-1" style={jpFont}>
+          {isJapanese ? 'おしまい' : '~ fin ~'}
+        </p>
+      </motion.div>
 
-          <p className="handwritten text-ink/30 text-xs">
-            {isJapanese ? 'おしまい' : '~ fin ~'}
-          </p>
-        </motion.div>
-      </div>
+      {/* The cartographer walks off the east edge of the page — journey over */}
+      <motion.div
+        className="absolute bottom-4 right-0 translate-x-[38%] pointer-events-none select-none"
+        aria-hidden="true"
+        initial={shouldReduceMotion ? false : { opacity: 0, x: -14 }}
+        whileInView={{ opacity: 0.9, x: 0 }}
+        viewport={{ once: true }}
+        transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8, delay: 0.3 }}
+      >
+        <Image
+          src="/avatar/waving_pose.webp"
+          alt=""
+          width={72}
+          height={94}
+          className="object-contain drop-shadow-lg"
+          style={{ transform: 'scaleX(-1)' }}
+        />
+      </motion.div>
     </footer>
   );
 }

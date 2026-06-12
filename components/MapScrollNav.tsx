@@ -18,12 +18,13 @@ interface Section {
    tab slides out further and brightens.
    ═══════════════════════════════════════════════════════════════ */
 
+// Desaturated vintage-map pigments — the tabs are paper artifacts too.
 const TAB_COLORS = [
-  { bg: '#FFD700', text: '#2D2D2D' },  // Home — gold
-  { bg: '#4A90D9', text: '#FFFFFF' },  // Journey — blue
-  { bg: '#FF6B6B', text: '#FFFFFF' },  // Skills — coral
-  { bg: '#9B59B6', text: '#FFFFFF' },  // Peek — purple
-  { bg: '#2ECC71', text: '#FFFFFF' },  // Contact — green
+  { bg: '#B9A37E', text: '#2D2D2D' },  // Home — aged tan
+  { bg: '#3B5F8A', text: '#FFF9E5' },  // Journey — prussian blue
+  { bg: '#B05F66', text: '#FFF9E5' },  // Skills — oxide red
+  { bg: '#7D6B8D', text: '#FFF9E5' },  // Peek — faded violet
+  { bg: '#82A775', text: '#2D2D2D' },  // Contact — sage
 ];
 
 export default function MapScrollNav() {

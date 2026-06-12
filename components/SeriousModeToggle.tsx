@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import { useTranslation } from '@/hooks/useTranslation';
+import { InkNib, InkTie } from './icons/InkIcons';
 
 export default function SeriousModeToggle() {
   const router = useRouter();
@@ -36,16 +37,22 @@ export default function SeriousModeToggle() {
           className="flex items-center gap-2"
           style={isJapanese ? { fontFamily: 'var(--font-jp-clean)' } : {}}
         >
-          <span aria-hidden="true" className="md:hidden">🎨</span>
-          <span className="hidden md:inline">{t('mode.fun')}</span>
+          <InkNib className="w-5 h-5 md:hidden" color="#FFF9E5" />
+          <span className="hidden md:inline-flex items-center gap-2">
+            <InkNib className="w-4 h-4" color="#FFF9E5" />
+            {t('mode.fun')}
+          </span>
         </span>
       ) : (
         <span 
           className="flex items-center gap-2 text-lg" 
           style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : { fontFamily: "'Patrick Hand', cursive" }}
         >
-          <span aria-hidden="true" className="md:hidden">👔</span>
-          <span className="hidden md:inline">{t('mode.serious')}</span>
+          <InkTie className="w-5 h-5 md:hidden" color="#2D2D2D" />
+          <span className="hidden md:inline-flex items-center gap-2">
+            <InkTie className="w-4 h-4" color="#2D2D2D" />
+            {t('mode.serious')}
+          </span>
         </span>
       )}
     </button>

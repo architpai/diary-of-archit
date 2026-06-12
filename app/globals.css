@@ -14,6 +14,15 @@
   --margin-blue: #3B5998;
   --correction: #E63946;
 
+  /* Vintage-map secondary palette — desaturated pigments only.
+     The saturated --margin-red is reserved for pins/seals/the margin line. */
+  --oxide: #B05F66;      /* faded oxide red — stamps, warnings, seals */
+  --prussian: #3B5F8A;   /* fountain-pen blue — water, links */
+  --sage: #82A775;       /* vegetated lowlands — success, nature */
+  --tan: #B9A37E;        /* aged-paper tan — borders, neutral accents */
+  --sepia: #64513B;      /* warm brown ink — secondary text, rules */
+  --parchment: #F1E9D2;  /* aged paper — artifact backgrounds */
+
   /* Typography */
   --font-display: 'Caveat Brush', cursive;
   --font-handwritten: 'Patrick Hand', cursive;
@@ -32,6 +41,12 @@
   --color-margin-red: var(--margin-red);
   --color-margin-blue: var(--margin-blue);
   --color-correction: var(--correction);
+  --color-oxide: var(--oxide);
+  --color-prussian: var(--prussian);
+  --color-sage: var(--sage);
+  --color-tan: var(--tan);
+  --color-sepia: var(--sepia);
+  --color-parchment: var(--parchment);
   --font-handwritten: var(--font-handwritten);
   --font-clean: var(--font-clean);
 }
@@ -1119,6 +1134,65 @@ body.serious-mode .diary-title {
     radial-gradient(ellipse at center, transparent 55%, rgba(45, 45, 45, 0.07) 100%);
 }
 
+/* Skills constellation: category names floating beside their star figures */
+.constellation-label {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: capitalize;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Skill-name pill revealed when its legend row is hovered */
+.constellation-tip {
+  font-family: var(--font-handwritten);
+  font-size: 13px;
+  color: var(--ink);
+  background: rgba(255, 249, 229, 0.94);
+  border: 2px solid;
+  border-radius: 12px 16px 11px 17px / 16px 11px 17px 12px;
+  padding: 1px 8px;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  transform: translateY(-24px);
+  transition: opacity 0.15s ease;
+}
+
+/* Hand-lettered caption under an inset map (e.g. the Mumbai side-map) */
+.map-inset-caption {
+  font-size: 17px;
+  line-height: 1.2;
+  color: rgba(45, 45, 45, 0.7);
+  white-space: nowrap;
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Field-log waypoints: resume bullets plotted like stops on a route.
+   The dot matches the experience's map-pin colour; dashed legs join them. */
+.waypoint-dot {
+  position: absolute;
+  left: 0;
+  top: 0.18em;
+  width: 13px;
+  height: 13px;
+  border-radius: 50% 45% 55% 50%;
+  border: 2px solid var(--ink);
+}
+
+.waypoint-leg {
+  position: absolute;
+  left: 5px;
+  top: calc(0.18em + 15px);
+  bottom: calc(-0.75rem - 0.18em + 2px);
+  border-left: 2px dashed rgba(45, 45, 45, 0.35);
+  transform-origin: top;
+}
+
 @media (max-width: 640px) {
   .terrain-pin[data-kind="landmark"] {
     display: none;
@@ -1172,4 +1246,253 @@ body.serious-mode .diary-title {
   height: 56px;
   margin: 0 auto 6px;
   border-left: 3px dashed rgba(230, 57, 70, 0.55);
+}
+
+/* ============================================
+   FIELD-JOURNAL ARTIFACTS
+   One paper device per section: passport stamps = tenure,
+   boarding-pass stubs = transitions, ticket/specimen cards =
+   hobbies, postcard = contact, colophon = footer.
+   ============================================ */
+
+/* — Neatline: the double-rule frame bounding the chart (the viewport) — */
+.map-neatline {
+  position: fixed;
+  inset: 7px;
+  border: 1.5px solid rgba(100, 81, 59, 0.4);
+  pointer-events: none;
+  z-index: 40;
+}
+.map-neatline::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(100, 81, 59, 0.22);
+}
+@media (max-width: 768px) {
+  .map-neatline { display: none; }
+}
+
+/* — Passport stamp: tenure marker on journey cards — */
+.passport-stamp {
+  display: inline-block;
+  font-family: var(--font-handwritten);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  line-height: 1.3;
+  padding: 4px 12px 5px;
+  border: 2.5px solid currentColor;
+  border-radius: 8px 11px 9px 12px / 11px 9px 12px 8px;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 249, 229, 0.9), inset 0 0 0 2.5px currentColor;
+  transform: rotate(-2.5deg);
+  opacity: 0.88;
+  /* uneven ink coverage, like a real rubber stamp */
+  mask-image: radial-gradient(ellipse at 30% 40%, black 55%, rgba(0,0,0,0.82) 100%);
+}
+
+/* — Boarding-pass stub: the travel leg between two jobs — */
+.boarding-stub {
+  display: inline-flex;
+  align-items: stretch;
+  text-align: left;
+  background: rgba(241, 233, 210, 0.95);
+  border: 2px solid rgba(100, 81, 59, 0.75);
+  border-radius: 10px 13px 11px 9px / 12px 9px 13px 10px;
+  box-shadow: 3px 4px 0 rgba(45, 45, 45, 0.12);
+  font-family: var(--font-handwritten);
+  color: var(--sepia);
+}
+.boarding-stub-main {
+  padding: 7px 16px 8px;
+}
+.boarding-stub-tear {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 14px 8px;
+  border-left: 2px dashed rgba(100, 81, 59, 0.45);
+}
+/* punched notches at the perforation */
+.boarding-stub-tear::before,
+.boarding-stub-tear::after {
+  content: '';
+  position: absolute;
+  left: -7px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 2px solid rgba(100, 81, 59, 0.55);
+}
+.boarding-stub-tear::before { top: -8px; }
+.boarding-stub-tear::after { bottom: -8px; }
+.boarding-route {
+  font-size: 1.3rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* — Rubber-stamp seal (HERE BE DRAGONS etc.) — */
+.stamp-seal {
+  display: inline-block;
+  font-family: var(--font-handwritten);
+  text-transform: uppercase;
+  text-align: center;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  color: var(--oxide);
+  border: 3px solid var(--oxide);
+  border-radius: 4px 7px 5px 8px / 7px 5px 8px 4px;
+  box-shadow: inset 0 0 0 2px rgba(255, 249, 229, 0.9), inset 0 0 0 3.5px var(--oxide);
+  background: rgba(255, 249, 229, 0.92);
+  padding: 6px 14px;
+  mask-image: radial-gradient(ellipse at 60% 30%, black 50%, rgba(0,0,0,0.8) 100%);
+}
+
+/* — Specimen/artifact card (sneak-peek hobbies): parchment, not neon — */
+.artifact-card {
+  background:
+    radial-gradient(ellipse at 75% 12%, rgba(185, 163, 126, 0.16), transparent 55%),
+    rgba(241, 233, 210, 0.97);
+  border: 2.5px solid var(--ink);
+  border-radius: 14px 20px 12px 22px / 20px 13px 22px 14px;
+  box-shadow: 4px 5px 0 rgba(45, 45, 45, 0.13);
+}
+.artifact-label {
+  font-family: var(--font-handwritten);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  border-bottom: 2px solid currentColor;
+  opacity: 0.75;
+  padding-bottom: 2px;
+}
+
+/* dog-eared page curl hinting "flip me" */
+.page-curl {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 30px;
+  height: 30px;
+  border-bottom-right-radius: 10px;
+  background:
+    linear-gradient(315deg,
+      transparent 46%,
+      rgba(100, 81, 59, 0.28) 48%,
+      #e9dec4 52%,
+      #f7f0dc 70%,
+      #fffdf2 100%);
+  box-shadow: -2px -2px 4px rgba(45, 45, 45, 0.08);
+  clip-path: polygon(100% 0, 0 100%, 100% 100%);
+  transform: rotate(180deg);
+  pointer-events: none;
+}
+
+/* — Luggage-tag / ship's-manifest tag — */
+.manifest-tag {
+  position: relative;
+  display: inline-block;
+  background: rgba(241, 233, 210, 0.97);
+  border: 2.5px solid var(--sepia);
+  border-radius: 18px 10px 12px 10px / 16px 9px 12px 9px;
+  box-shadow: 3px 4px 0 rgba(45, 45, 45, 0.12);
+  padding: 12px 20px 12px 44px;
+}
+/* reinforced eyelet */
+.manifest-tag::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 3px solid var(--sepia);
+  background: var(--paper);
+  box-shadow: 0 0 0 2px rgba(241, 233, 210, 1);
+}
+
+/* — Postcard (contact) — */
+.postcard {
+  background:
+    radial-gradient(ellipse at 20% 85%, rgba(185, 163, 126, 0.12), transparent 50%),
+    #FBF5E4;
+  border: 2.5px solid var(--ink);
+  border-radius: 8px 12px 9px 13px / 11px 8px 13px 9px;
+  box-shadow: 5px 7px 0 rgba(45, 45, 45, 0.13);
+}
+.postcard-divider {
+  border-left: 2px dashed rgba(100, 81, 59, 0.4);
+}
+/* ruled address lines */
+.address-line {
+  border-bottom: 1.5px solid rgba(100, 81, 59, 0.45);
+  min-height: 1.7em;
+  display: flex;
+  align-items: flex-end;
+}
+/* perforated postage-stamp edge */
+.postage-stamp {
+  background: var(--parchment);
+  padding: 6px;
+  /* scalloped perforations punched out of every edge */
+  --perf: radial-gradient(circle, transparent 0 2.5px, currentColor 2.6px);
+  mask-image: radial-gradient(circle at 2px 2px, transparent 2.5px, black 2.6px);
+  mask-size: 9px 9px;
+  mask-position: -2px -2px;
+  border: 1px solid rgba(100, 81, 59, 0.35);
+}
+.postmark-ring {
+  border: 2px solid rgba(100, 81, 59, 0.55);
+  border-radius: 50%;
+  color: rgba(100, 81, 59, 0.75);
+  mask-image: radial-gradient(ellipse at 40% 60%, black 45%, rgba(0,0,0,0.75) 100%);
+}
+
+/* — Wax seal (resume CTA) — */
+.wax-seal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 47% 53% 50% 50% / 52% 48% 52% 48%;
+  background:
+    radial-gradient(circle at 35% 30%, #C97B82 6%, var(--oxide) 35%, #8E4A52 85%);
+  box-shadow:
+    inset 0 0 0 6px rgba(142, 74, 82, 0.55),
+    inset 2px 3px 5px rgba(255, 235, 220, 0.35),
+    2px 3px 6px rgba(45, 45, 45, 0.3);
+  color: rgba(255, 244, 230, 0.92);
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  transition: transform 0.25s ease;
+}
+a:hover .wax-seal,
+a:focus-visible .wax-seal {
+  transform: rotate(-8deg) scale(1.07);
+}
+
+/* — Scale bar (hero ornament) — */
+.scale-bar-caption {
+  font-family: var(--font-handwritten);
+  font-size: 0.75rem;
+  color: rgba(45, 45, 45, 0.55);
+  letter-spacing: 0.04em;
+}
+
+/* — Colophon (footer imprint) — */
+.colophon {
+  font-family: var(--font-handwritten);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: rgba(100, 81, 59, 0.75);
 }

@@ -3,53 +3,60 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
-import StickerStars, { levelToStars } from './StickerStars';
-import { LegendSymbol } from './icons/LegendSymbols';
+import { InkKey } from './icons/InkIcons';
+import { StarGlyph } from './icons/StarGlyphs';
+import { CATEGORY_COLORS } from './hero3d/mapData';
+import { sceneState } from './hero3d/sceneState';
 
 interface Skill {
+  id?: string;
   name: string;
   level: number;
   category: string;
+  tier?: string;
 }
 
-// Category colors for visual distinction
-const categoryColors: Record<string, string> = {
-  cloud: '#5A6B8D',      // Desaturated Blue
-  database: '#5C7C5C',   // Desaturated Green
-  mapping: '#A65D57',    // Desaturated Red
-  frontend: '#7D6B8D',   // Desaturated Purple
-  backend: '#B88B4A',    // Desaturated Orange
-  domain: '#4A6B6B',     // Desaturated Teal
-  graphics: '#A67C52',   // Desaturated Brown
-  architecture: '#6B6B6B', // Desaturated Gray
-  devops: '#578D82',     // Desaturated Mint
-};
+const UNCHARTED_COLOR = '#3E6B5E';
 
 export default function Skills() {
   const { isSerious } = useSeriousMode();
   const { content, t, isJapanese } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const skills = content.skills as Skill[];
+  const jpFont = isJapanese
+    ? ({ fontFamily: 'var(--font-jp-handwritten)' } as React.CSSProperties)
+    : ({} as React.CSSProperties);
+
+  // Category key for the glyph legend — every glyph genuinely shines above.
+  const categories: { key: string; color: string; label: string }[] = [
+    ...Array.from(new Set(skills.map((s) => s.category))).map((c) => ({
+      key: c,
+      color: CATEGORY_COLORS[c] ?? '#64513B',
+      label: c,
+    })),
+    { key: 'uncharted', color: UNCHARTED_COLOR, label: t('skills.tier_charting') },
+  ];
 
   return (
     <section className="py-20 relative">
       {!isSerious ? (
         <motion.div
-          className="text-center mb-16 px-4"
+          className="text-center mb-10 px-4"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
           <div className="map-cartouche inline-block px-8 py-4 pointer-events-auto">
             <h2
-              className="diary-title text-3xl md:text-4xl text-ink"
-              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+              className="diary-title text-3xl md:text-4xl text-ink inline-flex items-center gap-3"
+              style={jpFont}
             >
+              <InkKey className="w-9 h-9 shrink-0 text-ink/80" />
               {t('skills.title_diary')}
             </h2>
             <p
               className="handwritten text-ink/50 text-sm mt-1 tracking-widest uppercase"
-              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+              style={jpFont}
             >
               {t('skills.legend_sub')}
             </p>
@@ -66,9 +73,9 @@ export default function Skills() {
         </motion.h2>
       )}
 
-      <div className="max-w-5xl mx-auto px-4 relative z-20">
-        {isSerious ? (
-          // Organized skills by category for serious mode
+      {isSerious ? (
+        // Organized skills by category for serious mode
+        <div className="max-w-5xl mx-auto px-4 relative z-20">
           <div className="max-w-4xl mx-auto">
             {Object.entries(
               skills.reduce((acc, skill) => {
@@ -77,8 +84,8 @@ export default function Skills() {
                 return acc;
               }, {} as Record<string, typeof skills>)
             ).map(([category, categorySkills], categoryIndex) => (
-              <motion.div 
-                key={category} 
+              <motion.div
+                key={category}
                 className="mb-8"
                 initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -118,86 +125,95 @@ export default function Skills() {
               </motion.div>
             ))}
           </div>
-        ) : (
-          // Map legend for diary mode — categories are legend groups with
-          // hand-drawn cartographic symbols; dotted leaders run to the stars.
+        </div>
+      ) : (
+        // ── Diary mode: the night sky IS the section. ──
+        // The 3D constellation (SkillsConstellation) fills this space;
+        // the spacer below is the camera waypoint and stays transparent
+        // to pointers so the stars themselves are hoverable.
+        <>
           <motion.div
-            data-map-waypoint="view-network"
-            className="map-panel max-w-4xl mx-auto p-6 md:p-10 pointer-events-auto"
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6 }}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-              {Object.entries(
-                skills.reduce((acc, skill) => {
-                  if (!acc[skill.category]) acc[skill.category] = [];
-                  acc[skill.category].push(skill);
-                  return acc;
-                }, {} as Record<string, typeof skills>)
-              ).map(([category, categorySkills], categoryIndex) => (
-                <motion.div
-                  key={category}
-                  initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={
-                    shouldReduceMotion ? { duration: 0 } : { delay: categoryIndex * 0.07 }
-                  }
-                >
-                  {/* Legend group header */}
-                  <div
-                    className="flex items-center gap-3 pb-2 mb-3"
-                    style={{ borderBottom: `2px solid ${categoryColors[category]}55` }}
-                  >
-                    <LegendSymbol category={category} color={categoryColors[category]} />
-                    <h3
-                      className="handwritten text-xl font-bold capitalize"
-                      style={{ color: categoryColors[category] }}
-                    >
-                      {category}
-                    </h3>
-                  </div>
-
-                  {/* Legend entries: name … stars */}
-                  <ul className="space-y-2">
-                    {categorySkills.map((skill) => (
-                      <li key={skill.name} className="flex items-end gap-2">
-                        <span className="handwritten text-ink text-base whitespace-nowrap">
-                          {skill.name}
-                        </span>
-                        <span
-                          className="flex-1 mb-1.5 border-b-2 border-dotted"
-                          style={{ borderColor: 'rgba(45,45,45,0.25)' }}
-                        />
-                        <StickerStars
-                          rating={levelToStars(skill.level)}
-                          color={categoryColors[skill.category]}
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-
-        {/* Fun disclaimer in diary mode */}
-        {!isSerious && (
-          <motion.div
-            className="text-center mt-8"
+            className="text-center px-4 mb-2"
             initial={shouldReduceMotion ? false : { opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
+            transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.4 }}
           >
-            <p className="handwritten text-ink/60 italic inline-block bg-paper/80 px-4 py-2 rounded-lg" style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}>
-              {t('skills.disclaimer')}
+            <p
+              className="inline-block handwritten text-ink/70 text-sm md:text-base bg-paper/85 px-4 py-1.5 wobbly-border-light"
+              style={jpFont}
+            >
+              {t('skills.sky_hint')}
             </p>
           </motion.div>
-        )}
-      </div>
+
+          {/* Open sky — the waypoint that tilts the camera up at night */}
+          <div
+            data-map-waypoint="view-network"
+            className="h-[85vh] md:h-[95vh]"
+            aria-hidden="true"
+          />
+
+          {/* How to read this sky — glyph key matching the stars above */}
+          <div className="max-w-3xl mx-auto px-4 relative z-20 pointer-events-auto">
+            <motion.div
+              className="map-panel px-5 py-4"
+              style={{ background: 'rgba(255, 249, 229, 0.82)', backdropFilter: 'blur(1.5px)' }}
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="flex items-baseline justify-between gap-4 mb-2.5">
+                <p className="artifact-label inline-block text-sepia" style={jpFont}>
+                  {t('skills.key_title')}
+                </p>
+                <p className="handwritten text-xs text-ink/55 text-right" style={jpFont}>
+                  {t('skills.size_note')}
+                </p>
+              </div>
+              <ul className="flex flex-wrap gap-x-4 gap-y-1.5">
+                {categories.map((cat) => (
+                  <li
+                    key={cat.key}
+                    className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md transition-colors duration-150 hover:bg-ink/5 cursor-default"
+                    onMouseEnter={() => {
+                      sceneState.hoverCategory = cat.key;
+                    }}
+                    onMouseLeave={() => {
+                      if (sceneState.hoverCategory === cat.key) {
+                        sceneState.hoverCategory = null;
+                      }
+                    }}
+                  >
+                    <StarGlyph category={cat.key} color={cat.color} className="w-5 h-5 shrink-0" />
+                    <span
+                      className="handwritten text-sm capitalize"
+                      style={{ color: cat.color, ...jpFont }}
+                    >
+                      {cat.label}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+
+            {/* Fun disclaimer */}
+            <motion.div
+              className="text-center mt-6"
+              initial={shouldReduceMotion ? false : { opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              <p
+                className="handwritten text-ink/60 italic inline-block bg-paper/80 px-4 py-2 rounded-lg"
+                style={jpFont}
+              >
+                {t('skills.disclaimer')}
+              </p>
+            </motion.div>
+          </div>
+        </>
+      )}
     </section>
   );
 }

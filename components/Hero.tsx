@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import HeroAvatarTransition from "./HeroAvatarTransition";
 import { useSeriousMode } from "@/contexts/SeriousModeContext";
 import { useTranslation } from "@/hooks/useTranslation";
+import { InkCompassRose, InkScaleBar } from "./icons/InkIcons";
 
 function HeroTitle({ compact }: { compact?: boolean }) {
   const { isSerious } = useSeriousMode();
@@ -69,6 +70,17 @@ function FieldNotebookHero() {
         >
           <HeroTitle compact />
 
+          {/* Cartouche imprint — every proper chart credits its surveyor */}
+          <motion.p
+            className="mt-2 handwritten text-ink/55 text-xs md:text-sm uppercase tracking-[0.18em]"
+            style={jpFont}
+            initial={shouldReduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 1.6 }}
+          >
+            {t("hero.credit")}
+          </motion.p>
+
           <motion.div
             className="mt-4 inline-block wobbly-border bg-paper/90 px-5 py-2.5 backdrop-blur-[2px]"
             initial={shouldReduceMotion ? false : { opacity: 0 }}
@@ -104,6 +116,21 @@ function FieldNotebookHero() {
               {t("hero.cartographer")}
             </p>
           </div>
+        </motion.div>
+
+        {/* Compass rose + scale bar — the chart's working ornaments,
+            anchored in the open water bottom-right */}
+        <motion.div
+          className="hidden md:flex absolute bottom-28 right-24 flex-col items-center gap-2 text-ink/70"
+          initial={shouldReduceMotion ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.9, delay: 2.0 }}
+        >
+          <InkCompassRose className="w-20 h-20" />
+          <InkScaleBar className="w-44" />
+          <p className="scale-bar-caption -mt-1" style={jpFont}>
+            ({t("hero.scale_note")})
+          </p>
         </motion.div>
 
         {/* Scroll indicator */}

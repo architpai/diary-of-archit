@@ -5,46 +5,87 @@
     "name": "日記",
     "subtitle": "作って、壊して、たまに直す。",
     "subtitle_role": "地図・バックエンドシステム・クラウドアプリを横断して作るフルスタックエンジニア",
+    "credit": "測量・作図 アーチット・パイ · MMXXVI",
+    "scale_note": "精度は気分次第",
     "scroll": "↓ スクロールして続きを見る ↓",
     "pin_stealth": "ステルススタートアップ ’25",
     "pin_softbank": "ソフトバンク ’24",
     "pin_khi": "川崎重工 ’22",
     "pin_fuji": "富士山 — 標高3,776mのドヤ顔",
-    "pin_mumbai": "← ムンバイのインターンはここから6,700km",
+    "pin_mumbai": "スコーピオ・グループ ’19",
+    "mumbai_inset": "ムンバイ — ページの西へ6,700km（縮尺は気にしない）",
     "map_note": "本物の標高データをシェーダーで手描き風に（地図が本業なので、ページも地図にしました）",
-    "cartographer": "私（地図担当）"
+    "cartographer": "図1 — 地図職人（私）"
   },
   "timeline": {
-    "title_diary": "📅 これまでの道のり...",
+    "title_diary": "これまでの道のり...",
     "title_serious": "職務経歴",
     "expand_cta": "...公式バージョン",
     "map_hint": "（地図に注目 — 物語と一緒に動きます）",
-    "loc_exp-1": "34.69°N 135.50°E・大阪",
-    "loc_exp-2": "35.66°N 139.76°E・東京",
-    "loc_exp-3": "34.67°N 135.18°E・神戸",
-    "loc_exp-4": "19.08°N 72.88°E・ムンバイ（地図の外）",
-    "leg_1": "↩ 1年前 · 東海道を東へ約400km",
-    "leg_2": "↩ 2年前 · 西へ約430km戻る",
-    "leg_3": "↩ すべての始まり · 海を越えて西へ約6,700km"
+    "notes_more": "調査ノートをすべて開く",
+    "notes_less": "ノートを畳む",
+    "stamp_entry": "入国",
+    "city_exp-1": "大阪",
+    "city_exp-2": "東京",
+    "city_exp-3": "神戸",
+    "city_exp-4": "ムンバイ",
+    "coords_exp-1": "34.69°N 135.50°E",
+    "coords_exp-2": "35.66°N 139.76°E",
+    "coords_exp-3": "34.67°N 135.18°E",
+    "coords_exp-4": "19.08°N 72.88°E · 挿入図を見てね",
+    "leg_1_rewind": "↩ 1年前へ",
+    "leg_1_route": "HND → ITM",
+    "leg_1_year": "2025",
+    "leg_1_note": "スタートアップ生活を求めて東京を発つ",
+    "leg_2_rewind": "↩ 2年前へ",
+    "leg_2_route": "UKB → HND",
+    "leg_2_year": "2024",
+    "leg_2_note": "東海道を東へ約430km",
+    "leg_3_rewind": "↩ すべての始まり",
+    "leg_3_route": "BOM → UKB",
+    "leg_3_year": "2022",
+    "leg_3_note": "海を越えて日本へ6,700km"
   },
   "skills": {
-    "title_diary": "💪 俺のスキル ⚡",
+    "title_diary": "測量士の道具箱",
     "title_serious": "技術スキル",
-    "legend_sub": "凡例 — 記号の意味",
-    "disclaimer": "※ 星の数は100%科学的です（たぶん）"
+    "legend_sub": "天測航法 — 私が頼りにする道具たち",
+    "sky_hint": "星にカーソルを乗せると、相棒の星が軌道に乗ります（モバイルはタップ）",
+    "disclaimer": "※ 軌道は100%科学的です（たぶん）",
+    "key_title": "この空の読み方",
+    "size_note": "大きい星ほど、よく手に取る道具",
+    "tier_charting": "開拓中",
+    "chart_1": "ローカルLLM・RAG",
+    "chart_2": "自律エージェント"
   },
   "sneakpeek": {
-    "title": "👀 ここだけの話",
+    "title": "ここだけの話",
     "subtitle": "（履歴書には書けないけど... 本当は書きたいこと）",
     "stamp": "この先、竜がいるかも",
-    "current_setup": "今の愛用ツール："
+    "stamp_latin": "· hic svnt dracones ·",
+    "uncharted": "未踏の海域",
+    "current_setup": "愛用の船",
+    "flip_hint": "めくってみて ↻",
+    "flip_back": "戻す ↩",
+    "label_gym": "入館証 nº 0042",
+    "label_llm": "実験標本",
+    "label_agents": "手配書",
+    "label_details": "詳細"
   },
   "contact": {
-    "title_diary": "📬 気軽に連絡して！",
+    "title_diary": "気軽に連絡して！",
     "title_serious": "連絡先",
-    "end_of_map": "地図はここまで · 旅してくれてありがとう",
     "message": "ここまで読んでくれたなら、きっと話が合うはず。",
     "signoff": "以上！さあ、何か面白いもの作ろう。",
+    "pc_to": "宛先:",
+    "pc_to_value": "これを読んでいるあなた",
+    "pc_from": "差出人:",
+    "pc_from_value": "アーチット・パイ · 日本・大阪",
+    "pc_postmark_top": "OSAKA",
+    "pc_postmark_bottom": "JAPAN",
+    "resume_cta": "紹介状（履歴書）",
+    "resume_sub": "封蝋付きの真面目バージョン",
+    "end_of_map": "地図はここまで · 旅してくれてありがとう",
     "thanks": "日記を読んでくれてありがとう！✨"
   },
   "nav": {
@@ -54,15 +95,18 @@
     "about": "自己紹介",
     "contact": "連絡",
     "peek": "おまけ",
-    "map_title": "🗺️ 経歴マップ"
+    "map_title": "経歴マップ"
   },
   "mode": {
-    "fun": "🎨 カジュアルモード",
-    "serious": "👔 ビジネスモード"
+    "fun": "カジュアルモード",
+    "serious": "ビジネスモード"
   },
   "footer": {
     "copyright": "© 2024 アーチット・パイ 無断転載禁止",
-    "scribbled": "❤️ を込めて制作 | アーチット・パイ"
+    "scribbled": "心を込めて制作 | アーチット・パイ",
+    "colophon": "測量・作図 アーチット・パイ · 大阪にて発行",
+    "edition": "初版 · MMXXVI",
+    "tech": "three.js と実際のSRTM標高データで描画"
   },
   "resume": {
     "summary_title": "職務要約",

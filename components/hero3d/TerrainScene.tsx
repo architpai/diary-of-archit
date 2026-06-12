@@ -6,21 +6,75 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Html, useTexture } from "@react-three/drei";
 import { TERRAIN_VERTEX, TERRAIN_FRAGMENT } from "./terrainShaders";
 import {
-  HEIGHT_SCALE,
-  MAP_BOUNDS,
   MAP_PINS,
+  TERRAIN_MAPS,
   WORLD_DEPTH,
   WORLD_WIDTH,
-  lonLatToWorld,
+  pinToWorld,
   type MapPin,
+  type TerrainMap,
 } from "./mapData";
 import { sceneState } from "./sceneState";
+import SkillsConstellation from "./SkillsConstellation";
+import UnchartedWaters from "./UnchartedWaters";
 import { useTranslation } from "@/hooks/useTranslation";
 
 const INTRO_SECONDS = 2.8;
 
-function Terrain({ reduceMotion }: { reduceMotion: boolean }) {
-  const heightmap = useTexture("/terrain/tokaido-heightmap.png");
+// Scratch vector for the night veil's per-frame placement.
+const VEIL_FORWARD = new THREE.Vector3();
+
+/**
+ * Night falls INSIDE the canvas: a camera-locked quad drawn after the
+ * terrain (renderOrder 1) but before the stars (renderOrder 2), so the
+ * constellation shines over a darkened world instead of being dimmed by
+ * a DOM overlay it can never outglow.
+ */
+function NightVeil() {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const matRef = useRef<THREE.MeshBasicMaterial>(null);
+
+  useFrame(({ camera }) => {
+    const mesh = meshRef.current;
+    const mat = matRef.current;
+    if (!mesh || !mat) return;
+    const w = sceneState.network;
+    mesh.visible = w > 0.01;
+    mat.opacity = w * 0.62;
+    if (!mesh.visible) return;
+    const cam = camera as THREE.PerspectiveCamera;
+    const dist = 1.5;
+    mesh.quaternion.copy(cam.quaternion);
+    mesh.position
+      .copy(cam.position)
+      .add(VEIL_FORWARD.set(0, 0, -dist).applyQuaternion(cam.quaternion));
+    const h = 2 * Math.tan((cam.fov * Math.PI) / 360) * dist;
+    mesh.scale.set(h * cam.aspect * 1.15, h * 1.15, 1);
+  });
+
+  return (
+    <mesh ref={meshRef} renderOrder={1} visible={false}>
+      <planeGeometry args={[1, 1]} />
+      <meshBasicMaterial
+        ref={matRef}
+        color="#16233E"
+        transparent
+        opacity={0}
+        depthWrite={false}
+        depthTest={false}
+      />
+    </mesh>
+  );
+}
+
+function Terrain({
+  map,
+  reduceMotion,
+}: {
+  map: TerrainMap;
+  reduceMotion: boolean;
+}) {
+  const heightmap = useTexture(map.texture);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
   const uniforms = useMemo(() => {
@@ -30,12 +84,18 @@ function Terrain({ reduceMotion }: { reduceMotion: boolean }) {
     heightmap.wrapS = heightmap.wrapT = THREE.ClampToEdgeWrapping;
     return {
       uHeightmap: { value: heightmap },
-      uHeightScale: { value: HEIGHT_SCALE },
+      uHeightScale: { value: map.heightScale },
       uReveal: { value: reduceMotion ? 1 : 0 },
       uTime: { value: 0 },
       uTexel: {
-        value: new THREE.Vector2(1 / MAP_BOUNDS.width, 1 / MAP_BOUNDS.height),
+        value: new THREE.Vector2(1 / map.bounds.width, 1 / map.bounds.height),
       },
+      // Keep grain/ruled-line/stroke frequencies constant in world units so
+      // inset maps read as part of the same drawing.
+      uUvScale: {
+        value: new THREE.Vector2(map.width / WORLD_WIDTH, map.depth / WORLD_DEPTH),
+      },
+      uSlopeScale: { value: map.slopeScale },
       uPaper: { value: new THREE.Color("#FFF9E5") },
       uPaperLine: { value: new THREE.Color("#a8c5e2") },
       uInk: { value: new THREE.Color("#2D2D2D") },
@@ -55,14 +115,19 @@ function Terrain({ reduceMotion }: { reduceMotion: boolean }) {
     }
   });
 
-  const segments = useMemo(
-    () => (typeof window !== "undefined" && window.innerWidth < 768 ? 256 : 480),
-    []
-  );
+  const segments = useMemo(() => {
+    const base =
+      typeof window !== "undefined" && window.innerWidth < 768 ? 256 : 480;
+    // Smaller planes need proportionally fewer segments for the same density.
+    return Math.max(96, Math.round(base * (map.width / WORLD_WIDTH)));
+  }, [map.width]);
 
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]}>
-      <planeGeometry args={[WORLD_WIDTH, WORLD_DEPTH, segments, segments]} />
+    <mesh
+      rotation={[-Math.PI / 2, 0, 0]}
+      position={[map.center[0], 0, map.center[1]]}
+    >
+      <planeGeometry args={[map.width, map.depth, segments, segments]} />
       <shaderMaterial
         ref={materialRef}
         vertexShader={TERRAIN_VERTEX}
@@ -91,15 +156,20 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
   const views = useMemo(() => {
     const v: Record<string, { pos: THREE.Vector3; tgt: THREE.Vector3 }> = {};
     for (const pin of MAP_PINS) {
-      const [x, y, z] = lonLatToWorld(pin.lon, pin.lat, pin.elevation);
-      const tgt = new THREE.Vector3(x, y, z);
+      const tgt = new THREE.Vector3(...pinToWorld(pin));
       v[pin.id] = { tgt, pos: tgt.clone().add(PIN_VIEW_OFFSET) };
     }
-    // Skills/AI section: lift off the map and look across the constellation
-    // floating above it.
+    // Skills section: tilt up into the night sky — the constellation IS
+    // the section now (no panel), so the stars fill the frame.
     v["view-network"] = {
-      tgt: new THREE.Vector3(0, 1.35, -0.6),
-      pos: new THREE.Vector3(0.2, 1.7, 4.9),
+      tgt: new THREE.Vector3(0, 1.75, -0.6),
+      pos: new THREE.Vector3(0.2, 2.15, 7.5),
+    };
+    // Sneak peek: sail south past the chart's edge into uncharted waters —
+    // the serpent and compass rose live on the blank page down there.
+    v["view-uncharted"] = {
+      tgt: new THREE.Vector3(1.4, 0.3, 4.1),
+      pos: new THREE.Vector3(1.6, 2.0, 7.6),
     };
     return v;
   }, []);
@@ -126,17 +196,19 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
     return () => window.removeEventListener("pointermove", onMove);
   }, []);
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     const scratch = scratchRef.current;
+    // Clamp tab-switch spikes; convert smoothing to per-second rates so the
+    // flight feels identical at 60 and 120 Hz.
+    const dt = Math.min(delta, 0.1);
     const t = reduceMotion
       ? 1
       : Math.min(state.clock.elapsedTime / INTRO_SECONDS, 1);
     const ease = 1 - Math.pow(1 - t, 3);
 
-    pointer.current.x +=
-      (targetPointer.current.x - pointer.current.x) * (reduceMotion ? 0 : 0.04);
-    pointer.current.y +=
-      (targetPointer.current.y - pointer.current.y) * (reduceMotion ? 0 : 0.04);
+    const pk = reduceMotion ? 0 : 1 - Math.exp(-dt * 2.5);
+    pointer.current.x += (targetPointer.current.x - pointer.current.x) * pk;
+    pointer.current.y += (targetPointer.current.y - pointer.current.y) * pk;
 
     const drift = reduceMotion
       ? 0
@@ -168,6 +240,7 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
     let sum = 0;
     let closeup = 0;
     let network = 0;
+    let uncharted = 0;
     const weights: Record<string, number> = {};
     if (!reduceMotion) {
       const vh = window.innerHeight;
@@ -179,13 +252,23 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
         const center = rect.top + rect.height / 2;
         // Narrow window: only the card actually near the viewport centre
         // drives the camera, so neighbouring cards can't drag the frame.
-        let w = 1 - Math.abs(center - vh * 0.5) / (vh * 0.55);
+        // The dead zone keeps the weight pinned at 1 while the card is near
+        // the centre, so small rect changes (entrance animation, typing,
+        // hover) can't jiggle the camera mid-read.
+        const dist = Math.abs(center - vh * 0.5);
+        const dead = vh * 0.1;
+        const span = vh * 0.55;
+        let w = dist <= dead ? 1 : 1 - (dist - dead) / (span - dead);
         if (w <= 0) continue;
         w = w * w * (3 - 2 * w); // smoothstep
 
         scratch.pos.addScaledVector(view.pos, w);
         scratch.tgt.addScaledVector(view.tgt, w);
-        if (id !== "view-network") {
+        if (id === "view-network") {
+          network = Math.min(1, network + w);
+        } else if (id === "view-uncharted") {
+          uncharted = Math.min(1, uncharted + w);
+        } else {
           // Shift the look-at point so the marker shows beside the card,
           // not underneath it (cards alternate sides on desktop).
           if (portrait) {
@@ -198,8 +281,6 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
           }
           weights[id] = (weights[id] ?? 0) + w;
           closeup = Math.max(closeup, w);
-        } else {
-          network = Math.min(1, network + w);
         }
         // Back off further on portrait screens, same as the overview does.
         scratch.pos.y += (fit - 1) * 1.1 * w;
@@ -215,6 +296,7 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
     sceneState.pinWeights = weights;
     sceneState.closeup = Math.min(1, closeup);
     sceneState.network = network;
+    sceneState.uncharted = uncharted;
 
     const ow = 1 - sum;
     scratch.pos.addScaledVector(scratch.overviewPos, ow);
@@ -226,8 +308,9 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
       scratch.curTgt.copy(scratch.tgt);
       scratch.initialized = true;
     } else {
-      scratch.curPos.lerp(scratch.pos, 0.07);
-      scratch.curTgt.lerp(scratch.tgt, 0.07);
+      const ck = 1 - Math.exp(-dt * 4.3);
+      scratch.curPos.lerp(scratch.pos, ck);
+      scratch.curTgt.lerp(scratch.tgt, ck);
     }
     camera.position.copy(scratch.curPos);
     camera.lookAt(scratch.curTgt);
@@ -249,6 +332,7 @@ function PinMarker({
   const hoveredRef = useRef(false);
   const markerRef = useRef<THREE.Group>(null);
   const labelRef = useRef<HTMLButtonElement>(null);
+  const ringMatRef = useRef<THREE.MeshBasicMaterial>(null);
 
   const experience = pin.experienceId
     ? content.experiences.find((e) => e.id === pin.experienceId)
@@ -259,7 +343,7 @@ function PinMarker({
       ? `${experience.company} ’${experience.date.slice(-2)}`
       : "";
 
-  const position = lonLatToWorld(pin.lon, pin.lat, pin.elevation);
+  const position = pinToWorld(pin);
   const interactive = pin.kind === "job";
   const phase = useMemo(() => position[0] * 7.3 + position[2] * 3.1, [position]);
   const worldPos = useMemo(
@@ -279,15 +363,31 @@ function PinMarker({
       markerRef.current.position.y = bob + w * 0.05;
       const landmarkShrink =
         pin.kind === "landmark"
-          ? 1 - Math.max(sceneState.closeup, sceneState.network) * 0.9
+          ? 1 -
+            Math.max(
+              sceneState.closeup,
+              sceneState.network,
+              sceneState.uncharted
+            ) *
+              0.9
           : 1;
-      markerRef.current.scale.setScalar((1 + w * 0.9) * landmarkShrink);
+      // Modest growth only — the closeup camera is already near the pin, so
+      // big scale multipliers read as a flat blob filling the frame.
+      markerRef.current.scale.setScalar((1 + w * 0.28) * landmarkShrink);
+    }
+    if (ringMatRef.current) {
+      // The ground shadow ring reads as a grey smudge at low altitude.
+      ringMatRef.current.opacity = 0.18 * (1 - w * 0.75);
     }
     if (labelRef.current) {
       // Unfocused labels fade during closeups; the focused pin's pill stays,
       // glides to sit directly above its marker, and counter-scales against
       // the distanceFactor growth so it keeps a readable size.
-      const fade = Math.max(sceneState.closeup, sceneState.network);
+      const fade = Math.max(
+        sceneState.closeup,
+        sceneState.network,
+        sceneState.uncharted
+      );
       const opacity = (1 - fade * 0.92) * (1 - w) + w;
       const baseX = pin.labelOffset?.[0] ?? 0;
       const baseY = pin.labelOffset?.[1] ?? 0;
@@ -362,7 +462,12 @@ function PinMarker({
           {/* ink shadow ring on the ground */}
           <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.004, 0]}>
             <ringGeometry args={[0.02, 0.05, 20]} />
-            <meshBasicMaterial color="#2D2D2D" transparent opacity={0.18} />
+            <meshBasicMaterial
+              ref={ringMatRef}
+              color="#2D2D2D"
+              transparent
+              opacity={0.18}
+            />
           </mesh>
         </group>
       )}
@@ -371,23 +476,37 @@ function PinMarker({
 }
 
 /** Dotted route (classic "journey" map style) that arcs off the west edge
- *  of the map toward Mumbai while the internship card is in view. Dots
- *  appear one by one from Kobe outward, like a pen tapping out the route. */
+ *  of the main map, across the open page, and lands on the Mumbai inset
+ *  while the internship card is in view. Dots appear one by one from Kobe
+ *  outward, like a pen tapping out the route. */
 function MumbaiTrail() {
+  const { t, isJapanese } = useTranslation();
   const groupRef = useRef<THREE.Group>(null);
   const dotMatsRef = useRef<THREE.MeshBasicMaterial[]>([]);
+  const captionRef = useRef<HTMLDivElement>(null);
 
-  const dots = useMemo(() => {
+  const { dots, captionPos } = useMemo(() => {
     const kobe = MAP_PINS.find((p) => p.id === "pin-khi")!;
-    const note = MAP_PINS.find((p) => p.id === "pin-mumbai")!;
-    const [kx, , kz] = lonLatToWorld(kobe.lon, kobe.lat, 0);
-    const [nx, , nz] = lonLatToWorld(note.lon, note.lat, 0);
+    const mumbai = MAP_PINS.find((p) => p.id === "pin-mumbai")!;
+    const [kx, , kz] = pinToWorld(kobe);
+    const [mx, , mz] = pinToWorld(mumbai);
     const curve = new THREE.QuadraticBezierCurve3(
       new THREE.Vector3(kx, 0.08, kz),
-      new THREE.Vector3((kx + nx) / 2 - 1.2, 0.8, (kz + nz) / 2 + 0.4),
-      new THREE.Vector3(-6.2, 0.3, nz + 1.1)
+      // Arc high over the "sea" of open paper between the two maps.
+      new THREE.Vector3((kx + mx) / 2 + 0.3, 1.6, (kz + mz) / 2 - 1.1),
+      new THREE.Vector3(mx, 0.14, mz)
     );
-    return curve.getPoints(26);
+    const inset = TERRAIN_MAPS.mumbai;
+    return {
+      dots: curve.getPoints(40),
+      // North of the inset: the closeup camera looks from the south, so the
+      // caption reads like a map title floating just beyond the island.
+      captionPos: new THREE.Vector3(
+        inset.center[0],
+        0.05,
+        inset.center[1] - inset.depth / 2 - 0.35
+      ),
+    };
   }, []);
 
   useFrame(() => {
@@ -395,6 +514,9 @@ function MumbaiTrail() {
     const group = groupRef.current;
     if (!group) return;
     group.visible = w > 0.02;
+    if (captionRef.current) {
+      captionRef.current.style.opacity = String(Math.max(0, w * 1.2 - 0.2));
+    }
     if (!group.visible) return;
     dotMatsRef.current.forEach((m, i) => {
       if (!m) return;
@@ -405,151 +527,40 @@ function MumbaiTrail() {
   });
 
   return (
-    <group ref={groupRef} visible={false}>
-      {dots.map((p, i) => (
-        <mesh key={i} position={p}>
-          <sphereGeometry args={[0.034, 8, 8]} />
-          <meshBasicMaterial
-            ref={(m) => {
-              if (m) dotMatsRef.current[i] = m;
+    <>
+      <group ref={groupRef} visible={false}>
+        {dots.map((p, i) => (
+          <mesh key={i} position={p}>
+            <sphereGeometry args={[0.034, 8, 8]} />
+            <meshBasicMaterial
+              ref={(m) => {
+                if (m) dotMatsRef.current[i] = m;
+              }}
+              color="#2E8B74"
+              transparent
+              opacity={0}
+            />
+          </mesh>
+        ))}
+      </group>
+      {/* Hand-lettered caption under the inset, fading in with the flight */}
+      <group position={captionPos}>
+        <Html center distanceFactor={5} zIndexRange={[19, 0]} style={{ pointerEvents: "none" }}>
+          <div
+            ref={captionRef}
+            className="map-inset-caption"
+            style={{
+              opacity: 0,
+              fontFamily: isJapanese
+                ? "var(--font-jp-handwritten)"
+                : "var(--font-handwritten)",
             }}
-            color="#2E8B74"
-            transparent
-            opacity={0}
-          />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
-/** Seeded PRNG so SSR/client and every visit agree on the constellation. */
-function mulberry32(seed: number) {
-  let a = seed;
-  return () => {
-    a |= 0;
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-const NETWORK_ACCENTS = ["#E63946", "#3B5998", "#B8860B", "#2E8B74"];
-
-/** The AI constellation: an inked node graph floating above the terrain,
- *  with packets travelling its edges. Appears for the skills section. */
-function NetworkLayer() {
-  const groupRef = useRef<THREE.Group>(null);
-  const pulseRefs = useRef<(THREE.Mesh | null)[]>([]);
-  const nodeMatsRef = useRef<THREE.MeshBasicMaterial[]>([]);
-
-  const graphRef = useRef<{
-    nodes: THREE.Vector3[];
-    edges: [number, number][];
-    lineObj: THREE.LineSegments;
-  } | null>(null);
-  if (graphRef.current === null) {
-    const rng = mulberry32(1337);
-    const nodes: THREE.Vector3[] = [];
-    for (let i = 0; i < 36; i++) {
-      nodes.push(
-        new THREE.Vector3(
-          (rng() - 0.5) * 8.5,
-          1.0 + rng() * 1.3,
-          (rng() - 0.5) * 3.4 - 0.4
-        )
-      );
-    }
-    const edges: [number, number][] = [];
-    for (let i = 0; i < nodes.length; i++) {
-      const near = nodes
-        .map((n, j) => ({ j, d: n.distanceTo(nodes[i]) }))
-        .filter((o) => o.j !== i)
-        .sort((a, b) => a.d - b.d)
-        .slice(0, 2);
-      for (const { j } of near) {
-        const a = Math.min(i, j);
-        const b = Math.max(i, j);
-        if (!edges.some((e) => e[0] === a && e[1] === b)) edges.push([a, b]);
-      }
-    }
-    const pts: THREE.Vector3[] = [];
-    for (const [a, b] of edges) pts.push(nodes[a], nodes[b]);
-    const geo = new THREE.BufferGeometry().setFromPoints(pts);
-    const mat = new THREE.LineDashedMaterial({
-      color: "#2D2D2D",
-      dashSize: 0.06,
-      gapSize: 0.045,
-      transparent: true,
-      opacity: 0,
-    });
-    const lineObj = new THREE.LineSegments(geo, mat);
-    lineObj.computeLineDistances();
-    graphRef.current = { nodes, edges, lineObj };
-  }
-  const { nodes, edges, lineObj } = graphRef.current;
-
-  const pulses = useMemo(
-    () =>
-      Array.from({ length: 7 }, (_, i) => ({
-        edge: (i * 5) % edges.length,
-        offset: i / 7,
-        speed: 0.22 + (i % 3) * 0.09,
-      })),
-    [edges.length]
-  );
-
-  useFrame((state) => {
-    const w = sceneState.network;
-    const group = groupRef.current;
-    if (!group) return;
-    group.visible = w > 0.02;
-    if (!group.visible) return;
-
-    group.position.y = Math.sin(state.clock.elapsedTime * 0.4) * 0.05;
-    (lineObj.material as THREE.LineDashedMaterial).opacity = w * 0.65;
-    for (const m of nodeMatsRef.current) if (m) m.opacity = w;
-
-    pulses.forEach((p, i) => {
-      const mesh = pulseRefs.current[i];
-      if (!mesh) return;
-      const [a, b] = edges[p.edge];
-      const t = (state.clock.elapsedTime * p.speed + p.offset) % 1;
-      mesh.position.lerpVectors(nodes[a], nodes[b], t);
-      const m = mesh.material as THREE.MeshBasicMaterial;
-      m.opacity = w * (0.4 + 0.6 * Math.sin(t * Math.PI));
-    });
-  });
-
-  return (
-    <group ref={groupRef} visible={false}>
-      <primitive object={lineObj} />
-      {nodes.map((n, i) => (
-        <mesh key={i} position={n}>
-          <sphereGeometry args={[i % 6 === 0 ? 0.045 : 0.028, 10, 10]} />
-          <meshBasicMaterial
-            ref={(m) => {
-              if (m) nodeMatsRef.current[i] = m;
-            }}
-            color={i % 6 === 0 ? NETWORK_ACCENTS[i % 4] : "#2D2D2D"}
-            transparent
-            opacity={0}
-          />
-        </mesh>
-      ))}
-      {pulses.map((_, i) => (
-        <mesh
-          key={`pulse-${i}`}
-          ref={(m) => {
-            pulseRefs.current[i] = m;
-          }}
-        >
-          <sphereGeometry args={[0.022, 8, 8]} />
-          <meshBasicMaterial color="#E63946" transparent opacity={0} />
-        </mesh>
-      ))}
-    </group>
+          >
+            {t("hero.mumbai_inset")}
+          </div>
+        </Html>
+      </group>
+    </>
   );
 }
 
@@ -583,12 +594,19 @@ export default function TerrainScene({
       camera={{ fov: 42, near: 0.1, far: 60, position: [0.5, 6.6, 5.4] }}
       gl={{ antialias: true, alpha: true }}
       style={{ background: "transparent" }}
+      onPointerMissed={() => {
+        // Tap/click on empty sky releases the orbiting stars.
+        sceneState.skyHover = null;
+      }}
     >
-      <Terrain reduceMotion={reduceMotion} />
+      <Terrain map={TERRAIN_MAPS.tokaido} reduceMotion={reduceMotion} />
+      <Terrain map={TERRAIN_MAPS.mumbai} reduceMotion={reduceMotion} />
       <CameraRig reduceMotion={reduceMotion} />
       <Pins />
       <MumbaiTrail />
-      <NetworkLayer />
+      <NightVeil />
+      <SkillsConstellation />
+      <UnchartedWaters />
     </Canvas>
   );
 }

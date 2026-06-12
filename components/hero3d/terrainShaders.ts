@@ -33,6 +33,10 @@ uniform sampler2D uHeightmap;
 uniform float uReveal;
 uniform float uTime;
 uniform vec2 uTexel;        // 1 / heightmap resolution
+uniform vec2 uUvScale;      // plane size relative to the main map — keeps
+                            // grain/ruled-line/stroke frequency constant in
+                            // world units across inset maps
+uniform float uSlopeScale;  // boosts slope response on finer-texel maps
 uniform vec3 uPaper;        // page cream
 uniform vec3 uPaperLine;    // ruled-line blue
 uniform vec3 uInk;          // handwriting ink
@@ -63,13 +67,15 @@ float noise(vec2 p) {
 
 void main() {
   float h = vHeight;
+  // UVs in "main map" units so all hand-drawn frequencies match across maps.
+  vec2 suv = vUv * uUvScale;
 
   // --- Paper base: grain + the page's ruled lines (they ARE the ocean) ---
-  float grain = noise(vUv * 700.0);
+  float grain = noise(suv * 700.0);
   vec3 paper = uPaper * (0.972 + 0.028 * grain);
 
-  float band = abs(fract(vUv.y * 18.0) - 0.5);
-  float bandW = fwidth(vUv.y * 18.0) + 1e-4;
+  float band = abs(fract(suv.y * 18.0) - 0.5);
+  float bandW = fwidth(suv.y * 18.0) + 1e-4;
   float ruled = smoothstep(0.5 - bandW * 1.6, 0.5 - bandW * 0.4, band);
   vec3 page = mix(paper, uPaperLine, ruled * 0.5);
 
@@ -90,7 +96,7 @@ void main() {
   float hw = fwidth(h) + 1e-4;
   float coast = 1.0 - smoothstep(hw * 1.2, hw * 2.6, abs(h - 2.0));
   // Wobble the ink weight so it feels hand-drawn.
-  coast *= 0.75 + 0.25 * noise(vUv * 240.0);
+  coast *= 0.75 + 0.25 * noise(suv * 240.0);
   color = mix(color, uInk, coast * 0.85);
 
   // Lines draw in from the coast upward as the terrain rises.
@@ -98,7 +104,7 @@ void main() {
     * smoothstep(0.02, 0.12, uReveal);
 
   // --- Contour lines: wobbly pen, heavier every 5th line ---
-  float wobble = (noise(vUv * 130.0) - 0.5) * 0.45;
+  float wobble = (noise(suv * 130.0) - 0.5) * 0.45;
   float e = h / 180.0 + wobble;
   float ew = fwidth(e) + 1e-4;
   float minor = 1.0 - smoothstep(ew * 0.9, ew * 2.0, abs(fract(e + 0.5) - 0.5));
@@ -113,21 +119,21 @@ void main() {
   // --- Pencil hatching on steep slopes ---
   float hx = decodeHeight(vUv + vec2(uTexel.x, 0.0)) - decodeHeight(vUv - vec2(uTexel.x, 0.0));
   float hy = decodeHeight(vUv + vec2(0.0, uTexel.y)) - decodeHeight(vUv - vec2(0.0, uTexel.y));
-  float slope = length(vec2(hx, hy));
-  float strokes = sin((vUv.x - vUv.y) * 1400.0 + noise(vUv * 90.0) * 9.0);
+  float slope = length(vec2(hx, hy)) * uSlopeScale;
+  float strokes = sin((suv.x - suv.y) * 1400.0 + noise(suv * 90.0) * 9.0);
   float hatch = smoothstep(0.55, 0.95, strokes)
     * smoothstep(200.0, 560.0, slope)
     * isLand * lineReveal;
   color = mix(color, uInk, hatch * 0.12);
 
   // Faint shading so the relief reads even between contour lines.
-  float lambert = clamp(0.5 + (hx + hy) * -0.0012, 0.0, 1.0);
+  float lambert = clamp(0.5 + (hx + hy) * uSlopeScale * -0.0012, 0.0, 1.0);
   color *= mix(1.0, 0.96 + 0.07 * lambert, isLand);
 
   // The drawing fades out toward the page edges like an unfinished sketch.
   vec2 edge = min(vUv, 1.0 - vUv);
   float rim = min(edge.x, edge.y);
-  float sketchEdge = smoothstep(0.012, 0.055 + noise(vUv * 42.0) * 0.03, rim);
+  float sketchEdge = smoothstep(0.012, 0.055 + noise(suv * 42.0) * 0.03, rim);
 
   gl_FragColor = vec4(color, sketchEdge);
   #include <colorspace_fragment>

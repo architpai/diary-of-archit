@@ -1,20 +1,80 @@
-import bounds from "@/public/terrain/tokaido-heightmap.json";
+import tokaidoBounds from "@/public/terrain/tokaido-heightmap.json";
+import mumbaiBounds from "@/public/terrain/mumbai-heightmap.json";
 
-// World-space size of the terrain plane (three.js units).
+// World-space size of the main terrain plane (three.js units).
 export const WORLD_WIDTH = 10;
-export const WORLD_DEPTH = WORLD_WIDTH * (bounds.height / bounds.width);
+export const WORLD_DEPTH = WORLD_WIDTH * (tokaidoBounds.height / tokaidoBounds.width);
 
-// Ground meters represented by the plane width, derived from the heightmap
-// bounds, with vertical exaggeration so the relief reads at a glance.
-const GROUND_METERS =
-  (bounds.east - bounds.west) *
-  111320 *
-  Math.cos((((bounds.north + bounds.south) / 2) * Math.PI) / 180);
 export const VERTICAL_EXAGGERATION = 3.2;
-export const HEIGHT_SCALE =
-  (WORLD_WIDTH / GROUND_METERS) * VERTICAL_EXAGGERATION;
 
-export const MAP_BOUNDS = bounds;
+export interface HeightmapBounds {
+  zoom: number;
+  width: number;
+  height: number;
+  west: number;
+  east: number;
+  north: number;
+  south: number;
+}
+
+/** A terrain plane drawn on the page: the main Tokaido map plus insets. */
+export interface TerrainMap {
+  id: "tokaido" | "mumbai";
+  bounds: HeightmapBounds;
+  texture: string;
+  /** World-space plane size */
+  width: number;
+  depth: number;
+  /** World units per meter of elevation */
+  heightScale: number;
+  /** World-space centre of the plane (x, z) */
+  center: [number, number];
+  /** Boosts the fragment shader's slope hatching for finer-texel maps */
+  slopeScale: number;
+}
+
+/** Ground meters represented by a heightmap's longitudinal span. */
+function groundMeters(b: HeightmapBounds) {
+  return (
+    (b.east - b.west) *
+    111320 *
+    Math.cos((((b.north + b.south) / 2) * Math.PI) / 180)
+  );
+}
+
+export const HEIGHT_SCALE =
+  (WORLD_WIDTH / groundMeters(tokaidoBounds)) * VERTICAL_EXAGGERATION;
+
+// The Mumbai inset: a small side-map floating on the page off the southwest
+// edge of the main map — the camera flies "off the chart" to reach it.
+const MUMBAI_WIDTH = 3.4;
+
+export const TERRAIN_MAPS: Record<TerrainMap["id"], TerrainMap> = {
+  tokaido: {
+    id: "tokaido",
+    bounds: tokaidoBounds,
+    texture: "/terrain/tokaido-heightmap.png",
+    width: WORLD_WIDTH,
+    depth: WORLD_DEPTH,
+    heightScale: HEIGHT_SCALE,
+    center: [0, 0],
+    slopeScale: 1,
+  },
+  mumbai: {
+    id: "mumbai",
+    bounds: mumbaiBounds,
+    texture: "/terrain/mumbai-heightmap.png",
+    width: MUMBAI_WIDTH,
+    depth: MUMBAI_WIDTH * (mumbaiBounds.height / mumbaiBounds.width),
+    // Slightly stronger exaggeration: the Sanjay Gandhi hills are gentle and
+    // need the help to read at inset scale.
+    heightScale: (MUMBAI_WIDTH / groundMeters(mumbaiBounds)) * 4.5,
+    center: [-8.3, 1.5],
+    slopeScale: 3.5,
+  },
+};
+
+export const MAP_BOUNDS = tokaidoBounds;
 
 function mercatorY(latDeg: number) {
   const rad = (latDeg * Math.PI) / 180;
@@ -22,23 +82,34 @@ function mercatorY(latDeg: number) {
 }
 
 /**
- * Project lon/lat to the terrain mesh's world position.
- * The plane lies in XZ (rotated -90° about X), so u → +x, v → -z.
+ * Project lon/lat onto one of the terrain planes' world positions.
+ * Planes lie in XZ (rotated -90° about X), so u → +x, v → -z.
  */
+export function lonLatToWorldOn(
+  map: TerrainMap,
+  lon: number,
+  lat: number,
+  elevationMeters = 0
+): [number, number, number] {
+  const b = map.bounds;
+  const u = (lon - b.west) / (b.east - b.west);
+  const v =
+    (mercatorY(lat) - mercatorY(b.south)) /
+    (mercatorY(b.north) - mercatorY(b.south));
+  return [
+    map.center[0] + (u - 0.5) * map.width,
+    elevationMeters * map.heightScale,
+    map.center[1] - (v - 0.5) * map.depth,
+  ];
+}
+
+/** Project lon/lat onto the main (Tokaido) map. */
 export function lonLatToWorld(
   lon: number,
   lat: number,
   elevationMeters = 0
 ): [number, number, number] {
-  const u = (lon - bounds.west) / (bounds.east - bounds.west);
-  const v =
-    (mercatorY(lat) - mercatorY(bounds.south)) /
-    (mercatorY(bounds.north) - mercatorY(bounds.south));
-  return [
-    (u - 0.5) * WORLD_WIDTH,
-    elevationMeters * HEIGHT_SCALE,
-    -(v - 0.5) * WORLD_DEPTH,
-  ];
+  return lonLatToWorldOn(TERRAIN_MAPS.tokaido, lon, lat, elevationMeters);
 }
 
 export interface MapPin {
@@ -48,6 +119,8 @@ export interface MapPin {
   lon: number;
   lat: number;
   elevation: number;
+  /** Which terrain plane the pin sits on (defaults to the main map) */
+  map?: TerrainMap["id"];
   /** Fallback label when not tied to an experience */
   labelKey?: string;
   kind: "job" | "landmark" | "offmap";
@@ -56,6 +129,30 @@ export interface MapPin {
   /** Marker colour — also used for the company name on the timeline card */
   color: string;
 }
+
+/** World position of a pin on whichever map it belongs to. */
+export function pinToWorld(pin: MapPin): [number, number, number] {
+  return lonLatToWorldOn(
+    TERRAIN_MAPS[pin.map ?? "tokaido"],
+    pin.lon,
+    pin.lat,
+    pin.elevation
+  );
+}
+
+/** Legend/category colours — shared by the Skills legend panel and the
+ *  skills constellation so the stars match their legend entries. */
+export const CATEGORY_COLORS: Record<string, string> = {
+  cloud: "#5A6B8D", // Desaturated Blue
+  database: "#5C7C5C", // Desaturated Green
+  mapping: "#A65D57", // Desaturated Red
+  frontend: "#7D6B8D", // Desaturated Purple
+  backend: "#B88B4A", // Desaturated Orange
+  domain: "#4A6B6B", // Desaturated Teal
+  graphics: "#A67C52", // Desaturated Brown
+  architecture: "#6B6B6B", // Desaturated Gray
+  devops: "#578D82", // Desaturated Mint
+};
 
 /** Marker colour for a timeline experience (falls back to margin blue). */
 export function experienceColor(expId: string): string {
@@ -103,7 +200,9 @@ export const MAP_PINS: MapPin[] = [
     elevation: 5,
     kind: "job",
     labelKey: "hero.pin_khi",
-    labelOffset: [-15, 62],
+    // Shifted east — the pin sits at the chart's west edge, so a centred
+    // label clips off-screen at the hero pose.
+    labelOffset: [120, 58],
   },
   {
     id: "pin-fuji",
@@ -113,15 +212,21 @@ export const MAP_PINS: MapPin[] = [
     elevation: 3776,
     labelKey: "hero.pin_fuji",
     kind: "landmark",
-    labelOffset: [0, -62],
+    // Below the summit so it can't collide with the hero subtitle pill.
+    labelOffset: [40, 85],
   },
   {
+    // A real pin on the Mumbai inset map — the camera flies off the main
+    // chart and across the page to reach it.
     id: "pin-mumbai",
     color: "#2E8B74",
-    lon: 136.15,
-    lat: 34.05,
-    elevation: 0,
+    experienceId: "exp-4",
+    map: "mumbai",
+    lon: 72.8777,
+    lat: 19.076,
+    elevation: 10,
+    kind: "job",
     labelKey: "hero.pin_mumbai",
-    kind: "offmap",
+    labelOffset: [0, -60],
   },
 ];

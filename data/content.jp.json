@@ -44,12 +44,31 @@
         "タイルパイプラインの技術リードとして、設計規約の策定、PRレビュー、ミッドレベルエンジニア2名のメンタリングを担当"
       ],
       "techStack": {
-        "os": ["macOS", "Linux"],
-        "languages": ["TypeScript", "Python", "Go"],
-        "databases": ["PostgreSQL (PostGIS)", "Redis"],
-        "cloud": ["Azure"],
-        "frameworks": ["Next.js", "Express"],
-        "tools": ["Docker", "MapLibre", "Vector Tiles (MVT)"]
+        "os": [
+          "macOS",
+          "Linux"
+        ],
+        "languages": [
+          "TypeScript",
+          "Python",
+          "Go"
+        ],
+        "databases": [
+          "PostgreSQL (PostGIS)",
+          "Redis"
+        ],
+        "cloud": [
+          "Azure"
+        ],
+        "frameworks": [
+          "Next.js",
+          "Express"
+        ],
+        "tools": [
+          "Docker",
+          "MapLibre",
+          "Vector Tiles (MVT)"
+        ]
       },
       "isResumeWorthy": true,
       "doodleType": "celebration"
@@ -68,12 +87,31 @@
         "大手自動車メーカー向けPOCとして、本番相当のタイムライン・制約下で屋内ジオフェンシングシステムの主要機能を開発"
       ],
       "techStack": {
-        "os": ["macOS", "Linux"],
-        "languages": ["TypeScript", "Python"],
-        "databases": ["PostgreSQL (PostGIS)", "Redis"],
-        "cloud": ["Azure"],
-        "frameworks": ["React", "Node.js", "Express"],
-        "tools": ["Docker", "MapLibre", "OSM"]
+        "os": [
+          "macOS",
+          "Linux"
+        ],
+        "languages": [
+          "TypeScript",
+          "Python"
+        ],
+        "databases": [
+          "PostgreSQL (PostGIS)",
+          "Redis"
+        ],
+        "cloud": [
+          "Azure"
+        ],
+        "frameworks": [
+          "React",
+          "Node.js",
+          "Express"
+        ],
+        "tools": [
+          "Docker",
+          "MapLibre",
+          "OSM"
+        ]
       },
       "isResumeWorthy": true,
       "doodleType": "coding"
@@ -93,12 +131,31 @@
         "スクリプト・モノリシック構成から、状態管理付きReactフロントエンド＋Azure Functionsベースのマイクロサービスバックエンドへ移行を実施"
       ],
       "techStack": {
-        "os": ["Windows", "Linux"],
-        "languages": ["TypeScript", "JavaScript", "Python"],
-        "databases": ["PostgreSQL", "Azure SQL"],
-        "cloud": ["Azure"],
-        "frameworks": ["React", "Azure Functions"],
-        "tools": ["Git", "Raspberry Pi", "BLE Beacons"]
+        "os": [
+          "Windows",
+          "Linux"
+        ],
+        "languages": [
+          "TypeScript",
+          "JavaScript",
+          "Python"
+        ],
+        "databases": [
+          "PostgreSQL",
+          "Azure SQL"
+        ],
+        "cloud": [
+          "Azure"
+        ],
+        "frameworks": [
+          "React",
+          "Azure Functions"
+        ],
+        "tools": [
+          "Git",
+          "Raspberry Pi",
+          "BLE Beacons"
+        ]
       },
       "isResumeWorthy": true,
       "doodleType": "newbie"
@@ -116,11 +173,26 @@
         "時間範囲フィルタリング・チャート間連動ハイライトに対応した、Reactベースのインタラクティブダッシュボードを開発"
       ],
       "techStack": {
-        "os": ["Windows"],
-        "languages": ["Python", "JavaScript"],
-        "databases": ["CSV", "Excel"],
-        "frameworks": ["React", "pandas", "matplotlib"],
-        "tools": ["Git", "Jupyter"]
+        "os": [
+          "Windows"
+        ],
+        "languages": [
+          "Python",
+          "JavaScript"
+        ],
+        "databases": [
+          "CSV",
+          "Excel"
+        ],
+        "frameworks": [
+          "React",
+          "pandas",
+          "matplotlib"
+        ],
+        "tools": [
+          "Git",
+          "Jupyter"
+        ]
       },
       "isResumeWorthy": true,
       "doodleType": "newbie"
@@ -128,84 +200,116 @@
   ],
   "skills": [
     {
+      "id": "geo",
       "name": "地理空間システム・マッピング",
       "level": 88,
-      "category": "domain"
+      "category": "domain",
+      "tier": "daily"
     },
     {
+      "id": "mvt",
       "name": "ベクタータイル (MVT)",
       "level": 88,
-      "category": "mapping"
+      "category": "mapping",
+      "tier": "daily"
     },
     {
+      "id": "wayfinding",
       "name": "経路案内",
       "level": 88,
-      "category": "mapping"
+      "category": "mapping",
+      "tier": "shipped"
     },
     {
+      "id": "maplibre",
       "name": "MapLibre",
       "level": 88,
-      "category": "mapping"
+      "category": "mapping",
+      "tier": "weekly"
     },
     {
+      "id": "postgis",
       "name": "PostgreSQL (PostGIS)",
       "level": 86,
-      "category": "database"
+      "category": "database",
+      "tier": "daily"
     },
     {
+      "id": "redis",
       "name": "Redis・キャッシュ戦略",
       "level": 88,
-      "category": "database"
+      "category": "database",
+      "tier": "daily"
     },
     {
+      "id": "react",
       "name": "React",
       "level": 88,
-      "category": "frontend"
+      "category": "frontend",
+      "tier": "weekly"
     },
     {
+      "id": "ts",
       "name": "TypeScript",
       "level": 85,
-      "category": "frontend"
+      "category": "frontend",
+      "tier": "daily"
     },
     {
+      "id": "redux",
       "name": "状態管理 (Redux)",
       "level": 88,
-      "category": "frontend"
+      "category": "frontend",
+      "tier": "shipped"
     },
     {
+      "id": "node",
       "name": "Node.js (Express/Fastify)",
       "level": 85,
-      "category": "backend"
+      "category": "backend",
+      "tier": "daily"
     },
     {
+      "id": "python",
       "name": "Python",
       "level": 75,
-      "category": "backend"
+      "category": "backend",
+      "tier": "shipped"
     },
     {
+      "id": "azure",
       "name": "Azureクラウドサービス",
       "level": 88,
-      "category": "cloud"
+      "category": "cloud",
+      "tier": "daily"
     },
     {
+      "id": "docker",
       "name": "Docker・コンテナ化",
       "level": 80,
-      "category": "devops"
+      "category": "devops",
+      "tier": "weekly"
     },
     {
+      "id": "cicd",
       "name": "CI/CD (Azure DevOps)",
       "level": 80,
-      "category": "devops"
+      "category": "devops",
+      "tier": "weekly"
     },
     {
+      "id": "threejs",
       "name": "Three.js (3D可視化)",
       "level": 82,
-      "category": "graphics"
+      "category": "graphics",
+      "tier": "weekly"
     },
     {
+      "id": "sysdesign",
       "name": "システム設計・マイクロサービス",
       "level": 82,
-      "category": "architecture"
+      "category": "architecture",
+      "tier": "weekly"
     }
   ],
   "contact": {

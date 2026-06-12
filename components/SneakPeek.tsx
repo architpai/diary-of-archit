@@ -5,6 +5,14 @@ import { motion, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
+import {
+  InkChip,
+  InkClaw,
+  InkDumbbell,
+  InkSerpent,
+  InkSpyglass,
+  InkThumbtack,
+} from './icons/InkIcons';
 
 interface Hobby {
   id: string;
@@ -22,13 +30,26 @@ const hobbyPoses: Record<string, string> = {
   agents: '/avatar/victory_pose.webp',
 };
 
-// Hobby card colors
-const hobbyColors: Record<string, { bg: string; accent: string }> = {
-  pokemon: { bg: '#FFEB3B', accent: '#FDD835' },
-  gym: { bg: '#FF69B4', accent: '#FF1493' },
-  llm: { bg: '#87CEEB', accent: '#4682B4' },
-  agents: { bg: '#B39DDB', accent: '#7E57C2' },
+// One desaturated pigment per hobby — parchment artifacts, not neon post-its.
+const hobbyAccents: Record<string, string> = {
+  gym: '#B05F66', // oxide — a gym day-pass stub
+  llm: '#3B5F8A', // prussian — a lab specimen card
+  agents: '#64513B', // sepia — a wanted poster
 };
+
+// Drawn ink icon per hobby (replaces the emoji from content json)
+function HobbyIcon({ id, color, className }: { id: string; color: string; className?: string }) {
+  switch (id) {
+    case 'gym':
+      return <InkDumbbell className={className} color={color} />;
+    case 'llm':
+      return <InkChip className={className} color={color} />;
+    case 'agents':
+      return <InkClaw className={className} color={color} />;
+    default:
+      return null;
+  }
+}
 
 function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese }: {
   hobby: Hobby;
@@ -36,9 +57,13 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese }: {
   shouldReduceMotion: boolean | null;
   isJapanese: boolean;
 }) {
+  const { t } = useTranslation();
   const [isFlipped, setIsFlipped] = useState(false);
-  const colors = hobbyColors[hobby.id] || { bg: '#FFEB3B', accent: '#FDD835' };
-  const rotation = (index - 1) * 3;
+  const accent = hobbyAccents[hobby.id] ?? '#64513B';
+  const rotation = (index - 1) * 2.5;
+  const jpFont = isJapanese
+    ? ({ fontFamily: 'var(--font-jp-handwritten)' } as React.CSSProperties)
+    : ({} as React.CSSProperties);
   const toggleFlipped = () => setIsFlipped((current) => !current);
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter' || event.key === ' ') {
@@ -47,11 +72,9 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese }: {
     }
   };
 
-  const cardShadow = '4px 4px 12px rgba(0,0,0,0.25), inset 0 -2px 4px rgba(0,0,0,0.1)';
-
   return (
     <motion.div
-      className="relative cursor-pointer rounded-lg focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-white"
+      className="relative cursor-pointer rounded-lg focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ink"
       style={{ perspective: '1000px', transform: `rotate(${rotation}deg)` }}
       initial={shouldReduceMotion ? false : { opacity: 0, y: 50, rotate: rotation }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -72,14 +95,20 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese }: {
       >
         {/* ── FRONT — stays in normal flow so it sizes the container ── */}
         <div
-          className="p-6 flex flex-col items-center relative tape-corner"
-          style={{
-            background: `linear-gradient(135deg, ${colors.bg} 0%, ${colors.accent} 100%)`,
-            boxShadow: cardShadow,
-            backfaceVisibility: 'hidden',
-          }}
+          className="artifact-card p-6 pb-8 flex flex-col items-center relative tape-corner"
+          style={{ backfaceVisibility: 'hidden' }}
         >
-          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 text-2xl drop-shadow-md">📌</div>
+          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 drop-shadow-md">
+            <InkThumbtack className="w-7 h-8" color={accent} />
+          </div>
+
+          {/* artifact label — what kind of paper this pretends to be */}
+          <span
+            className="artifact-label self-start mb-3"
+            style={{ color: accent, ...jpFont }}
+          >
+            {t(`sneakpeek.label_${hobby.id}`)}
+          </span>
 
           <motion.div
             className="mb-4 flex justify-center"
@@ -96,51 +125,66 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese }: {
           </motion.div>
 
           <h3
-            className="handwritten text-xl font-bold text-ink text-center mb-3"
-            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            className="handwritten text-xl font-bold text-ink text-center mb-3 inline-flex items-center gap-2"
+            style={jpFont}
           >
-            {hobby.icon} {hobby.title}
+            <HobbyIcon id={hobby.id} color={accent} className="w-7 h-7 shrink-0" />
+            {hobby.title}
           </h3>
 
           <p
-            className="handwritten text-ink text-center leading-relaxed text-sm"
-            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            className="handwritten text-ink/85 text-center leading-relaxed text-sm"
+            style={jpFont}
           >
             {hobby.narrative}
           </p>
 
-          <span className="mt-3 text-xs text-ink/50 handwritten"><span className="md:hidden">tap</span><span className="hidden md:inline">click</span> to flip</span>
+          {/* dog-eared corner + handwritten flip hint */}
+          <span className="page-curl" aria-hidden="true" />
+          <span
+            className="absolute bottom-2 right-9 handwritten text-xs -rotate-3"
+            style={{ color: accent, ...jpFont }}
+          >
+            {t('sneakpeek.flip_hint')}
+          </span>
         </div>
 
         {/* ── BACK — positioned via inset-0 inside the preserve-3d container ── */}
         <div
-          className="p-6 flex flex-col items-center justify-center tape-corner"
+          className="artifact-card p-6 pb-8 flex flex-col items-center justify-center tape-corner"
           style={{
             position: 'absolute',
             inset: 0,
             transform: 'rotateY(180deg)',
             backfaceVisibility: 'hidden',
-            background: `linear-gradient(135deg, ${colors.accent} 0%, ${colors.bg} 100%)`,
-            boxShadow: cardShadow,
+            borderColor: accent,
           }}
         >
-          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 text-2xl drop-shadow-md">📌</div>
+          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 drop-shadow-md">
+            <InkThumbtack className="w-7 h-8" color={accent} />
+          </div>
 
           <h3
-            className="handwritten text-xl font-bold text-ink text-center mb-4"
-            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            className="handwritten text-xl font-bold text-ink text-center mb-4 inline-flex items-center gap-2"
+            style={jpFont}
           >
-            {hobby.icon} The Details
+            <HobbyIcon id={hobby.id} color={accent} className="w-7 h-7 shrink-0" />
+            {t('sneakpeek.label_details')}
           </h3>
 
           <p
-            className="handwritten text-ink text-center leading-relaxed text-sm"
-            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            className="handwritten text-ink/85 text-center leading-relaxed text-sm"
+            style={jpFont}
           >
             {hobby.details || hobby.narrative}
           </p>
 
-          <span className="mt-4 text-xs text-ink/50 handwritten"><span className="md:hidden">tap</span><span className="hidden md:inline">click</span> to flip back</span>
+          <span
+            className="absolute bottom-2 right-4 handwritten text-xs -rotate-2"
+            style={{ color: accent, ...jpFont }}
+          >
+            {t('sneakpeek.flip_back')}
+          </span>
         </div>
       </motion.div>
     </motion.div>
@@ -152,6 +196,9 @@ export default function SneakPeek() {
   const { t, content, isJapanese } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const hobbies = content.personal.hobbies as Hobby[];
+  const jpFont = isJapanese
+    ? ({ fontFamily: 'var(--font-jp-handwritten)' } as React.CSSProperties)
+    : ({} as React.CSSProperties);
 
   // Hide this section in serious mode
   if (isSerious) return null;
@@ -167,35 +214,40 @@ export default function SneakPeek() {
       >
         <div className="map-cartouche relative inline-block px-8 py-4 pointer-events-auto">
           <h2
-            className="diary-title text-3xl md:text-4xl text-ink mb-2"
-            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            className="diary-title text-3xl md:text-4xl text-ink mb-2 inline-flex items-center gap-3"
+            style={jpFont}
           >
+            <InkSpyglass className="w-9 h-9 shrink-0 text-ink/80" />
             {t('sneakpeek.title')}
           </h2>
           <p
             className="diary-subtitle text-ink/60 handwritten"
-            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            style={jpFont}
           >
             {t('sneakpeek.subtitle')}
           </p>
           {/* Old-map warning stamp */}
           <span
-            className="absolute -top-5 -right-8 rotate-12 handwritten text-sm font-bold px-3 py-1 border-[2.5px] rounded-md hidden sm:block"
-            style={{
-              color: '#C0392B',
-              borderColor: '#C0392B',
-              background: 'rgba(255,249,229,0.9)',
-              fontFamily: isJapanese ? 'var(--font-jp-handwritten)' : undefined,
-            }}
+            className="stamp-seal absolute -top-7 -right-10 rotate-6 hidden sm:inline-flex items-center gap-2"
+            aria-hidden="true"
           >
-            🐉 {t('sneakpeek.stamp')}
+            <InkSerpent className="w-9 h-6 shrink-0" color="#B05F66" />
+            <span style={jpFont}>
+              <span className="block text-sm font-bold leading-tight">
+                {t('sneakpeek.stamp')}
+              </span>
+              <span className="block text-[9px] tracking-[0.22em] opacity-80 normal-case">
+                {t('sneakpeek.stamp_latin')}
+              </span>
+            </span>
           </span>
         </div>
       </motion.div>
 
-      {/* Hobbies Grid — keeps the AI constellation overhead */}
+      {/* Hobbies Grid — sails the camera off the chart into uncharted
+          waters (sea serpent, compass rose, here-be-dragons caption) */}
       <div
-        data-map-waypoint="view-network"
+        data-map-waypoint="view-uncharted"
         className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10 pointer-events-auto"
       >
         {hobbies.map((hobby, index) => (
@@ -209,27 +261,19 @@ export default function SneakPeek() {
         ))}
       </div>
 
-      {/* Current Setup Note */}
+      {/* Current Setup — the expedition's vessel, on a ship's-manifest tag */}
       <motion.div
-        className="mt-16 max-w-md mx-auto relative z-10 pointer-events-auto"
+        className="mt-16 flex justify-center relative z-10 pointer-events-auto px-4"
         initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.9 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
       >
-        <div 
-          className="p-5 text-center relative"
-          style={{ 
-            background: 'linear-gradient(135deg, #98FB98 0%, #32CD32 100%)',
-            transform: 'rotate(2deg)',
-            boxShadow: '3px 3px 10px rgba(0,0,0,0.2)'
-          }}
-        >
-          <span className="absolute -top-3 left-1/2 transform -translate-x-1/2 text-xl">📌</span>
-          <p 
-            className="handwritten text-ink text-lg"
-            style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-          >
-            {t('sneakpeek.current_setup')}: <strong>{content.personal.currentSetup}</strong> 💪
+        <div className="manifest-tag rotate-[1.5deg]">
+          <p className="handwritten text-ink text-base md:text-lg" style={jpFont}>
+            <span className="uppercase tracking-[0.14em] text-sepia text-xs md:text-sm font-bold mr-2">
+              {t('sneakpeek.current_setup')}:
+            </span>
+            <strong>{content.personal.currentSetup}</strong>
           </p>
         </div>
       </motion.div>

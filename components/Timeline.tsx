@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import Image from 'next/image';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { EXPERIENCE_PIN, experienceColor } from './hero3d/mapData';
+import { InkPlane, InkRoute } from './icons/InkIcons';
 
 // Map doodle types to avatar poses
 const doodlePoses: Record<string, string> = {
@@ -25,20 +26,98 @@ interface Experience {
   doodleType: string;
 }
 
+// How many survey notes show before the fold. The rest live behind the
+// "unfold the full survey notes" expander — the full list is on /resume.
+const NOTES_ABOVE_FOLD = 3;
+
+// "Plotting the route" reveal — resume bullets are waypoints inked onto the
+// field log one after another, joined by dashed legs: the same visual
+// language as the journey trail on the map. Only opacity/transform animate,
+// so the card's height never changes while the camera tracks its rect.
+// Delays are computed per index (via `custom`) so the sequence is exact:
+// dot i stamps → text i inks → leg draws toward dot i+1.
+const WP_BASE = 0.15;
+const WP_STEP = 0.4;
+const waypointItem: Variants = {
+  hidden: {},
+  visible: {},
+};
+const waypointDot: Variants = {
+  hidden: { scale: 0, opacity: 0 },
+  visible: (i: number) => ({
+    scale: 1,
+    opacity: 1,
+    transition: {
+      type: 'spring',
+      stiffness: 500,
+      damping: 18,
+      delay: WP_BASE + i * WP_STEP,
+    },
+  }),
+};
+const waypointText: Variants = {
+  hidden: { opacity: 0, x: -8 },
+  visible: (i: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.35, delay: WP_BASE + i * WP_STEP + 0.1 },
+  }),
+};
+const waypointLeg: Variants = {
+  hidden: { scaleY: 0, opacity: 0 },
+  visible: (i: number) => ({
+    scaleY: 1,
+    opacity: 1,
+    transition: {
+      duration: 0.28,
+      ease: 'easeIn',
+      delay: WP_BASE + i * WP_STEP + 0.22,
+    },
+  }),
+};
+
+/** Passport-style tenure stamp: city, entry year, coordinates. */
+function PassportStamp({
+  city,
+  entryWord,
+  year,
+  coords,
+  color,
+  jpFont,
+}: {
+  city: string;
+  entryWord: string;
+  year: string;
+  coords: string;
+  color: string;
+  jpFont: React.CSSProperties;
+}) {
+  return (
+    <span className="passport-stamp mt-2" style={{ color, ...jpFont }}>
+      <span className="block text-sm font-bold">
+        {city} · {entryWord} {year}
+      </span>
+      <span className="block text-[10px] tracking-[0.18em] opacity-80">
+        {coords}
+      </span>
+    </span>
+  );
+}
+
 // ExperienceCard component - extracted to avoid hooks issues
 function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
   const shouldReduceMotion = useReducedMotion();
-  const [isExpanded, setIsExpanded] = useState(false);
   const { t, isJapanese } = useTranslation();
-  const toggleExpanded = () => setIsExpanded((current) => !current);
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      toggleExpanded();
-    }
-  };
+  const [expanded, setExpanded] = useState(false);
 
   const pinColor = experienceColor(exp.id);
+  const jpFont = isJapanese
+    ? ({ fontFamily: 'var(--font-jp-handwritten)' } as React.CSSProperties)
+    : ({} as React.CSSProperties);
+
+  const bullets = exp.resumeBulletPoints;
+  const visibleBullets = expanded ? bullets : bullets.slice(0, NOTES_ABOVE_FOLD);
+  const hiddenCount = bullets.length - NOTES_ABOVE_FOLD;
 
   return (
       <motion.div
@@ -53,130 +132,183 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
         viewport={{ once: true, margin: "-50px" }}
         transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 0.2 }}
       >
-      {/* Experience Card — narrow and docked to the edge so the map
-          (and the marker we just flew to) stays visible beside it */}
+      {/* Experience Card — one journal sheet, narrow and docked to the edge
+          so the map (and the marker we just flew to) stays visible beside it */}
       <motion.div
         className="w-full md:w-[26rem] lg:w-[30rem] flex-none"
-        whileHover={shouldReduceMotion ? undefined : { scale: 1.02, rotate: index % 2 === 0 ? 1 : -1 }}
+        whileHover={shouldReduceMotion ? undefined : { scale: 1.01, rotate: index % 2 === 0 ? 0.5 : -0.5 }}
         transition={shouldReduceMotion ? undefined : { type: "spring", stiffness: 300 }}
       >
-        <div
-          className="relative cursor-pointer overflow-hidden rounded-lg focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ink"
-          style={{ perspective: '1200px' }}
-          onClick={toggleExpanded}
-          onKeyDown={handleKeyDown}
-          role="button"
-          tabIndex={0}
-          aria-expanded={isExpanded}
-          aria-label={`${exp.professionalTitle} at ${exp.company}`}
-        >
-          {/* ── TOP HALF — always visible (diary side) ── */}
-          <div className="relative p-6 wobbly-border bg-paper/95 tape-corner shadow-xl">
-            {/* Header — avatar pose + year tucked into the corner */}
-            <div className="mb-4 relative pr-20">
-              <div className="absolute top-0 right-0 flex flex-col items-center">
-                <div
-                  className="w-14 h-14 rounded-full border-[3px] bg-gradient-to-br from-yellow-300 to-yellow-500 overflow-hidden flex items-center justify-center"
-                  style={{ borderColor: pinColor }}
-                >
-                  <Image
-                    src={doodlePoses[exp.doodleType] || doodlePoses.coding}
-                    alt={`${exp.doodleType} doodle`}
-                    width={44}
-                    height={57}
-                    className="object-contain mt-2"
-                  />
-                </div>
-                <span
-                  className="handwritten text-xs font-bold text-white px-2 py-0.5 rounded-full -mt-2 shadow"
-                  style={{ backgroundColor: pinColor }}
-                >
-                  {exp.date}
-                </span>
+        <div className="relative p-6 wobbly-border bg-paper/95 tape-corner shadow-xl">
+          {/* Header — avatar pose + year tucked into the corner */}
+          <div className="mb-4 relative pr-20">
+            <div className="absolute top-0 right-0 flex flex-col items-center">
+              <div
+                className="w-14 h-14 rounded-full border-[3px] bg-parchment overflow-hidden flex items-center justify-center"
+                style={{ borderColor: pinColor }}
+              >
+                <Image
+                  src={doodlePoses[exp.doodleType] || doodlePoses.coding}
+                  alt={`${exp.doodleType} doodle`}
+                  width={44}
+                  height={57}
+                  className="object-contain mt-2"
+                />
               </div>
-              <h3
-                className="handwritten text-xl md:text-2xl font-bold text-ink"
-                style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-              >
-                {exp.professionalTitle}
-              </h3>
-              <p
-                className="handwritten font-bold"
-                style={{
-                  color: pinColor,
-                  ...(isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}),
-                }}
-              >
-                @ {exp.company}
-              </p>
               <span
-                className="map-coords mt-2"
-                style={{
-                  color: pinColor,
-                  borderColor: `${pinColor}77`,
-                  ...(isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}),
-                }}
+                className="handwritten text-xs font-bold text-white px-2 py-0.5 rounded-full -mt-2 shadow"
+                style={{ backgroundColor: pinColor }}
               >
-                📍 {t(`timeline.loc_${exp.id}`)}
+                {exp.date}
               </span>
             </div>
-
-            {/* Diary Narrative */}
-            <motion.p
-              className="diary-narrative handwritten text-lg text-ink italic bg-yellow-100/50 p-3 rounded-lg"
-              initial={shouldReduceMotion ? false : { opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.3 }}
+            <h3
+              className="handwritten text-xl md:text-2xl font-bold text-ink"
+              style={jpFont}
             >
-              &ldquo;{exp.diaryNarrative}&rdquo;
-            </motion.p>
-
-            {/* Tap to unfold hint */}
-            {!isExpanded && (
-              <span className="block mt-3 text-xs text-ink/40 handwritten text-center"
-                style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-              >
-                {isJapanese ? '開く' : <><span className="md:hidden">tap</span><span className="hidden md:inline">click</span> to unfold</>}
-              </span>
-            )}
+              {exp.professionalTitle}
+            </h3>
+            <p
+              className="handwritten font-bold"
+              style={{ color: pinColor, ...jpFont }}
+            >
+              @ {exp.company}
+            </p>
+            <PassportStamp
+              city={t(`timeline.city_${exp.id}`)}
+              entryWord={t('timeline.stamp_entry')}
+              year={exp.date}
+              coords={t(`timeline.coords_${exp.id}`)}
+              color={pinColor}
+              jpFont={jpFont}
+            />
           </div>
 
-          {/* ── BOTTOM HALF — unfolds to reveal resume bullets ── */}
-          <motion.div
-            initial={false}
-            animate={{
-              height: isExpanded ? 'auto' : 0,
-              rotateX: isExpanded ? 0 : -90,
-              opacity: isExpanded ? 1 : 0,
-            }}
-            transition={
-              shouldReduceMotion
-                ? { duration: 0 }
-                : { duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }
-            }
-            style={{
-              transformOrigin: 'top center',
-              overflow: 'hidden',
-            }}
+          {/* Diary Narrative */}
+          <motion.p
+            className="diary-narrative handwritten text-lg text-ink italic bg-[#EFE3B8]/60 p-3 rounded-lg"
+            initial={shouldReduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.3 }}
           >
-            <div
-              className="p-6 pt-5 wobbly-border shadow-lg"
+            &ldquo;{exp.diaryNarrative}&rdquo;
+          </motion.p>
+
+          {/* Fold crease between the diary half and the survey notes */}
+          <div
+            className="my-5 -mx-6"
+            style={{
+              borderTop: '2px dashed rgba(100, 81, 59, 0.3)',
+              boxShadow: '0 1.5px 0 rgba(255,255,255,0.55)',
+            }}
+          />
+
+          {/* Survey notes — top bullets plotted like route waypoints */}
+          <motion.ul
+            className="space-y-3 handwritten text-sm text-ink/70"
+            style={jpFont}
+            initial={shouldReduceMotion ? false : 'hidden'}
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.4 }}
+          >
+            {visibleBullets.map((point: string, i: number) => {
+              const isExtra = i >= NOTES_ABOVE_FOLD;
+              return (
+                <motion.li
+                  key={i}
+                  custom={i}
+                  className="relative pl-7"
+                  variants={shouldReduceMotion || isExtra ? undefined : waypointItem}
+                  initial={isExtra && !shouldReduceMotion ? { opacity: 0, y: 6 } : undefined}
+                  animate={isExtra ? { opacity: 1, y: 0 } : undefined}
+                  transition={
+                    isExtra && !shouldReduceMotion
+                      ? { duration: 0.3, delay: (i - NOTES_ABOVE_FOLD) * 0.1 }
+                      : undefined
+                  }
+                >
+                  <motion.span
+                    aria-hidden="true"
+                    className="waypoint-dot"
+                    style={{ background: pinColor }}
+                    variants={shouldReduceMotion || isExtra ? undefined : waypointDot}
+                  />
+                  {i < visibleBullets.length - 1 && (
+                    <motion.span
+                      aria-hidden="true"
+                      className="waypoint-leg"
+                      variants={shouldReduceMotion || isExtra ? undefined : waypointLeg}
+                    />
+                  )}
+                  <motion.span
+                    className="block"
+                    variants={shouldReduceMotion || isExtra ? undefined : waypointText}
+                  >
+                    {point}
+                  </motion.span>
+                </motion.li>
+              );
+            })}
+          </motion.ul>
+
+          {/* Unfold the rest of the notes */}
+          {hiddenCount > 0 && (
+            <button
+              type="button"
+              onClick={() => setExpanded((v) => !v)}
+              aria-expanded={expanded}
+              className="mt-4 handwritten text-sm text-ink/60 hover:text-ink transition-colors cursor-pointer"
               style={{
-                background: 'linear-gradient(to bottom, #F0E8D8 0%, var(--paper) 8%)',
-                marginTop: '-2px',
-                borderTop: '1px dashed rgba(0,0,0,0.1)',
+                textDecoration: 'underline dashed',
+                textDecorationColor: `${pinColor}88`,
+                textUnderlineOffset: '4px',
+                ...jpFont,
               }}
             >
-              <ul className="list-disc list-inside space-y-2 handwritten text-sm text-ink/70">
-                {exp.resumeBulletPoints.map((point: string, i: number) => (
-                  <li key={i}>{point}</li>
-                ))}
-              </ul>
-            </div>
-          </motion.div>
+              {expanded
+                ? `${t('timeline.notes_less')} ↑`
+                : `${t('timeline.notes_more')} (+${hiddenCount}) ↓`}
+            </button>
+          )}
         </div>
       </motion.div>
     </motion.div>
+  );
+}
+
+/** Boarding-pass stub marking the travel leg between two journey stops. */
+function BoardingStub({ leg }: { leg: number }) {
+  const { t, isJapanese } = useTranslation();
+  const jpFont = isJapanese
+    ? ({ fontFamily: 'var(--font-jp-handwritten)' } as React.CSSProperties)
+    : ({} as React.CSSProperties);
+
+  return (
+    <div className="route-leg py-16 md:py-28" style={jpFont}>
+      <p className="text-sm md:text-base text-ink/50 mb-3">
+        {t(`timeline.leg_${leg}_rewind`)}
+      </p>
+      <div
+        className="boarding-stub"
+        style={{ transform: `rotate(${leg % 2 === 0 ? 1.5 : -1.5}deg)` }}
+      >
+        <div className="boarding-stub-main">
+          <div className="flex items-center gap-2.5">
+            <InkPlane className="w-5 h-5 shrink-0" color="#64513B" />
+            <span className="boarding-route">{t(`timeline.leg_${leg}_route`)}</span>
+          </div>
+          <p className="text-sm opacity-80 mt-0.5">{t(`timeline.leg_${leg}_note`)}</p>
+        </div>
+        <div className="boarding-stub-tear">
+          <span className="text-[10px] uppercase tracking-[0.2em] opacity-70">
+            {isJapanese ? '年' : 'YR'}
+          </span>
+          <span className="text-lg font-bold leading-none text-ink">
+            {t(`timeline.leg_${leg}_year`)}
+          </span>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -197,9 +329,10 @@ export default function Timeline() {
         >
           <div className="map-cartouche inline-block px-8 py-4 pointer-events-auto">
             <h2
-              className="diary-title text-3xl md:text-4xl text-ink"
+              className="diary-title text-3xl md:text-4xl text-ink inline-flex items-center gap-3"
               style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
             >
+              <InkRoute className="w-9 h-9 shrink-0 text-ink/80" />
               {t('timeline.title_diary')}
             </h2>
             <p
@@ -263,18 +396,11 @@ export default function Timeline() {
           </div>
         ) : (
           // Journey waypoints — big gaps between cards let the map (and the
-          // camera flight) show through.
+          // camera flight) show through; boarding-pass stubs mark each leg.
           <div className="relative">
             {experiences.map((exp, index) => (
               <div key={exp.id}>
-                {index > 0 && (
-                  <div
-                    className="route-leg py-16 md:py-28 text-base md:text-lg"
-                    style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-                  >
-                    {t(`timeline.leg_${index}`)}
-                  </div>
-                )}
+                {index > 0 && <BoardingStub leg={index} />}
                 <ExperienceCard exp={exp} index={index} />
               </div>
             ))}
