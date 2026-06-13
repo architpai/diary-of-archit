@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import Image from 'next/image';
+import { avatarBox } from './avatarDimensions';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { EXPERIENCE_PIN, experienceColor } from './hero3d/mapData';
@@ -150,8 +151,7 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
                 <Image
                   src={doodlePoses[exp.doodleType] || doodlePoses.coding}
                   alt={`${exp.doodleType} doodle`}
-                  width={44}
-                  height={57}
+                  {...avatarBox(doodlePoses[exp.doodleType] || doodlePoses.coding, 44)}
                   className="object-contain mt-2"
                 />
               </div>

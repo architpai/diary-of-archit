@@ -32,6 +32,17 @@ export function InkThumbtack({ className = "w-6 h-6", color = "#B05F66" }: InkIc
   );
 }
 
+/** Specimen-tag eyelet grommet — the reinforced hole the twine threads
+ *  through. Stays put while the tag flips; the twine above it does the winding. */
+export function InkEyelet({ className = "w-6 h-5", color = "#64513B" }: InkIconProps) {
+  return (
+    <svg viewBox="0 0 24 20" className={className} aria-hidden="true">
+      <circle cx="12" cy="11" r="6.4" stroke={color} strokeWidth="2.6" fill="#FFF9E5" />
+      <circle cx="12" cy="11" r="2.7" fill="none" stroke={color} strokeWidth="1.3" opacity="0.45" />
+    </svg>
+  );
+}
+
 /** Dotted journey route ending in a flag — replaces 📅 on the journey title. */
 export function InkRoute({ className = "w-9 h-9", color }: InkIconProps) {
   const s = strokeProps(color);

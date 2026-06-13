@@ -121,8 +121,10 @@ export default function MapScrollNav() {
         })}
       </div>
 
-      {/* Mobile: colored dots at bottom */}
-      <div className="fixed top-3 left-1/2 -translate-x-1/2 z-50 flex md:hidden gap-2.5 px-4 py-2 rounded-full"
+      {/* Mobile: colored dots, tucked top-left just past the red margin line.
+          (Centered would collide with the right-anchored language + serious
+          toggles on narrow in-app-browser widths; --margin-width is 60px.) */}
+      <div className="fixed top-3 left-16 z-50 flex md:hidden gap-2.5 px-4 py-2 rounded-full"
         style={{ backgroundColor: 'rgba(255,249,229,0.85)', boxShadow: '0 2px 10px rgba(0,0,0,0.15)' }}
       >
         {sections.map((s, i) => {

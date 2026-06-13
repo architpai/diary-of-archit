@@ -211,7 +211,7 @@ export default function Contact() {
               viewport={{ once: true }}
               transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: 'easeOut' }}
             >
-              <Avatar pose="namaste" width={130} height={169} className="drop-shadow-lg" />
+              <Avatar pose="namaste" width={130} className="drop-shadow-lg" />
             </motion.div>
 
             {/* The postcard */}

@@ -63,14 +63,11 @@
     "subtitle": "（履歴書には書けないけど... 本当は書きたいこと）",
     "stamp": "この先、竜がいるかも",
     "stamp_latin": "· hic svnt dracones ·",
-    "uncharted": "未踏の海域",
     "current_setup": "愛用の船",
     "flip_hint": "めくってみて ↻",
     "flip_back": "戻す ↩",
-    "label_gym": "入館証 nº 0042",
-    "label_llm": "実験標本",
-    "label_agents": "手配書",
-    "label_details": "詳細"
+    "spec_label": "標本",
+    "label_notes": "調査メモ"
   },
   "contact": {
     "title_diary": "気軽に連絡して！",

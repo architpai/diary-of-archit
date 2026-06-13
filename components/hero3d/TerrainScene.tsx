@@ -34,13 +34,32 @@ function NightVeil() {
   const meshRef = useRef<THREE.Mesh>(null);
   const matRef = useRef<THREE.MeshBasicMaterial>(null);
 
+  // Vertical gradient — deep ink at the zenith easing toward a faint
+  // horizon glow, so the night reads as atmosphere rather than a flat wash.
+  const gradient = useMemo(() => {
+    if (typeof document === "undefined") return null;
+    const canvas = document.createElement("canvas");
+    canvas.width = 4;
+    canvas.height = 256;
+    const ctx = canvas.getContext("2d")!;
+    const g = ctx.createLinearGradient(0, 0, 0, 256);
+    g.addColorStop(0, "#091228");
+    g.addColorStop(0.55, "#142139");
+    g.addColorStop(1, "#243760");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 4, 256);
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
+  }, []);
+
   useFrame(({ camera }) => {
     const mesh = meshRef.current;
     const mat = matRef.current;
     if (!mesh || !mat) return;
     const w = sceneState.network;
     mesh.visible = w > 0.01;
-    mat.opacity = w * 0.62;
+    mat.opacity = w * 0.75;
     if (!mesh.visible) return;
     const cam = camera as THREE.PerspectiveCamera;
     const dist = 1.5;
@@ -57,7 +76,8 @@ function NightVeil() {
       <planeGeometry args={[1, 1]} />
       <meshBasicMaterial
         ref={matRef}
-        color="#16233E"
+        color="#FFFFFF"
+        map={gradient ?? undefined}
         transparent
         opacity={0}
         depthWrite={false}

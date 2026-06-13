@@ -147,56 +147,59 @@ export default function Skills() {
             </p>
           </motion.div>
 
-          {/* Open sky — the waypoint that tilts the camera up at night */}
+          {/* Open sky — the waypoint that tilts the camera up at night.
+              The glyph key is docked INSIDE it, so you read the legend
+              while the constellations are still overhead at full strength
+              (it used to sit below, where the sky had already faded). */}
           <div
             data-map-waypoint="view-network"
-            className="h-[85vh] md:h-[95vh]"
-            aria-hidden="true"
-          />
-
-          {/* How to read this sky — glyph key matching the stars above */}
-          <div className="max-w-3xl mx-auto px-4 relative z-20 pointer-events-auto">
-            <motion.div
-              className="map-panel px-5 py-4"
-              style={{ background: 'rgba(255, 249, 229, 0.82)', backdropFilter: 'blur(1.5px)' }}
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="flex items-baseline justify-between gap-4 mb-2.5">
-                <p className="artifact-label inline-block text-sepia" style={jpFont}>
-                  {t('skills.key_title')}
-                </p>
-                <p className="handwritten text-xs text-ink/55 text-right" style={jpFont}>
-                  {t('skills.size_note')}
-                </p>
-              </div>
-              <ul className="flex flex-wrap gap-x-4 gap-y-1.5">
-                {categories.map((cat) => (
-                  <li
-                    key={cat.key}
-                    className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md transition-colors duration-150 hover:bg-ink/5 cursor-default"
-                    onMouseEnter={() => {
-                      sceneState.hoverCategory = cat.key;
-                    }}
-                    onMouseLeave={() => {
-                      if (sceneState.hoverCategory === cat.key) {
-                        sceneState.hoverCategory = null;
-                      }
-                    }}
-                  >
-                    <StarGlyph category={cat.key} color={cat.color} className="w-5 h-5 shrink-0" />
-                    <span
-                      className="handwritten text-sm capitalize"
-                      style={{ color: cat.color, ...jpFont }}
+            className="relative h-[88vh] md:h-[95vh]"
+          >
+            <div className="absolute inset-x-0 bottom-3 md:bottom-8 px-4 z-20">
+              <motion.div
+                className="map-panel max-w-3xl mx-auto px-4 py-2.5 md:px-5 md:py-3.5 pointer-events-auto"
+                style={{ background: 'rgba(255, 249, 229, 0.86)', backdropFilter: 'blur(1.5px)' }}
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                <div className="flex items-baseline justify-between gap-4 mb-2.5">
+                  <p className="artifact-label inline-block text-sepia" style={jpFont}>
+                    {t('skills.key_title')}
+                  </p>
+                  <p className="handwritten text-xs text-ink/55 text-right" style={jpFont}>
+                    {t('skills.size_note')}
+                  </p>
+                </div>
+                <ul className="flex flex-wrap gap-x-4 gap-y-1.5">
+                  {categories.map((cat) => (
+                    <li
+                      key={cat.key}
+                      className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md transition-colors duration-150 hover:bg-ink/5 cursor-default"
+                      onMouseEnter={() => {
+                        sceneState.hoverCategory = cat.key;
+                      }}
+                      onMouseLeave={() => {
+                        if (sceneState.hoverCategory === cat.key) {
+                          sceneState.hoverCategory = null;
+                        }
+                      }}
                     >
-                      {cat.label}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
+                      <StarGlyph category={cat.key} color={cat.color} className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
+                      <span
+                        className="handwritten text-xs md:text-sm capitalize"
+                        style={{ color: cat.color, ...jpFont }}
+                      >
+                        {cat.label}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            </div>
+          </div>
 
+          <div className="max-w-3xl mx-auto px-4 relative z-20 pointer-events-auto">
             {/* Fun disclaimer */}
             <motion.div
               className="text-center mt-6"

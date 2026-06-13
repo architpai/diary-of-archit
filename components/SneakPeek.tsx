@@ -1,17 +1,26 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useVelocity,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from 'framer-motion';
 import Image from 'next/image';
+import { avatarBox } from './avatarDimensions';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import {
   InkChip,
   InkClaw,
   InkDumbbell,
+  InkEyelet,
   InkSerpent,
   InkSpyglass,
-  InkThumbtack,
 } from './icons/InkIcons';
 
 interface Hobby {
@@ -30,11 +39,17 @@ const hobbyPoses: Record<string, string> = {
   agents: '/avatar/victory_pose.webp',
 };
 
-// One desaturated pigment per hobby — parchment artifacts, not neon post-its.
-const hobbyAccents: Record<string, string> = {
-  gym: '#B05F66', // oxide — a gym day-pass stub
-  llm: '#3B5F8A', // prussian — a lab specimen card
-  agents: '#64513B', // sepia — a wanted poster
+// One sepia "field ink" for every specimen. The three cards used to be three
+// different artifacts (day-pass / lab-specimen / wanted poster); they are now a
+// single tagged-specimen system, so one accent keeps them cohesive.
+const SPECIMEN_INK = '#64513B'; // --sepia
+
+// Decorative "collected at" grid references nodding to the journey-map cities,
+// so each card reads as a specimen logged on the survey.
+const SPECIMEN_COORDS: Record<string, string> = {
+  gym: '34.7°N 135.5°E', // Osaka — present base
+  llm: '35.7°N 139.7°E', // Tokyo
+  agents: '19.1°N 72.9°E', // Mumbai — origin
 };
 
 // Drawn ink icon per hobby (replaces the emoji from content json)
@@ -51,16 +66,72 @@ function HobbyIcon({ id, color, className }: { id: string; color: string; classN
   }
 }
 
-function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese }: {
+// A strand of the twisted pair, sampled as a fine polyline so it reads as a
+// continuous thread (not a few fat loops). `amp` is the helix radius, `phase`
+// offsets the two strands by π so they wind around each other.
+const TWINE_TURNS = 4;
+const TWINE_LEN = 31;
+const TWINE_PTS = 56;
+function twineStrand(amp: number, phase: number): string {
+  let d = '';
+  for (let i = 0; i <= TWINE_PTS; i++) {
+    const t = i / TWINE_PTS;
+    const x = (10 + amp * Math.sin(2 * Math.PI * TWINE_TURNS * t + phase)).toFixed(2);
+    const y = (1 + t * TWINE_LEN).toFixed(2);
+    d += `${i === 0 ? 'M' : 'L'}${x} ${y} `;
+  }
+  return d.trim();
+}
+
+// The twine above each eyelet: two thin strands woven into a tight twisted pair.
+// At rest it's a relaxed cord; on flip the helix winds tighter (amplitude grows)
+// and STAYS wound until it flips back — real twine doesn't spring straight. Both
+// states share the same polyline structure so framer morphs smoothly between them.
+function WindingTwine({ wound, color }: { wound: boolean; color: string }) {
+  const amp = wound ? 3.1 : 1.1;
+  const front = twineStrand(amp, 0);
+  const back = twineStrand(amp, Math.PI);
+  const tr = { type: 'spring', stiffness: 150, damping: 14 } as const;
+  const base = { fill: 'none', strokeLinecap: 'round' as const };
+  return (
+    <svg viewBox="0 0 20 33" className="w-3.5 h-8" aria-hidden="true">
+      {/* back strand — faded + slightly thinner reads as behind */}
+      <motion.path initial={false} animate={{ d: back }} transition={tr} stroke={color} strokeWidth={1.1} opacity={0.5} {...base} />
+      {/* front strand — full weight, drawn last so it crosses over */}
+      <motion.path initial={false} animate={{ d: front }} transition={tr} stroke={color} strokeWidth={1.4} {...base} />
+    </svg>
+  );
+}
+
+// Per-card pendulum springs — slightly different so the tags desync naturally.
+const SWING_SPRINGS = [
+  { stiffness: 55, damping: 9, mass: 1.0 },
+  { stiffness: 48, damping: 8, mass: 1.15 },
+  { stiffness: 62, damping: 10, mass: 0.92 },
+];
+const SWAY_MAX = 10; // degrees of swing at full scroll velocity
+
+function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese, scrollVelocity }: {
   hobby: Hobby;
   index: number;
   shouldReduceMotion: boolean | null;
   isJapanese: boolean;
+  scrollVelocity: MotionValue<number>;
 }) {
   const { t } = useTranslation();
   const [isFlipped, setIsFlipped] = useState(false);
-  const accent = hobbyAccents[hobby.id] ?? '#64513B';
-  const rotation = (index - 1) * 2.5;
+  const accent = SPECIMEN_INK;
+  const specimenNo = String(index + 1).padStart(2, '0');
+  const coord = SPECIMEN_COORDS[hobby.id];
+  const restTilt = (index - 1) * 1.2; // tags hang at slightly different rest angles
+
+  // Dangling pendulum: scroll velocity pushes the tag sideways; an underdamped
+  // spring lets it swing past and settle. Faster scroll → bigger swing.
+  const spring = SWING_SPRINGS[index % SWING_SPRINGS.length];
+  const swayTarget = useTransform(scrollVelocity, [-4000, 0, 4000], [SWAY_MAX, 0, -SWAY_MAX], { clamp: true });
+  const swaySpring = useSpring(swayTarget, spring);
+  const sway = useTransform(swaySpring, (s) => restTilt + s);
+
   const jpFont = isJapanese
     ? ({ fontFamily: 'var(--font-jp-handwritten)' } as React.CSSProperties)
     : ({} as React.CSSProperties);
@@ -75,8 +146,8 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese }: {
   return (
     <motion.div
       className="relative cursor-pointer rounded-lg focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ink"
-      style={{ perspective: '1000px', transform: `rotate(${rotation}deg)` }}
-      initial={shouldReduceMotion ? false : { opacity: 0, y: 50, rotate: rotation }}
+      style={{ perspective: '1000px' }}
+      initial={shouldReduceMotion ? false : { opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: index * 0.15 }}
@@ -87,45 +158,77 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese }: {
       aria-pressed={isFlipped}
       aria-label={`${hobby.title}: ${isFlipped ? 'show summary' : 'show details'}`}
     >
+      {/* SWAY — the whole tag swings from the twine anchor above its top edge */}
       <motion.div
-        className="relative w-full"
-        style={{ transformStyle: 'preserve-3d' }}
-        animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, type: 'spring', stiffness: 200, damping: 25 }}
+        className="relative"
+        style={{
+          rotate: shouldReduceMotion ? restTilt : sway,
+          transformOrigin: '50% -10px',
+          transformStyle: 'preserve-3d',
+        }}
       >
-        {/* ── FRONT — stays in normal flow so it sizes the container ── */}
+        {/* TWINE TIE — anchored to the page. The eyelet stays put; the twine
+            above it winds into a tighter coil on flip and stays wound. */}
         <div
-          className="artifact-card p-6 pb-8 flex flex-col items-center relative tape-corner"
+          className="absolute -top-7 left-1/2 z-20 flex flex-col items-center drop-shadow-sm"
+          style={{ transform: 'translateX(-50%) translateZ(2px)' }}
+        >
+          <WindingTwine wound={isFlipped && !shouldReduceMotion} color={accent} />
+          <InkEyelet className="w-6 h-5 -mt-1.5" color={accent} />
+        </div>
+
+        <motion.div
+          className="relative w-full"
+          style={{ transformStyle: 'preserve-3d' }}
+          animate={{ rotateY: isFlipped ? 180 : 0 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, type: 'spring', stiffness: 200, damping: 25 }}
+        >
+        {/* ── FRONT — a field-survey specimen tag (sizes the container) ── */}
+        <div
+          className="specimen-tag p-6 pt-7 pb-8 flex flex-col items-center relative"
           style={{ backfaceVisibility: 'hidden' }}
         >
-          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 drop-shadow-md">
-            <InkThumbtack className="w-7 h-8" color={accent} />
-          </div>
-
-          {/* artifact label — what kind of paper this pretends to be */}
-          <span
-            className="artifact-label self-start mb-3"
-            style={{ color: accent, ...jpFont }}
+          {/* unified specimen header — identical on every card */}
+          <div
+            className="self-stretch flex items-end justify-between gap-2 pb-1 border-b-2"
+            style={{ borderColor: accent, color: accent }}
           >
-            {t(`sneakpeek.label_${hobby.id}`)}
-          </span>
+            <span
+              className="handwritten uppercase text-[0.7rem] font-bold tracking-[0.2em] opacity-80"
+              style={jpFont}
+            >
+              {t('sneakpeek.spec_label')}
+            </span>
+            <span className="handwritten text-sm font-bold tracking-wide shrink-0">
+              Nº {specimenNo}
+            </span>
+          </div>
+          {/* survey detail — where this specimen was logged */}
+          {coord && (
+            <span
+              className="self-start mt-1 mb-3 handwritten text-[0.7rem] tracking-wide inline-flex items-center gap-1"
+              style={{ color: accent, opacity: 0.8 }}
+            >
+              <span aria-hidden="true">⌖</span>
+              {coord}
+            </span>
+          )}
 
           <motion.div
-            className="mb-4 flex justify-center"
+            className="mb-3 flex justify-center"
             animate={shouldReduceMotion ? undefined : { y: [0, -8, 0] }}
             transition={shouldReduceMotion ? undefined : { duration: 2, repeat: Infinity, delay: index * 0.3, ease: 'easeInOut' }}
           >
             <Image
               src={hobbyPoses[hobby.id] || '/avatar/waving_pose.webp'}
               alt={`${hobby.title} pose`}
-              width={140}
-              height={175}
+              {...avatarBox(hobbyPoses[hobby.id] || '/avatar/waving_pose.webp', 140)}
               className="object-contain drop-shadow-lg"
             />
           </motion.div>
 
           <h3
-            className="handwritten text-xl font-bold text-ink text-center mb-3 inline-flex items-center gap-2"
+            className="handwritten text-xl font-bold text-ink text-center mb-2 inline-flex items-center gap-2"
             style={jpFont}
           >
             <HobbyIcon id={hobby.id} color={accent} className="w-7 h-7 shrink-0" />
@@ -149,27 +252,38 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese }: {
           </span>
         </div>
 
-        {/* ── BACK — positioned via inset-0 inside the preserve-3d container ── */}
+        {/* ── BACK — the specimen's field notes (inset-0 in the 3d container) ── */}
         <div
-          className="artifact-card p-6 pb-8 flex flex-col items-center justify-center tape-corner"
+          className="specimen-tag p-6 pt-7 pb-8 flex flex-col items-center justify-center"
           style={{
             position: 'absolute',
             inset: 0,
             transform: 'rotateY(180deg)',
             backfaceVisibility: 'hidden',
-            borderColor: accent,
           }}
         >
-          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 drop-shadow-md">
-            <InkThumbtack className="w-7 h-8" color={accent} />
+          {/* same header as the front — keeps the specimen identified when flipped */}
+          <div
+            className="self-stretch flex items-end justify-between gap-2 mb-3 pb-1 border-b-2"
+            style={{ borderColor: accent, color: accent }}
+          >
+            <span
+              className="handwritten uppercase text-[0.7rem] font-bold tracking-[0.2em] opacity-80"
+              style={jpFont}
+            >
+              {t('sneakpeek.label_notes')}
+            </span>
+            <span className="handwritten text-sm font-bold tracking-wide shrink-0">
+              Nº {specimenNo}
+            </span>
           </div>
 
           <h3
-            className="handwritten text-xl font-bold text-ink text-center mb-4 inline-flex items-center gap-2"
+            className="handwritten text-lg font-bold text-ink text-center mb-3 inline-flex items-center gap-2"
             style={jpFont}
           >
-            <HobbyIcon id={hobby.id} color={accent} className="w-7 h-7 shrink-0" />
-            {t('sneakpeek.label_details')}
+            <HobbyIcon id={hobby.id} color={accent} className="w-6 h-6 shrink-0" />
+            {hobby.title}
           </h3>
 
           <p
@@ -186,6 +300,7 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese }: {
             {t('sneakpeek.flip_back')}
           </span>
         </div>
+        </motion.div>
       </motion.div>
     </motion.div>
   );
@@ -196,6 +311,12 @@ export default function SneakPeek() {
   const { t, content, isJapanese } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const hobbies = content.personal.hobbies as Hobby[];
+
+  // Shared scroll velocity → each specimen tag swings from its twine.
+  const { scrollY } = useScroll();
+  const rawVelocity = useVelocity(scrollY);
+  const scrollVelocity = useSpring(rawVelocity, { damping: 50, stiffness: 350, mass: 0.6 });
+
   const jpFont = isJapanese
     ? ({ fontFamily: 'var(--font-jp-handwritten)' } as React.CSSProperties)
     : ({} as React.CSSProperties);
@@ -257,6 +378,7 @@ export default function SneakPeek() {
             index={index}
             shouldReduceMotion={shouldReduceMotion}
             isJapanese={isJapanese}
+            scrollVelocity={scrollVelocity}
           />
         ))}
       </div>

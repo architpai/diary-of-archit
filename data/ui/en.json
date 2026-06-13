@@ -63,14 +63,11 @@
     "subtitle": "(The stuff that doesn't go on the resume... but should)",
     "stamp": "HERE BE DRAGONS",
     "stamp_latin": "· hic svnt dracones ·",
-    "uncharted": "uncharted waters",
     "current_setup": "Vessel of choice",
     "flip_hint": "flip me ↻",
     "flip_back": "flip back ↩",
-    "label_gym": "day pass nº 0042",
-    "label_llm": "lab specimen",
-    "label_agents": "wanted",
-    "label_details": "the details"
+    "spec_label": "Field Spec",
+    "label_notes": "Field Notes"
   },
   "contact": {
     "title_diary": "Let's Talk!",

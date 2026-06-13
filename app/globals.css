@@ -1394,6 +1394,19 @@ body.serious-mode .diary-title {
   pointer-events: none;
 }
 
+/* — Field-survey specimen tag (sneak-peek hobbies) —
+     One tied-tag system echoing .manifest-tag (the "Vessel of choice" tag), so
+     the whole section reads as one tagged expedition kit. Sepia border + the
+     InkTagTie eyelet replace the old day-pass / lab-specimen / wanted cards. */
+.specimen-tag {
+  background:
+    radial-gradient(ellipse at 75% 12%, rgba(185, 163, 126, 0.16), transparent 55%),
+    rgba(241, 233, 210, 0.97);
+  border: 2.5px solid var(--sepia);
+  border-radius: 16px 10px 14px 12px / 12px 14px 11px 16px;
+  box-shadow: 4px 5px 0 rgba(45, 45, 45, 0.13);
+}
+
 /* — Luggage-tag / ship's-manifest tag — */
 .manifest-tag {
   position: relative;

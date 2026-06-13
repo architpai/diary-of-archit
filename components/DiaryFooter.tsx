@@ -2,7 +2,11 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
+import { avatarBox } from './avatarDimensions';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
+
+// Mirrored cartographer waving off the page edge.
+const FOOTER_AVATAR = avatarBox('/avatar/waving_pose.webp', 72);
 import { useTranslation } from '@/hooks/useTranslation';
 
 export default function DiaryFooter() {
@@ -76,10 +80,10 @@ export default function DiaryFooter() {
         <Image
           src="/avatar/waving_pose.webp"
           alt=""
-          width={72}
-          height={94}
+          width={FOOTER_AVATAR.width}
+          height={FOOTER_AVATAR.height}
           className="object-contain drop-shadow-lg"
-          style={{ transform: 'scaleX(-1)' }}
+          style={{ ...FOOTER_AVATAR.style, transform: 'scaleX(-1)' }}
         />
       </motion.div>
     </footer>
