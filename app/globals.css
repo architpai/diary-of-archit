@@ -1517,16 +1517,12 @@ a:focus-visible .wax-seal {
    the rest of the map's legend.
    ============================================ */
 .skills-basecamp-section {
-  --bc-sand: var(--parchment);
   --bc-ink: var(--ink);
-  --bc-line: rgba(100, 81, 59, 0.16);
 
-  background:
-    radial-gradient(circle at 18% 22%, rgba(100, 81, 59, 0.05), transparent 22rem),
-    radial-gradient(circle at 74% 16%, rgba(100, 81, 59, 0.04), transparent 20rem),
-    linear-gradient(0deg, var(--bc-line) 1px, transparent 1px),
-    var(--bc-sand);
-  background-size: auto, auto, 100% 31px, auto;
+  /* Transparent so the persistent 3D map shows through — the skills "page"
+     (headline, folded map, pins) floats over the same constant backdrop as
+     every other diary section instead of walling it off with opaque paper. */
+  background: transparent;
   color: var(--bc-ink);
   min-height: 70rem;
   overflow: hidden;
@@ -1534,42 +1530,9 @@ a:focus-visible .wax-seal {
   isolation: isolate;
 }
 
-.skills-basecamp-section::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    radial-gradient(circle, rgba(55, 55, 55, 0.18) 0 0.7px, transparent 0.8px),
-    radial-gradient(circle, rgba(255, 255, 255, 0.2) 0 0.6px, transparent 0.7px);
-  background-position: 0 0, 9px 11px;
-  background-size: 18px 18px, 24px 24px;
-  opacity: 0.18;
-  pointer-events: none;
-  z-index: 0;
-}
-
 .skills-basecamp-inner {
   position: relative;
   z-index: 1;
-}
-
-.skills-basecamp-border {
-  align-items: center;
-  display: flex;
-  height: 12.5rem;
-  justify-content: center;
-  left: 0;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
-  top: -8rem;
-  z-index: 2;
-}
-
-.skills-basecamp-border img {
-  height: 100%;
-  object-fit: contain;
-  width: 100%;
 }
 
 .skills-basecamp-heading {
@@ -1633,6 +1596,9 @@ a:focus-visible .wax-seal {
 .skills-basecamp-map-wrap {
   aspect-ratio: 3250 / 1450;
   max-width: 96rem;
+  /* The section itself is pointer-transparent (so the map underneath stays
+     interactive in the gaps); the pins re-enable pointer events here. */
+  pointer-events: auto;
   position: relative;
   width: 92vw;
 }
@@ -1846,10 +1812,6 @@ a:focus-visible .wax-seal {
     min-height: 34rem;
     padding-bottom: 2.5rem;
     padding-top: 5rem;
-  }
-
-  .skills-basecamp-border {
-    top: -6.8rem;
   }
 
   .skills-basecamp-heading {

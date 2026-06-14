@@ -124,7 +124,7 @@ export default function Skills() {
   ];
 
   return (
-    <section className={isSerious ? 'py-20 relative' : 'skills-basecamp-section relative pointer-events-auto'}>
+    <section className={isSerious ? 'py-20 relative' : 'skills-basecamp-section relative'}>
       {isSerious && (
         <motion.h2
           className="text-3xl md:text-4xl text-center mb-16 pt-16 font-sans font-bold text-ink"
@@ -191,10 +191,6 @@ export default function Skills() {
         </div>
       ) : (
         <div className="skills-basecamp-inner">
-          <div className="skills-basecamp-border" aria-hidden="true">
-            <Image src="/basecamp/border-mountains.svg" alt="" fill sizes="100vw" />
-          </div>
-
           <motion.div
             className="skills-basecamp-heading"
             initial={shouldReduceMotion ? false : { opacity: 0, y: 50 }}
