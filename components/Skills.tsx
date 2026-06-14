@@ -1,12 +1,20 @@
 'use client';
 
+import { type ComponentType, type CSSProperties, useMemo, useState } from 'react';
+import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
-import { InkKey } from './icons/InkIcons';
-import { StarGlyph } from './icons/StarGlyphs';
-import { CATEGORY_COLORS } from './hero3d/mapData';
-import { sceneState } from './hero3d/sceneState';
+import { CATEGORY_COLORS } from '@/components/hero3d/mapData';
+import {
+  InkBrackets,
+  InkCloud,
+  InkCompass,
+  InkDatabase,
+  InkSerpent,
+  InkServer,
+} from '@/components/icons/InkIcons';
+import BasecampLottie from './BasecampLottie';
 
 interface Skill {
   id?: string;
@@ -16,53 +24,108 @@ interface Skill {
   tier?: string;
 }
 
-const UNCHARTED_COLOR = '#3E6B5E';
+type InkGlyph = ComponentType<{ className?: string; color?: string }>;
+
+/** A worn sepia for the unexplored "here be dragons" frontier — it has no
+ *  entry in CATEGORY_COLORS because it isn't a charted category yet. */
+const FRONTIER_COLOR = '#7E5A3C';
+/** Cream the pin glyphs are drawn in, so the ink reads on the solid marker. */
+const PIN_GLYPH_INK = '#FFF9E5';
+
+interface SkillGroup {
+  id: string;
+  /** Maps to the .skills-basecamp-pin-_N position slots in globals.css */
+  className: string;
+  labelKey: string;
+  color: string;
+  Icon: InkGlyph;
+  /** Skill ids resolved against content.skills for their localized names */
+  skillIds: string[];
+  /** ui-copy keys for skills not in content.skills (the frontier two) */
+  chartKeys?: string[];
+  frontier?: boolean;
+}
+
+// Six kits laid out as regions on the map — the diary's real skill
+// categories grouped, coloured by CATEGORY_COLORS so they match the rest of
+// the map's legend. The frontier kit is the uncharted AI edge.
+const SKILL_GROUPS: SkillGroup[] = [
+  {
+    id: 'mapping',
+    className: '_1',
+    labelKey: 'skills.group_mapping',
+    color: CATEGORY_COLORS.mapping,
+    Icon: InkCompass,
+    skillIds: ['geo', 'mvt', 'wayfinding', 'maplibre'],
+  },
+  {
+    id: 'data',
+    className: '_2',
+    labelKey: 'skills.group_data',
+    color: CATEGORY_COLORS.database,
+    Icon: InkDatabase,
+    skillIds: ['postgis', 'redis'],
+  },
+  {
+    id: 'frontend',
+    className: '_3',
+    labelKey: 'skills.group_frontend',
+    color: CATEGORY_COLORS.frontend,
+    Icon: InkBrackets,
+    skillIds: ['react', 'ts', 'redux', 'threejs'],
+  },
+  {
+    id: 'backend',
+    className: '_4',
+    labelKey: 'skills.group_backend',
+    color: CATEGORY_COLORS.backend,
+    Icon: InkServer,
+    skillIds: ['node', 'python', 'sysdesign'],
+  },
+  {
+    id: 'cloud',
+    className: '_5',
+    labelKey: 'skills.group_cloud',
+    color: CATEGORY_COLORS.cloud,
+    Icon: InkCloud,
+    skillIds: ['azure', 'docker', 'cicd'],
+  },
+  {
+    id: 'frontier',
+    className: '_6',
+    labelKey: 'skills.group_frontier',
+    color: FRONTIER_COLOR,
+    Icon: InkSerpent,
+    skillIds: [],
+    chartKeys: ['skills.chart_1', 'skills.chart_2'],
+    frontier: true,
+  },
+];
 
 export default function Skills() {
   const { isSerious } = useSeriousMode();
-  const { content, t, isJapanese } = useTranslation();
+  const { content, t } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
+  const [activeGroupId, setActiveGroupId] = useState<string | null>(null);
   const skills = content.skills as Skill[];
-  const jpFont = isJapanese
-    ? ({ fontFamily: 'var(--font-jp-handwritten)' } as React.CSSProperties)
-    : ({} as React.CSSProperties);
 
-  // Category key for the glyph legend — every glyph genuinely shines above.
-  const categories: { key: string; color: string; label: string }[] = [
-    ...Array.from(new Set(skills.map((s) => s.category))).map((c) => ({
-      key: c,
-      color: CATEGORY_COLORS[c] ?? '#64513B',
-      label: c,
-    })),
-    { key: 'uncharted', color: UNCHARTED_COLOR, label: t('skills.tier_charting') },
+  // id → localized skill name, so a group's pins can list their tools.
+  const skillNameById = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const skill of skills) if (skill.id) map[skill.id] = skill.name;
+    return map;
+  }, [skills]);
+
+  const activeGroup = SKILL_GROUPS.find((group) => group.id === activeGroupId);
+
+  const groupSkillNames = (group: SkillGroup): string[] => [
+    ...group.skillIds.map((id) => skillNameById[id]).filter(Boolean),
+    ...(group.chartKeys ?? []).map((key) => t(key)),
   ];
 
   return (
-    <section className="py-20 relative">
-      {!isSerious ? (
-        <motion.div
-          className="text-center mb-10 px-4"
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          <div className="map-cartouche inline-block px-8 py-4 pointer-events-auto">
-            <h2
-              className="diary-title text-3xl md:text-4xl text-ink inline-flex items-center gap-3"
-              style={jpFont}
-            >
-              <InkKey className="w-9 h-9 shrink-0 text-ink/80" />
-              {t('skills.title_diary')}
-            </h2>
-            <p
-              className="handwritten text-ink/50 text-sm mt-1 tracking-widest uppercase"
-              style={jpFont}
-            >
-              {t('skills.legend_sub')}
-            </p>
-          </div>
-        </motion.div>
-      ) : (
+    <section className={isSerious ? 'py-20 relative' : 'skills-basecamp-section relative pointer-events-auto'}>
+      {isSerious && (
         <motion.h2
           className="text-3xl md:text-4xl text-center mb-16 pt-16 font-sans font-bold text-ink"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
@@ -127,95 +190,95 @@ export default function Skills() {
           </div>
         </div>
       ) : (
-        // ── Diary mode: the night sky IS the section. ──
-        // The 3D constellation (SkillsConstellation) fills this space;
-        // the spacer below is the camera waypoint and stays transparent
-        // to pointers so the stars themselves are hoverable.
-        <>
+        <div className="skills-basecamp-inner">
+          <div className="skills-basecamp-border" aria-hidden="true">
+            <Image src="/basecamp/border-mountains.svg" alt="" fill sizes="100vw" />
+          </div>
+
           <motion.div
-            className="text-center px-4 mb-2"
-            initial={shouldReduceMotion ? false : { opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.4 }}
+            className="skills-basecamp-heading"
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.35 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8, ease: 'easeOut' }}
           >
-            <p
-              className="inline-block handwritten text-ink/70 text-sm md:text-base bg-paper/85 px-4 py-1.5 wobbly-border-light"
-              style={jpFont}
-            >
-              {t('skills.sky_hint')}
-            </p>
+            <span>there&apos;s</span>
+            <span>more to</span>
+            <span>explore</span>
+            <Image
+              className="skills-basecamp-cloud"
+              src="/basecamp/cloud01.svg"
+              alt=""
+              aria-hidden="true"
+              width={100}
+              height={64}
+            />
           </motion.div>
 
-          {/* Open sky — the waypoint that tilts the camera up at night.
-              The glyph key is docked INSIDE it, so you read the legend
-              while the constellations are still overhead at full strength
-              (it used to sit below, where the sky had already faded). */}
-          <div
-            data-map-waypoint="view-network"
-            className="relative h-[88vh] md:h-[95vh]"
-          >
-            <div className="absolute inset-x-0 bottom-3 md:bottom-8 px-4 z-20">
-              <motion.div
-                className="map-panel max-w-3xl mx-auto px-4 py-2.5 md:px-5 md:py-3.5 pointer-events-auto"
-                style={{ background: 'rgba(255, 249, 229, 0.86)', backdropFilter: 'blur(1.5px)' }}
-                initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-              >
-                <div className="flex items-baseline justify-between gap-4 mb-2.5">
-                  <p className="artifact-label inline-block text-sepia" style={jpFont}>
-                    {t('skills.key_title')}
-                  </p>
-                  <p className="handwritten text-xs text-ink/55 text-right" style={jpFont}>
-                    {t('skills.size_note')}
-                  </p>
+          <p className="skills-basecamp-hint">{t('skills.map_hint')}</p>
+
+          <div className="skills-basecamp-map-stage">
+            <div
+              className="skills-basecamp-map-wrap"
+              onMouseLeave={() => setActiveGroupId(null)}
+            >
+              <BasecampLottie
+                className="skills-basecamp-lottie"
+                path="/basecamp/kaart-loop.json"
+              />
+
+              {SKILL_GROUPS.map((group) => {
+                const Icon = group.Icon;
+                return (
+                  <button
+                    key={group.id}
+                    type="button"
+                    className={`skills-basecamp-pin skills-basecamp-pin-${group.className}${
+                      group.frontier ? ' skills-basecamp-pin-frontier' : ''
+                    }`}
+                    style={{ backgroundColor: group.color }}
+                    aria-label={t(group.labelKey)}
+                    title={t(group.labelKey)}
+                    // One model: hover, focus, or tap all OPEN this group; the
+                    // wrap's onMouseLeave + onBlur close it. (A toggle on click
+                    // would cancel the open that mouseenter/focus just set,
+                    // breaking "tap on mobile".)
+                    onFocus={() => setActiveGroupId(group.id)}
+                    onBlur={() => setActiveGroupId((cur) => (cur === group.id ? null : cur))}
+                    onMouseEnter={() => setActiveGroupId(group.id)}
+                    onClick={() => setActiveGroupId(group.id)}
+                  >
+                    <Icon className="skills-basecamp-pin-glyph" color={PIN_GLYPH_INK} />
+                  </button>
+                );
+              })}
+
+              {activeGroup && (
+                <div
+                  className={`skills-basecamp-popup skills-basecamp-popup-${activeGroup.className}`}
+                  style={{ '--pin-color': activeGroup.color } as CSSProperties}
+                  role="status"
+                >
+                  <span className="skills-basecamp-popup-head">
+                    <activeGroup.Icon
+                      className="skills-basecamp-popup-glyph"
+                      color={activeGroup.color}
+                    />
+                    {t(activeGroup.labelKey)}
+                  </span>
+                  <ul className="skills-basecamp-popup-list">
+                    {groupSkillNames(activeGroup).map((name) => (
+                      <li key={name}>{name}</li>
+                    ))}
+                  </ul>
+                  {activeGroup.frontier && (
+                    <span className="skills-basecamp-popup-note">{t('skills.tier_charting')}</span>
+                  )}
                 </div>
-                <ul className="flex flex-wrap gap-x-4 gap-y-1.5">
-                  {categories.map((cat) => (
-                    <li
-                      key={cat.key}
-                      className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-md transition-colors duration-150 hover:bg-ink/5 cursor-default"
-                      onMouseEnter={() => {
-                        sceneState.hoverCategory = cat.key;
-                      }}
-                      onMouseLeave={() => {
-                        if (sceneState.hoverCategory === cat.key) {
-                          sceneState.hoverCategory = null;
-                        }
-                      }}
-                    >
-                      <StarGlyph category={cat.key} color={cat.color} className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
-                      <span
-                        className="handwritten text-xs md:text-sm capitalize"
-                        style={{ color: cat.color, ...jpFont }}
-                      >
-                        {cat.label}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
+              )}
             </div>
           </div>
-
-          <div className="max-w-3xl mx-auto px-4 relative z-20 pointer-events-auto">
-            {/* Fun disclaimer */}
-            <motion.div
-              className="text-center mt-6"
-              initial={shouldReduceMotion ? false : { opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-            >
-              <p
-                className="handwritten text-ink/60 italic inline-block bg-paper/80 px-4 py-2 rounded-lg"
-                style={jpFont}
-              >
-                {t('skills.disclaimer')}
-              </p>
-            </motion.div>
-          </div>
-        </>
+        </div>
       )}
     </section>
   );

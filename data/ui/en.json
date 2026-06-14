@@ -56,7 +56,14 @@
     "size_note": "bigger star = reached for more often",
     "tier_charting": "still charting",
     "chart_1": "Local LLMs & RAG",
-    "chart_2": "Autonomous agents"
+    "chart_2": "Autonomous agents",
+    "map_hint": "hover a marker to see what's in each kit (tap on mobile)",
+    "group_mapping": "Geospatial & Mapping",
+    "group_data": "Databases & Caching",
+    "group_frontend": "Frontend & Visualisation",
+    "group_backend": "Backend & Systems",
+    "group_cloud": "Cloud & DevOps",
+    "group_frontier": "Frontier · AI"
   },
   "sneakpeek": {
     "title": "The \"Sneak Peek\" Section",

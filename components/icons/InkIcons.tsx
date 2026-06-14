@@ -170,6 +170,70 @@ export function InkClaw({ className = "w-8 h-8", color }: InkIconProps) {
   );
 }
 
+/** Compact compass — geospatial & mapping pin. */
+export function InkCompass({ className = "w-7 h-7", color }: InkIconProps) {
+  const s = strokeProps(color, 2);
+  return (
+    <svg viewBox="0 0 36 36" className={className} aria-hidden="true">
+      <circle cx="18" cy="18" r="13" {...s} />
+      <path d="M18 8 L21 18 L18 28 L15 18 Z" {...s} />
+      <circle cx="18" cy="18" r="1.6" fill={color ?? "currentColor"} stroke="none" />
+    </svg>
+  );
+}
+
+/** Stacked cylinder — databases & caching pin. */
+export function InkDatabase({ className = "w-7 h-7", color }: InkIconProps) {
+  const s = strokeProps(color, 2);
+  return (
+    <svg viewBox="0 0 36 36" className={className} aria-hidden="true">
+      <ellipse cx="18" cy="9.5" rx="10" ry="3.6" {...s} />
+      <path d="M8 9.5 L8 26.5 C8 28.5 12.5 30 18 30 C23.5 30 28 28.5 28 26.5 L28 9.5" {...s} />
+      <path d="M8 18 C8 20 12.5 21.5 18 21.5 C23.5 21.5 28 20 28 18" {...s} strokeWidth={1.6} opacity={0.7} />
+    </svg>
+  );
+}
+
+/** Angle brackets with a slash — frontend & visualisation pin. */
+export function InkBrackets({ className = "w-7 h-7", color }: InkIconProps) {
+  const s = strokeProps(color, 2.2);
+  return (
+    <svg viewBox="0 0 36 36" className={className} aria-hidden="true">
+      <path d="M12 11 L5 18 L12 25" {...s} />
+      <path d="M24 11 L31 18 L24 25" {...s} />
+      <line x1="20.5" y1="9" x2="15.5" y2="27" {...s} strokeWidth={1.8} />
+    </svg>
+  );
+}
+
+/** Two rack units — backend & systems pin. */
+export function InkServer({ className = "w-7 h-7", color }: InkIconProps) {
+  const s = strokeProps(color, 2);
+  const c = color ?? "currentColor";
+  return (
+    <svg viewBox="0 0 36 36" className={className} aria-hidden="true">
+      <rect x="7" y="8" width="22" height="9" rx="1.8" {...s} />
+      <rect x="7" y="19" width="22" height="9" rx="1.8" {...s} />
+      <circle cx="11.5" cy="12.5" r="1.3" fill={c} stroke="none" />
+      <circle cx="11.5" cy="23.5" r="1.3" fill={c} stroke="none" />
+      <line x1="16" y1="12.5" x2="24" y2="12.5" {...s} strokeWidth={1.5} opacity={0.6} />
+      <line x1="16" y1="23.5" x2="24" y2="23.5" {...s} strokeWidth={1.5} opacity={0.6} />
+    </svg>
+  );
+}
+
+/** Cloud with a deploy arrow — cloud & devops pin. */
+export function InkCloud({ className = "w-7 h-7", color }: InkIconProps) {
+  const s = strokeProps(color, 2);
+  return (
+    <svg viewBox="0 0 36 36" className={className} aria-hidden="true">
+      <path d="M10 25 C6 25 4 22 5.5 19 C6.5 17 9 16.5 10.5 17.5 C10.5 12 16 9.5 20 12 C22.5 13.5 23 16 22.5 17.5 C26 16.5 29 19 28 22.5 C27.4 24.3 25.5 25 24 25 Z" {...s} />
+      <line x1="17" y1="29.5" x2="17" y2="20.5" {...s} strokeWidth={1.9} />
+      <path d="M13.5 23.5 L17 20 L20.5 23.5" {...s} strokeWidth={1.9} />
+    </svg>
+  );
+}
+
 /** Compass rose with fleur-de-lis north — hero ornament. */
 export function InkCompassRose({ className = "w-16 h-16", color }: InkIconProps) {
   const c = color ?? "currentColor";

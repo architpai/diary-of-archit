@@ -1509,3 +1509,427 @@ a:focus-visible .wax-seal {
   font-size: 0.72rem;
   color: rgba(100, 81, 59, 0.75);
 }
+
+/* ============================================
+   BASECAMP-STYLE SKILLS MAP
+   The map section is "another page of the diary": parchment ground, the
+   diary's ink, and pins coloured from CATEGORY_COLORS so the markers match
+   the rest of the map's legend.
+   ============================================ */
+.skills-basecamp-section {
+  --bc-sand: var(--parchment);
+  --bc-ink: var(--ink);
+  --bc-line: rgba(100, 81, 59, 0.16);
+
+  background:
+    radial-gradient(circle at 18% 22%, rgba(100, 81, 59, 0.05), transparent 22rem),
+    radial-gradient(circle at 74% 16%, rgba(100, 81, 59, 0.04), transparent 20rem),
+    linear-gradient(0deg, var(--bc-line) 1px, transparent 1px),
+    var(--bc-sand);
+  background-size: auto, auto, 100% 31px, auto;
+  color: var(--bc-ink);
+  min-height: 70rem;
+  overflow: hidden;
+  padding: 2.5rem 0 7rem;
+  isolation: isolate;
+}
+
+.skills-basecamp-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(55, 55, 55, 0.18) 0 0.7px, transparent 0.8px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.2) 0 0.6px, transparent 0.7px);
+  background-position: 0 0, 9px 11px;
+  background-size: 18px 18px, 24px 24px;
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.skills-basecamp-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.skills-basecamp-border {
+  align-items: center;
+  display: flex;
+  height: 12.5rem;
+  justify-content: center;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: -8rem;
+  z-index: 2;
+}
+
+.skills-basecamp-border img {
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.skills-basecamp-heading {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-basecamp-display), Impact, sans-serif;
+  font-size: 17rem;
+  font-style: italic;
+  font-weight: 800;
+  line-height: 0.75;
+  padding-right: 0.8rem;
+  position: relative;
+  text-transform: uppercase;
+  z-index: 3;
+}
+
+.skills-basecamp-heading span {
+  display: block;
+  white-space: nowrap;
+}
+
+.skills-basecamp-heading span:nth-child(2) {
+  margin-left: 11rem;
+}
+
+.skills-basecamp-heading span:nth-child(3) {
+  margin-left: 2rem;
+}
+
+.skills-basecamp-cloud {
+  left: calc(50% - 11.5rem);
+  pointer-events: none;
+  position: absolute;
+  top: 21rem;
+  width: 5.2rem;
+  z-index: 4;
+}
+
+.skills-basecamp-hint {
+  color: var(--sepia);
+  font-family: var(--font-handwritten), "Patrick Hand", cursive;
+  font-size: 1.1rem;
+  margin: 0.6rem auto 0;
+  max-width: 32rem;
+  padding: 0 1rem;
+  position: relative;
+  text-align: center;
+  z-index: 5;
+}
+
+.skills-basecamp-map-stage {
+  align-items: flex-start;
+  display: flex;
+  justify-content: center;
+  margin-top: -5.75rem;
+  position: relative;
+  z-index: 4;
+}
+
+.skills-basecamp-map-wrap {
+  aspect-ratio: 3250 / 1450;
+  max-width: 96rem;
+  position: relative;
+  width: 92vw;
+}
+
+.skills-basecamp-lottie {
+  aspect-ratio: 3250 / 1450;
+  margin-top: -7.8rem;
+  width: 100%;
+}
+
+.skills-basecamp-lottie svg {
+  display: block;
+  height: auto !important;
+  width: 100% !important;
+}
+
+.skills-basecamp-pin {
+  align-items: center;
+  /* background-color is set inline per group, from CATEGORY_COLORS */
+  border: 2.5px solid var(--bc-ink);
+  border-radius: 999px;
+  box-shadow: 2px 3px 0 rgba(45, 45, 45, 0.18);
+  cursor: pointer;
+  display: flex;
+  height: 6.75rem;
+  justify-content: center;
+  padding: 0;
+  position: absolute;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+  width: 6.75rem;
+  z-index: 6;
+}
+
+.skills-basecamp-pin:hover,
+.skills-basecamp-pin:focus-visible {
+  box-shadow:
+    0 0 0 4px var(--paper),
+    0 0 0 6px rgba(45, 45, 45, 0.35);
+  outline: 0;
+  transform: scale(1.08) rotate(-2deg);
+  z-index: 7;
+}
+
+/* The uncharted AI frontier — an unfinished, dashed edge. */
+.skills-basecamp-pin-frontier {
+  border-style: dashed;
+}
+
+.skills-basecamp-pin-glyph {
+  height: 52%;
+  width: 52%;
+}
+
+.skills-basecamp-pin-_1 {
+  left: 0;
+  top: 31%;
+}
+
+.skills-basecamp-pin-_2 {
+  left: 30%;
+  top: 31%;
+}
+
+.skills-basecamp-pin-_3 {
+  left: 35%;
+  top: 72%;
+}
+
+.skills-basecamp-pin-_4 {
+  left: 63%;
+  top: 33%;
+}
+
+.skills-basecamp-pin-_5 {
+  right: 8%;
+  top: 17%;
+}
+
+.skills-basecamp-pin-_6 {
+  right: 7rem;
+  top: 42%;
+}
+
+.skills-basecamp-popup {
+  background: var(--paper);
+  border: 2.5px solid var(--bc-ink);
+  border-radius: 0.9rem;
+  border-top-left-radius: 1.6rem;
+  box-shadow: 5px 8px 0 rgba(45, 45, 45, 0.16);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 22rem;
+  padding: 1.1rem 1.35rem 1.25rem;
+  pointer-events: none;
+  position: absolute;
+  transform: translate(-8%, -96%) rotate(-1.2deg);
+  width: min(22rem, 78vw);
+  z-index: 8;
+}
+
+.skills-basecamp-popup-head {
+  align-items: center;
+  border-bottom: 2px solid var(--pin-color, var(--bc-ink));
+  color: var(--bc-ink);
+  display: flex;
+  font-family: var(--font-display), "Caveat Brush", cursive;
+  font-size: 1.55rem;
+  gap: 0.5rem;
+  line-height: 1.05;
+  padding-bottom: 0.4rem;
+}
+
+.skills-basecamp-popup-glyph {
+  flex: none;
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.skills-basecamp-popup-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.16rem;
+  list-style: none;
+  margin: 0.25rem 0 0;
+  padding: 0;
+}
+
+.skills-basecamp-popup-list li {
+  color: var(--bc-ink);
+  font-family: var(--font-handwritten), "Patrick Hand", cursive;
+  font-size: 1.05rem;
+  line-height: 1.25;
+  padding-left: 0.95rem;
+  position: relative;
+}
+
+.skills-basecamp-popup-list li::before {
+  color: var(--pin-color, var(--bc-ink));
+  content: "✦";
+  font-size: 0.7rem;
+  left: 0;
+  position: absolute;
+  top: 0.2rem;
+}
+
+.skills-basecamp-popup-note {
+  color: var(--sepia);
+  font-family: var(--font-handwritten), "Patrick Hand", cursive;
+  font-size: 0.85rem;
+  font-style: italic;
+  margin-top: 0.3rem;
+  opacity: 0.85;
+}
+
+.skills-basecamp-popup-_1,
+.skills-basecamp-popup-_2 {
+  left: 12%;
+  top: 31%;
+}
+
+.skills-basecamp-popup-_3 {
+  left: 38%;
+  top: 72%;
+}
+
+.skills-basecamp-popup-_4 {
+  left: 66%;
+  top: 33%;
+}
+
+.skills-basecamp-popup-_5 {
+  right: 12%;
+  top: 17%;
+}
+
+.skills-basecamp-popup-_6 {
+  right: 12%;
+  top: 42%;
+}
+
+@media (max-width: 1279px) {
+  .skills-basecamp-section {
+    min-height: 58rem;
+  }
+
+  .skills-basecamp-heading {
+    font-size: 12rem;
+  }
+
+  .skills-basecamp-heading span:nth-child(2) {
+    margin-left: 7rem;
+  }
+
+  .skills-basecamp-cloud {
+    left: calc(50% - 8rem);
+    top: 14.8rem;
+    width: 4.2rem;
+  }
+
+  .skills-basecamp-pin {
+    height: 5.5rem;
+    width: 5.5rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .skills-basecamp-section {
+    min-height: 34rem;
+    padding-bottom: 2.5rem;
+    padding-top: 5rem;
+  }
+
+  .skills-basecamp-border {
+    top: -6.8rem;
+  }
+
+  .skills-basecamp-heading {
+    font-size: 6rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .skills-basecamp-heading span:nth-child(2) {
+    margin-left: 3rem;
+  }
+
+  .skills-basecamp-heading span:nth-child(3) {
+    margin-left: 0.8rem;
+  }
+
+  .skills-basecamp-cloud {
+    left: calc(50% - 4.8rem);
+    top: 7.4rem;
+    width: 2.6rem;
+  }
+
+  .skills-basecamp-map-stage {
+    margin-top: -1.8rem;
+  }
+
+  .skills-basecamp-map-wrap {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .skills-basecamp-lottie {
+    margin-top: -2rem;
+  }
+
+  .skills-basecamp-pin {
+    height: 3.75rem;
+    width: 3.75rem;
+  }
+
+  .skills-basecamp-pin-_1 {
+    left: 10%;
+    top: 46%;
+  }
+
+  .skills-basecamp-pin-_2 {
+    left: 31%;
+    top: 43%;
+  }
+
+  .skills-basecamp-pin-_3 {
+    left: 28%;
+    top: 78%;
+  }
+
+  .skills-basecamp-pin-_4 {
+    left: 50%;
+    top: 58%;
+  }
+
+  .skills-basecamp-pin-_5 {
+    right: 16%;
+    top: 38%;
+  }
+
+  .skills-basecamp-pin-_6 {
+    right: 4%;
+    top: 69%;
+  }
+
+  .skills-basecamp-popup {
+    padding: 0.9rem 1.1rem 1rem;
+    transform: translate(-4%, -98%) rotate(-1.2deg);
+  }
+
+  .skills-basecamp-popup-head {
+    font-size: 1.25rem;
+  }
+
+  .skills-basecamp-popup-list li {
+    font-size: 0.95rem;
+  }
+}

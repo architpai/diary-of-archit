@@ -15,77 +15,10 @@ import {
   type TerrainMap,
 } from "./mapData";
 import { sceneState } from "./sceneState";
-import SkillsConstellation from "./SkillsConstellation";
 import UnchartedWaters from "./UnchartedWaters";
 import { useTranslation } from "@/hooks/useTranslation";
 
 const INTRO_SECONDS = 2.8;
-
-// Scratch vector for the night veil's per-frame placement.
-const VEIL_FORWARD = new THREE.Vector3();
-
-/**
- * Night falls INSIDE the canvas: a camera-locked quad drawn after the
- * terrain (renderOrder 1) but before the stars (renderOrder 2), so the
- * constellation shines over a darkened world instead of being dimmed by
- * a DOM overlay it can never outglow.
- */
-function NightVeil() {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const matRef = useRef<THREE.MeshBasicMaterial>(null);
-
-  // Vertical gradient — deep ink at the zenith easing toward a faint
-  // horizon glow, so the night reads as atmosphere rather than a flat wash.
-  const gradient = useMemo(() => {
-    if (typeof document === "undefined") return null;
-    const canvas = document.createElement("canvas");
-    canvas.width = 4;
-    canvas.height = 256;
-    const ctx = canvas.getContext("2d")!;
-    const g = ctx.createLinearGradient(0, 0, 0, 256);
-    g.addColorStop(0, "#091228");
-    g.addColorStop(0.55, "#142139");
-    g.addColorStop(1, "#243760");
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, 4, 256);
-    const tex = new THREE.CanvasTexture(canvas);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    return tex;
-  }, []);
-
-  useFrame(({ camera }) => {
-    const mesh = meshRef.current;
-    const mat = matRef.current;
-    if (!mesh || !mat) return;
-    const w = sceneState.network;
-    mesh.visible = w > 0.01;
-    mat.opacity = w * 0.75;
-    if (!mesh.visible) return;
-    const cam = camera as THREE.PerspectiveCamera;
-    const dist = 1.5;
-    mesh.quaternion.copy(cam.quaternion);
-    mesh.position
-      .copy(cam.position)
-      .add(VEIL_FORWARD.set(0, 0, -dist).applyQuaternion(cam.quaternion));
-    const h = 2 * Math.tan((cam.fov * Math.PI) / 360) * dist;
-    mesh.scale.set(h * cam.aspect * 1.15, h * 1.15, 1);
-  });
-
-  return (
-    <mesh ref={meshRef} renderOrder={1} visible={false}>
-      <planeGeometry args={[1, 1]} />
-      <meshBasicMaterial
-        ref={matRef}
-        color="#FFFFFF"
-        map={gradient ?? undefined}
-        transparent
-        opacity={0}
-        depthWrite={false}
-        depthTest={false}
-      />
-    </mesh>
-  );
-}
 
 function Terrain({
   map,
@@ -624,8 +557,6 @@ export default function TerrainScene({
       <CameraRig reduceMotion={reduceMotion} />
       <Pins />
       <MumbaiTrail />
-      <NightVeil />
-      <SkillsConstellation />
       <UnchartedWaters />
     </Canvas>
   );

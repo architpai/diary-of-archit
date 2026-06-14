@@ -56,7 +56,14 @@
     "size_note": "大きい星ほど、よく手に取る道具",
     "tier_charting": "開拓中",
     "chart_1": "ローカルLLM・RAG",
-    "chart_2": "自律エージェント"
+    "chart_2": "自律エージェント",
+    "map_hint": "マーカーにカーソルを乗せると、その道具箱の中身が見えます（モバイルはタップ）",
+    "group_mapping": "地理空間・地図",
+    "group_data": "データベース・キャッシュ",
+    "group_frontend": "フロントエンド・可視化",
+    "group_backend": "バックエンド・システム",
+    "group_cloud": "クラウド・DevOps",
+    "group_frontier": "未踏地・AI"
   },
   "sneakpeek": {
     "title": "ここだけの話",
