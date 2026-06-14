@@ -1,8 +1,8 @@
 'use client';
 
-import { type ComponentType, type CSSProperties, useMemo, useState } from 'react';
+import { type ComponentType, type CSSProperties, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { CATEGORY_COLORS } from '@/components/hero3d/mapData';
@@ -109,6 +109,19 @@ export default function Skills() {
   const [activeGroupId, setActiveGroupId] = useState<string | null>(null);
   const skills = content.skills as Skill[];
 
+  // basecamp-style headline: each line drifts horizontally at its own rate as
+  // the section scrolls through the viewport (their .megatext translate3d).
+  const headingRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: headingRef,
+    offset: ['start end', 'end start'],
+  });
+  const xThere = useTransform(scrollYProgress, [0, 1], ['12vw', '-6vw']);
+  const xAlways = useTransform(scrollYProgress, [0, 1], ['-16vw', '6vw']);
+  const xMore = useTransform(scrollYProgress, [0, 1], ['9vw', '-13vw']);
+  const xExplore = useTransform(scrollYProgress, [0, 1], ['-18vw', '8vw']);
+  const drift = (mv: typeof xThere) => (shouldReduceMotion ? undefined : mv);
+
   // id → localized skill name, so a group's pins can list their tools.
   const skillNameById = useMemo(() => {
     const map: Record<string, string> = {};
@@ -192,15 +205,17 @@ export default function Skills() {
       ) : (
         <div className="skills-basecamp-inner">
           <motion.div
+            ref={headingRef}
             className="skills-basecamp-heading"
             initial={shouldReduceMotion ? false : { opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.35 }}
             transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8, ease: 'easeOut' }}
           >
-            <span>there&apos;s</span>
-            <span>more to</span>
-            <span>explore</span>
+            <motion.span style={{ x: drift(xThere) }}>there&apos;s</motion.span>
+            <motion.span style={{ x: drift(xAlways) }}>always</motion.span>
+            <motion.span style={{ x: drift(xMore) }}>more to</motion.span>
+            <motion.span style={{ x: drift(xExplore) }}>explore</motion.span>
             <Image
               className="skills-basecamp-cloud"
               src="/basecamp/cloud01.svg"

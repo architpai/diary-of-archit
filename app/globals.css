@@ -1540,27 +1540,25 @@ a:focus-visible .wax-seal {
   display: flex;
   flex-direction: column;
   font-family: var(--font-basecamp-display), Impact, sans-serif;
-  font-size: 17rem;
+  font-size: 14rem;
   font-style: italic;
   font-weight: 800;
-  line-height: 0.75;
+  line-height: 0.78;
   padding-right: 0.8rem;
   position: relative;
   text-transform: uppercase;
-  z-index: 3;
+  /* Decorative — sits BELOW the interactive map + popups so a kit card that
+     overlaps the giant text reads on top of it. */
+  z-index: 1;
 }
 
+/* Each line drifts horizontally on scroll (per-line translateX from
+   framer-motion), basecamp-style — so the stagger is the parallax itself,
+   not a static indent. */
 .skills-basecamp-heading span {
   display: block;
   white-space: nowrap;
-}
-
-.skills-basecamp-heading span:nth-child(2) {
-  margin-left: 11rem;
-}
-
-.skills-basecamp-heading span:nth-child(3) {
-  margin-left: 2rem;
+  will-change: transform;
 }
 
 .skills-basecamp-cloud {
@@ -1788,11 +1786,7 @@ a:focus-visible .wax-seal {
   }
 
   .skills-basecamp-heading {
-    font-size: 12rem;
-  }
-
-  .skills-basecamp-heading span:nth-child(2) {
-    margin-left: 7rem;
+    font-size: 10rem;
   }
 
   .skills-basecamp-cloud {
@@ -1815,17 +1809,9 @@ a:focus-visible .wax-seal {
   }
 
   .skills-basecamp-heading {
-    font-size: 6rem;
+    font-size: 5rem;
     padding-left: 1rem;
     padding-right: 1rem;
-  }
-
-  .skills-basecamp-heading span:nth-child(2) {
-    margin-left: 3rem;
-  }
-
-  .skills-basecamp-heading span:nth-child(3) {
-    margin-left: 0.8rem;
   }
 
   .skills-basecamp-cloud {
