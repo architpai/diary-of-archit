@@ -173,10 +173,12 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
     const portrait = aspect < 1;
 
     // Overview pose (the hero framing) — intro drops from high to oblique.
+    // Rests a touch higher + closer than a pure horizon view so the terrain
+    // fills more of the frame top-to-bottom (less blank paper above/below).
     scratch.overviewPos.set(
       0.2 + pointer.current.x * 0.45 + drift,
-      (6.2 - ease * 2.6 - pointer.current.y * 0.3) * fit,
-      (4.6 + ease * 0.7) * fit
+      (6.2 - ease * 2.0 - pointer.current.y * 0.3) * fit,
+      (4.6 + ease * 0.4) * fit
     );
 
     // Blend toward pin views based on which [data-map-waypoint] element is

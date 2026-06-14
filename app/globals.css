@@ -1220,6 +1220,23 @@ body.serious-mode .diary-title {
     5px 7px 0 5px rgba(45, 45, 45, 0.12);
 }
 
+/* Hero subtitle reads as an annotation inked onto the chart — a soft paper
+   breath that melts into the map, not a pasted-on bordered card. */
+.hero-map-annotation {
+  display: inline-block;
+  padding: 0.4rem 2.25rem 0.7rem;
+  background: radial-gradient(
+    ellipse 115% 130% at 50% 45%,
+    rgba(255, 249, 229, 0.9) 0%,
+    rgba(255, 249, 229, 0.62) 48%,
+    rgba(255, 249, 229, 0) 100%
+  );
+}
+
+.hero-map-annotation p {
+  text-shadow: 0 1px 6px rgba(255, 249, 229, 0.92);
+}
+
 /* Handwritten coordinates stamp on journey cards */
 .map-coords {
   font-family: var(--font-handwritten);

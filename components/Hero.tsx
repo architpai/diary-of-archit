@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import Image from "next/image";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import HeroAvatarTransition from "./HeroAvatarTransition";
 import { useSeriousMode } from "@/contexts/SeriousModeContext";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -42,28 +43,65 @@ function HeroTitle({ compact }: { compact?: boolean }) {
 }
 
 /** Playful hero: the page itself is a hand-drawn map of Kanto. */
+// Three drifting clouds in the sky over the map. Positions match the marked
+// spots; the real cloud01 doodle, scrolling with the hero section.
+const HERO_CLOUDS = [
+  { cls: "top-[13%] left-[20%] w-28 md:w-32", scrollDrift: -55, delay: 1.0, w: 130, h: 82 },
+  { cls: "top-[4%] left-[56%] w-20 md:w-24", scrollDrift: 42, delay: 1.3, w: 100, h: 64 },
+  { cls: "top-[22%] right-[11%] w-24 md:w-28", scrollDrift: -72, delay: 1.6, w: 116, h: 74 },
+] as const;
+
 function FieldNotebookHero() {
   const { t, isJapanese } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const jpFont = isJapanese ? { fontFamily: "var(--font-jp-handwritten)" } : {};
 
+  // Clouds drift sideways as the page scrolls (and ride the hero up and out).
+  const { scrollY } = useScroll();
+  const cloudX0 = useTransform(scrollY, [0, 700], [0, HERO_CLOUDS[0].scrollDrift]);
+  const cloudX1 = useTransform(scrollY, [0, 700], [0, HERO_CLOUDS[1].scrollDrift]);
+  const cloudX2 = useTransform(scrollY, [0, 700], [0, HERO_CLOUDS[2].scrollDrift]);
+  const cloudX = [cloudX0, cloudX1, cloudX2];
+
   return (
     <section className="relative min-h-screen overflow-hidden pointer-events-none">
       {/* Overlay content — the map itself is the page-level MapBackdrop */}
       <div className="relative z-10 min-h-screen flex flex-col items-center pointer-events-none px-4 pt-14 md:pt-16 pb-10">
-        {/* Field-notes annotation */}
+        {/* Drifting clouds in the sky over the map — they scroll with the
+            hero (riding up and out) and drift sideways as you scroll. */}
+        {HERO_CLOUDS.map((cloud, i) => (
+          <motion.div
+            key={i}
+            className={`hidden md:block absolute z-0 pointer-events-none ${cloud.cls}`}
+            style={{ x: shouldReduceMotion ? undefined : cloudX[i] }}
+            initial={shouldReduceMotion ? false : { opacity: 0, y: -10 }}
+            animate={{ opacity: 0.92, y: 0 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 1.0, delay: cloud.delay }}
+          >
+            <Image
+              src="/basecamp/cloud01.svg"
+              alt=""
+              aria-hidden="true"
+              width={cloud.w}
+              height={cloud.h}
+              className="w-full h-auto"
+            />
+          </motion.div>
+        ))}
+
+        {/* Field-notes annotation — tucked just above the map's top edge */}
         <motion.p
-          className="hidden md:block absolute top-24 left-8 max-w-[230px] handwritten text-ink/60 text-sm leading-snug -rotate-2"
+          className="hidden md:block absolute top-[32%] left-8 max-w-[230px] handwritten text-ink/60 text-sm leading-snug -rotate-2 z-20"
           style={jpFont}
           initial={shouldReduceMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2.2, duration: 0.8 }}
         >
-          ↖ {t("hero.map_note")}
+          {t("hero.map_note")} ↘
         </motion.p>
 
         <motion.div
-          className="text-center"
+          className="text-center relative z-20"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8 }}
@@ -80,20 +118,6 @@ function FieldNotebookHero() {
           >
             {t("hero.credit")}
           </motion.p>
-
-          <motion.div
-            className="mt-4 inline-block wobbly-border bg-paper/90 px-5 py-2.5 backdrop-blur-[2px]"
-            initial={shouldReduceMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: 0.8 }}
-          >
-            <p className="diary-subtitle handwritten max-w-md mx-auto" style={jpFont}>
-              {t("hero.subtitle")}
-            </p>
-            <p className="mt-1 text-ink/60 handwritten text-sm md:text-base tracking-wide" style={jpFont}>
-              {t("hero.subtitle_role")}
-            </p>
-          </motion.div>
         </motion.div>
 
         {/* Taped polaroid of the cartographer */}
@@ -133,9 +157,25 @@ function FieldNotebookHero() {
           </p>
         </motion.div>
 
+        {/* Subtitle — inked across the bottom of the chart, not stacked under
+            the title block */}
+        <motion.div
+          className="absolute bottom-[5.5rem] left-1/2 -translate-x-1/2 w-[min(92%,30rem)] hero-map-annotation text-center z-20"
+          initial={shouldReduceMotion ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: 1.0 }}
+        >
+          <p className="diary-subtitle handwritten" style={jpFont}>
+            {t("hero.subtitle")}
+          </p>
+          <p className="mt-1 text-ink/65 handwritten text-sm md:text-base tracking-wide" style={jpFont}>
+            {t("hero.subtitle_role")}
+          </p>
+        </motion.div>
+
         {/* Scroll indicator */}
         <motion.div
-          className="absolute bottom-6 left-1/2 -translate-x-1/2"
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20"
           animate={shouldReduceMotion ? undefined : { y: [0, 10, 0] }}
           transition={shouldReduceMotion ? undefined : { duration: 1.5, repeat: Infinity }}
         >
