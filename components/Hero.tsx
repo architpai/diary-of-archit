@@ -5,7 +5,7 @@ import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion
 import HeroAvatarTransition from "./HeroAvatarTransition";
 import { useSeriousMode } from "@/contexts/SeriousModeContext";
 import { useTranslation } from "@/hooks/useTranslation";
-import { InkCompassRose, InkScaleBar } from "./icons/InkIcons";
+import { InkCompassRose, InkScaleBar, InkWind } from "./icons/InkIcons";
 
 function HeroTitle({ compact }: { compact?: boolean }) {
   const { isSerious } = useSeriousMode();
@@ -46,9 +46,9 @@ function HeroTitle({ compact }: { compact?: boolean }) {
 // Three drifting clouds in the sky over the map. Positions match the marked
 // spots; the real cloud01 doodle, scrolling with the hero section.
 const HERO_CLOUDS = [
-  { cls: "top-[13%] left-[20%] w-28 md:w-32", scrollDrift: -55, delay: 1.0, w: 130, h: 82 },
-  { cls: "top-[4%] left-[56%] w-20 md:w-24", scrollDrift: 42, delay: 1.3, w: 100, h: 64 },
-  { cls: "top-[22%] right-[11%] w-24 md:w-28", scrollDrift: -72, delay: 1.6, w: 116, h: 74 },
+  { cls: "top-[13%] left-[20%] w-28 md:w-32", scrollDrift: -55, delay: 1.0 },
+  { cls: "top-[4%] left-[56%] w-20 md:w-24", scrollDrift: 42, delay: 1.3 },
+  { cls: "top-[22%] right-[11%] w-24 md:w-28", scrollDrift: -72, delay: 1.6 },
 ] as const;
 
 function FieldNotebookHero() {
@@ -82,12 +82,26 @@ function FieldNotebookHero() {
               src="/basecamp/cloud01.svg"
               alt=""
               aria-hidden="true"
-              width={cloud.w}
-              height={cloud.h}
-              className="w-full h-auto"
+              width={90}
+              height={60}
+              style={{ width: "100%", height: "auto" }}
             />
           </motion.div>
         ))}
+
+        {/* Charted weather mark — frames the clouds as a survey annotation
+            rather than cartoon decoration */}
+        <motion.div
+          className="hidden md:flex absolute top-[19%] left-[31%] z-0 flex-col items-start gap-0.5 text-ink/55 pointer-events-none -rotate-3"
+          initial={shouldReduceMotion ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.9, delay: 1.9 }}
+        >
+          <InkWind className="w-20" />
+          <span className="handwritten text-[0.7rem] uppercase tracking-[0.18em] pl-3" style={jpFont}>
+            {t("hero.wind_note")}
+          </span>
+        </motion.div>
 
         {/* Field-notes annotation — tucked just above the map's top edge */}
         <motion.p

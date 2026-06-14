@@ -1,8 +1,8 @@
 'use client';
 
-import { type ComponentType, type CSSProperties, useMemo, useRef, useState } from 'react';
+import { type ComponentType, type CSSProperties, useMemo, useState } from 'react';
 import Image from 'next/image';
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { CATEGORY_COLORS } from '@/components/hero3d/mapData';
@@ -109,19 +109,6 @@ export default function Skills() {
   const [activeGroupId, setActiveGroupId] = useState<string | null>(null);
   const skills = content.skills as Skill[];
 
-  // basecamp-style headline: each line drifts horizontally at its own rate as
-  // the section scrolls through the viewport (their .megatext translate3d).
-  const headingRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: headingRef,
-    offset: ['start end', 'end start'],
-  });
-  const xThere = useTransform(scrollYProgress, [0, 1], ['12vw', '-6vw']);
-  const xAlways = useTransform(scrollYProgress, [0, 1], ['-16vw', '6vw']);
-  const xMore = useTransform(scrollYProgress, [0, 1], ['9vw', '-13vw']);
-  const xExplore = useTransform(scrollYProgress, [0, 1], ['-18vw', '8vw']);
-  const drift = (mv: typeof xThere) => (shouldReduceMotion ? undefined : mv);
-
   // id → localized skill name, so a group's pins can list their tools.
   const skillNameById = useMemo(() => {
     const map: Record<string, string> = {};
@@ -205,28 +192,49 @@ export default function Skills() {
       ) : (
         <div className="skills-basecamp-inner">
           <motion.div
-            ref={headingRef}
             className="skills-basecamp-heading"
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={shouldReduceMotion ? false : { opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true, amount: 0.35 }}
-            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8, ease: 'easeOut' }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6 }}
           >
-            <motion.span style={{ x: drift(xThere) }}>there&apos;s</motion.span>
-            <motion.span style={{ x: drift(xAlways) }}>always</motion.span>
-            <motion.span style={{ x: drift(xMore) }}>more to</motion.span>
-            <motion.span style={{ x: drift(xExplore) }}>explore</motion.span>
+            {/* Hand-surveyed, not campaign-poster: the diary's brush type with
+                a gentle wobble on each line, no mechanical scroll-parallax. */}
+            <motion.span
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 16, rotate: -2.5 }}
+              whileInView={{ opacity: 1, y: 0, rotate: -1.5 }}
+              viewport={{ once: true }}
+              transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: 0.05 }}
+            >
+              there&apos;s always
+            </motion.span>
+            <motion.span
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 16, rotate: 2.5 }}
+              whileInView={{ opacity: 1, y: 0, rotate: 1 }}
+              viewport={{ once: true }}
+              transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: 0.2 }}
+            >
+              more to explore
+            </motion.span>
             <Image
               className="skills-basecamp-cloud"
               src="/basecamp/cloud01.svg"
               alt=""
               aria-hidden="true"
-              width={100}
-              height={64}
+              width={90}
+              height={60}
             />
           </motion.div>
 
-          <p className="skills-basecamp-hint">{t('skills.map_hint')}</p>
+          {/* The hint fades out once a kit is open, so it never competes with
+              the popup card for the same patch of screen. */}
+          <p
+            className="skills-basecamp-hint"
+            style={{ opacity: activeGroup ? 0 : 1 }}
+            aria-hidden={activeGroup ? true : undefined}
+          >
+            {t('skills.map_hint')}
+          </p>
 
           <div className="skills-basecamp-map-stage">
             <div

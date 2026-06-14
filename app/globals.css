@@ -1554,31 +1554,29 @@ a:focus-visible .wax-seal {
 
 .skills-basecamp-heading {
   align-items: center;
+  color: var(--ink);
   display: flex;
   flex-direction: column;
-  font-family: var(--font-basecamp-display), Impact, sans-serif;
-  font-size: 14rem;
-  font-style: italic;
-  font-weight: 800;
-  line-height: 0.78;
-  padding-right: 0.8rem;
+  /* Hand-surveyed, not campaign-poster — the diary's brush display, not the
+     bold condensed editorial face. */
+  font-family: var(--font-display), "Caveat Brush", cursive;
+  font-size: 6rem;
+  font-weight: 400;
+  line-height: 0.95;
   position: relative;
-  text-transform: uppercase;
+  text-align: center;
   /* Decorative — sits BELOW the interactive map + popups so a kit card that
-     overlaps the giant text reads on top of it. */
+     overlaps the text reads on top of it. */
   z-index: 1;
 }
 
-/* Each line drifts horizontally on scroll (per-line translateX from
-   framer-motion), basecamp-style — so the stagger is the parallax itself,
-   not a static indent. */
 .skills-basecamp-heading span {
   display: block;
   white-space: nowrap;
-  will-change: transform;
 }
 
 .skills-basecamp-cloud {
+  height: auto;
   left: calc(50% - 11.5rem);
   pointer-events: none;
   position: absolute;
@@ -1596,6 +1594,7 @@ a:focus-visible .wax-seal {
   padding: 0 1rem;
   position: relative;
   text-align: center;
+  transition: opacity 0.25s ease;
   z-index: 5;
 }
 
@@ -1667,6 +1666,15 @@ a:focus-visible .wax-seal {
 .skills-basecamp-pin-glyph {
   height: 52%;
   width: 52%;
+}
+
+/* The frontier serpent is a wide glyph (40×24), not square like the others.
+   Give it a wider box + intrinsic height so it doesn't letterbox small, and
+   lift its bottom-heavy mass so it optically centres in the pin. */
+.skills-basecamp-pin-frontier .skills-basecamp-pin-glyph {
+  height: auto;
+  transform: translateY(-9%);
+  width: 64%;
 }
 
 .skills-basecamp-pin-_1 {
@@ -1803,7 +1811,7 @@ a:focus-visible .wax-seal {
   }
 
   .skills-basecamp-heading {
-    font-size: 10rem;
+    font-size: 5rem;
   }
 
   .skills-basecamp-cloud {
@@ -1821,12 +1829,13 @@ a:focus-visible .wax-seal {
 @media (max-width: 767px) {
   .skills-basecamp-section {
     min-height: 34rem;
-    padding-bottom: 2.5rem;
+    /* Clean ending before the Sneak Peek cartouche on narrow viewports. */
+    padding-bottom: 7rem;
     padding-top: 5rem;
   }
 
   .skills-basecamp-heading {
-    font-size: 5rem;
+    font-size: 3rem;
     padding-left: 1rem;
     padding-right: 1rem;
   }

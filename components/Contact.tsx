@@ -202,7 +202,68 @@ export default function Contact() {
       ) : (
         /* ── Diary mode: a postcard mailed from the edge of the map ── */
         <div className="max-w-4xl mx-auto px-4 relative z-10 pointer-events-auto">
-          <div className="flex flex-col md:flex-row items-center md:items-end justify-center gap-6 md:gap-8">
+          {/* Contact channels up front — the actual actions surface
+              immediately, before the warm-but-slower postcard below. */}
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <ContactChip
+              href={`mailto:${content.contact.email}`}
+              icon={<DiaryMailIcon className="h-6 w-6" />}
+              label={content.contact.email}
+              rotation={-1.5}
+              delay={0.15}
+              shouldReduceMotion={shouldReduceMotion}
+            />
+            <ContactChip
+              href={content.contact.github}
+              isExternal
+              icon={<DiaryGitHubIcon className="h-6 w-6" />}
+              label={githubHandle}
+              rotation={1}
+              delay={0.3}
+              shouldReduceMotion={shouldReduceMotion}
+            />
+            <ContactChip
+              href={content.contact.linkedin}
+              isExternal
+              icon={<DiaryLinkedInIcon className="h-6 w-6" />}
+              label={linkedinHandle}
+              rotation={-0.5}
+              delay={0.45}
+              shouldReduceMotion={shouldReduceMotion}
+            />
+          </div>
+
+          {/* The letter of introduction, under seal */}
+          <motion.div
+            className="mt-6 flex justify-center"
+            initial={shouldReduceMotion ? false : { opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.35 }}
+          >
+            <Link href="/resume" className="group inline-flex items-center gap-4" style={{ textDecoration: 'none' }}>
+              <span className="wax-seal shrink-0">AP</span>
+              <span>
+                <span
+                  className="handwritten text-lg font-bold text-ink block"
+                  style={{
+                    textDecoration: 'underline wavy',
+                    textDecorationColor: 'rgba(176,95,102,0.55)',
+                    textUnderlineOffset: '4px',
+                    ...jpFont,
+                  }}
+                >
+                  {t('contact.resume_cta')} →
+                </span>
+                <span className="handwritten text-sm text-ink/55" style={jpFont}>
+                  {t('contact.resume_sub')}
+                </span>
+              </span>
+            </Link>
+          </motion.div>
+
+          {/* The postcard — the warm personal note, below the actions */}
+          <div className="mt-14 flex flex-col md:flex-row items-center md:items-end justify-center gap-6 md:gap-8">
             {/* Namaste Avatar */}
             <motion.div
               className="flex-shrink-0"
@@ -280,65 +341,6 @@ export default function Contact() {
               </div>
             </motion.div>
           </div>
-
-          {/* Contact channels — stamped chips with handles, not raw URLs */}
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <ContactChip
-              href={`mailto:${content.contact.email}`}
-              icon={<DiaryMailIcon className="h-6 w-6" />}
-              label={content.contact.email}
-              rotation={-1.5}
-              delay={0.15}
-              shouldReduceMotion={shouldReduceMotion}
-            />
-            <ContactChip
-              href={content.contact.github}
-              isExternal
-              icon={<DiaryGitHubIcon className="h-6 w-6" />}
-              label={githubHandle}
-              rotation={1}
-              delay={0.3}
-              shouldReduceMotion={shouldReduceMotion}
-            />
-            <ContactChip
-              href={content.contact.linkedin}
-              isExternal
-              icon={<DiaryLinkedInIcon className="h-6 w-6" />}
-              label={linkedinHandle}
-              rotation={-0.5}
-              delay={0.45}
-              shouldReduceMotion={shouldReduceMotion}
-            />
-          </div>
-
-          {/* The letter of introduction, under seal */}
-          <motion.div
-            className="mt-12 flex justify-center"
-            initial={shouldReduceMotion ? false : { opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.5 }}
-          >
-            <Link href="/resume" className="group inline-flex items-center gap-4" style={{ textDecoration: 'none' }}>
-              <span className="wax-seal shrink-0">AP</span>
-              <span>
-                <span
-                  className="handwritten text-lg font-bold text-ink block"
-                  style={{
-                    textDecoration: 'underline wavy',
-                    textDecorationColor: 'rgba(176,95,102,0.55)',
-                    textUnderlineOffset: '4px',
-                    ...jpFont,
-                  }}
-                >
-                  {t('contact.resume_cta')} →
-                </span>
-                <span className="handwritten text-sm text-ink/55" style={jpFont}>
-                  {t('contact.resume_sub')}
-                </span>
-              </span>
-            </Link>
-          </motion.div>
 
           {/* End-of-map marker above the bottom neatline */}
           <motion.div

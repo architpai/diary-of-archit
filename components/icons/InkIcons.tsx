@@ -170,6 +170,19 @@ export function InkClaw({ className = "w-8 h-8", color }: InkIconProps) {
   );
 }
 
+/** Hand-drawn wind streak — a chart weather annotation that ties the hero
+ *  clouds to the map's survey vocabulary. Dashed flowing lines + arrowhead. */
+export function InkWind({ className = "w-16", color = "#5B4A36" }: InkIconProps) {
+  const s = strokeProps(color, 1.7);
+  return (
+    <svg viewBox="0 0 84 34" className={className} aria-hidden="true">
+      <path d="M4 11 C22 4 44 4 60 11 C66 13.5 70 12.5 72 9" {...s} strokeDasharray="1 5" />
+      <path d="M67 4.5 L74 9 L66.5 13" {...s} />
+      <path d="M8 23 C24 17.5 42 17.5 55 22.5" {...s} strokeDasharray="1 5" opacity={0.55} />
+    </svg>
+  );
+}
+
 /** Compact compass — geospatial & mapping pin. */
 export function InkCompass({ className = "w-7 h-7", color }: InkIconProps) {
   const s = strokeProps(color, 2);
