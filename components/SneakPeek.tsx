@@ -160,7 +160,7 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese, scrollVelocit
     >
       {/* SWAY — the whole tag swings from the twine anchor above its top edge */}
       <motion.div
-        className="relative"
+        className="relative h-full"
         style={{
           rotate: shouldReduceMotion ? restTilt : sway,
           transformOrigin: '50% -10px',
@@ -178,14 +178,14 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese, scrollVelocit
         </div>
 
         <motion.div
-          className="relative w-full"
+          className="relative w-full h-full"
           style={{ transformStyle: 'preserve-3d' }}
           animate={{ rotateY: isFlipped ? 180 : 0 }}
           transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, type: 'spring', stiffness: 200, damping: 25 }}
         >
         {/* ── FRONT — a field-survey specimen tag (sizes the container) ── */}
         <div
-          className="specimen-tag p-6 pt-7 pb-8 flex flex-col items-center relative"
+          className="specimen-tag p-6 pt-7 pb-8 flex flex-col items-center relative h-full"
           style={{ backfaceVisibility: 'hidden' }}
         >
           {/* unified specimen header — identical on every card */}

@@ -34,7 +34,7 @@ function HeroTitle({ compact }: { compact?: boolean }) {
         {t("hero.of")}
       </span>
       <span
-        className={`block ${!isSerious ? "scribble-underline-animated relative" : "underline-sketch"}${shouldReduceMotion ? "" : " handwrite-reveal-delay-2"}`}
+        className={`block ${!isSerious ? "" : "underline-sketch"}${shouldReduceMotion ? "" : " handwrite-reveal-delay-2"}`}
       >
         {t("hero.name")}
       </span>
@@ -134,21 +134,23 @@ function FieldNotebookHero() {
           </motion.p>
         </motion.div>
 
-        {/* Taped polaroid of the cartographer */}
+        {/* Taped polaroid of the cartographer. Portrait: tucked into the
+            top-left below the title — a field photo taped to the chart.
+            Desktop keeps it down in the open water, bottom-left. */}
         <motion.div
-          className="absolute bottom-20 left-4 md:bottom-16 md:left-10 pointer-events-auto"
+          className="absolute top-56 left-3 md:top-auto md:bottom-16 md:left-10 pointer-events-auto"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 30, rotate: -10 }}
           animate={{ opacity: 1, y: 0, rotate: -5 }}
           transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 1.4 }}
           whileHover={shouldReduceMotion ? undefined : { rotate: -2, scale: 1.04 }}
         >
-          <div className="relative bg-white p-2 pb-1 shadow-[3px_5px_12px_rgba(45,45,45,0.25)]">
+          <div className="relative bg-white p-2 pb-1 shadow-[3px_5px_12px_rgba(45,45,45,0.25)] flex flex-col items-center">
             {/* tape */}
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-[#f5e9b8]/80 rotate-[-4deg] shadow-sm" />
             <HeroAvatarTransition
               width={800}
               height={1080}
-              className="w-[96px] md:w-[140px]"
+              className="w-[84px] md:w-[140px]"
             />
             <p className="handwritten text-ink/70 text-xs md:text-sm text-center pt-1" style={jpFont}>
               {t("hero.cartographer")}
@@ -174,7 +176,7 @@ function FieldNotebookHero() {
         {/* Subtitle — inked across the bottom of the chart, not stacked under
             the title block */}
         <motion.div
-          className="absolute bottom-[5.5rem] left-1/2 -translate-x-1/2 w-[min(92%,30rem)] hero-map-annotation text-center z-20"
+          className="absolute bottom-[14.5rem] md:bottom-[5.5rem] left-1/2 -translate-x-1/2 w-[min(92%,30rem)] hero-map-annotation text-center z-20"
           initial={shouldReduceMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: 1.0 }}

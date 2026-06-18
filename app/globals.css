@@ -1194,8 +1194,19 @@ body.serious-mode .diary-title {
 }
 
 @media (max-width: 640px) {
-  .terrain-pin[data-kind="landmark"] {
-    display: none;
+  /* Slightly trimmed pin labels on phones — a touch smaller than desktop so
+     the long company names sit more comfortably in the narrow column, but
+     still clearly readable (the map is framed close, not dollied back). */
+  .terrain-pin {
+    font-size: 17px;
+    gap: 7px;
+    padding: 3px 10px;
+    border-radius: 15px 19px 13px 21px / 19px 13px 21px 15px;
+  }
+
+  .terrain-pin-dot {
+    width: 12px;
+    height: 12px;
   }
 }
 
@@ -1355,7 +1366,10 @@ body.serious-mode .diary-title {
 
 /* — Rubber-stamp seal (HERE BE DRAGONS etc.) — */
 .stamp-seal {
-  display: inline-block;
+  /* Display is left to the consumer's utilities (`hidden sm:inline-flex`).
+     Setting it here as an unlayered rule would override Tailwind's layered
+     `hidden`, forcing the seal visible on mobile where its `-right-10` offset
+     pushes past the viewport and creates horizontal scroll. */
   font-family: var(--font-handwritten);
   text-transform: uppercase;
   text-align: center;
@@ -1560,7 +1574,10 @@ a:focus-visible .wax-seal {
   /* Hand-surveyed, not campaign-poster — the diary's brush display, not the
      bold condensed editorial face. */
   font-family: var(--font-display), "Caveat Brush", cursive;
-  font-size: 6rem;
+  /* Fluid, not stepped: the heading scales on the same curve as the folded
+     map below it, so the gap between headline and map stays constant instead
+     of jumping at the old 1279/767 breakpoints. */
+  font-size: clamp(3rem, 6.6vw, 6rem);
   font-weight: 400;
   line-height: 0.95;
   position: relative;
@@ -1599,16 +1616,27 @@ a:focus-visible .wax-seal {
 }
 
 .skills-basecamp-map-stage {
+  /* Mirrors the wrap's own sizing so the heading↔map gap can be expressed as a
+     fraction of the map width (cqw only resolves *inside* the wrap, not here). */
+  --map-w: min(92vw, 96rem);
+
   align-items: flex-start;
   display: flex;
   justify-content: center;
-  margin-top: -5.75rem;
+  /* Heading↔map gap. Proportional to the map so it tracks the fluid heading
+     instead of jumping at breakpoints. Moves pins + drawing together, so it
+     has no effect on pin↔drawing alignment. */
+  margin-top: calc(var(--map-w) * -0.069);
   position: relative;
   z-index: 4;
 }
 
 .skills-basecamp-map-wrap {
   aspect-ratio: 3250 / 1450;
+  /* The pins are sized/offset in cqw so they scale with the drawing; this makes
+     the wrap the query container they measure against. inline-size (not size)
+     so the aspect-ratio still derives the height from the width. */
+  container-type: inline-size;
   max-width: 96rem;
   /* The section itself is pointer-transparent (so the map underneath stays
      interactive in the gaps); the pins re-enable pointer events here. */
@@ -1619,7 +1647,10 @@ a:focus-visible .wax-seal {
 
 .skills-basecamp-lottie {
   aspect-ratio: 3250 / 1450;
-  margin-top: -7.8rem;
+  /* Load-bearing for pin alignment, not just decoration: this lifts the drawing
+     up within the wrap so the pin grid lands on it. Expressed in cqw so the
+     drawing and the pins stay locked together at every map size. */
+  margin-top: -9.4cqw;
   width: 100%;
 }
 
@@ -1637,14 +1668,16 @@ a:focus-visible .wax-seal {
   box-shadow: 2px 3px 0 rgba(45, 45, 45, 0.18);
   cursor: pointer;
   display: flex;
-  height: 6.75rem;
+  /* Sized as a fraction of the map width so the pins shrink and grow *with* the
+     drawing at every width — no size breakpoints. */
+  height: 6cqw;
   justify-content: center;
   padding: 0;
   position: absolute;
   transition:
     transform 0.18s ease,
     box-shadow 0.18s ease;
-  width: 6.75rem;
+  width: 6cqw;
   z-index: 6;
 }
 
@@ -1677,6 +1710,12 @@ a:focus-visible .wax-seal {
   width: 64%;
 }
 
+/* The cloud-upload glyph's artwork sits high in its viewBox, so its centred
+   box reads optically too high — nudge it down to the visual centre. */
+.skills-basecamp-pin-_5 .skills-basecamp-pin-glyph {
+  transform: translateY(6%);
+}
+
 .skills-basecamp-pin-_1 {
   left: 0;
   top: 31%;
@@ -1688,8 +1727,10 @@ a:focus-visible .wax-seal {
 }
 
 .skills-basecamp-pin-_3 {
+  /* Sits at the end of the southern trail (by the deer/river), not off the
+     bottom fold of the map. */
   left: 35%;
-  top: 72%;
+  top: 58%;
 }
 
 .skills-basecamp-pin-_4 {
@@ -1703,8 +1744,11 @@ a:focus-visible .wax-seal {
 }
 
 .skills-basecamp-pin-_6 {
-  right: 7rem;
-  top: 42%;
+  /* Was a fixed 7rem — the one pin that didn't track the map. Now a % like the
+     rest so it stays on its panel as the map scales. Lands on the pond where the
+     frontier trail loop closes — the end of the trail. */
+  right: 6.5%;
+  top: 47%;
 }
 
 .skills-basecamp-popup {
@@ -1787,7 +1831,7 @@ a:focus-visible .wax-seal {
 
 .skills-basecamp-popup-_3 {
   left: 38%;
-  top: 72%;
+  top: 58%;
 }
 
 .skills-basecamp-popup-_4 {
@@ -1802,7 +1846,7 @@ a:focus-visible .wax-seal {
 
 .skills-basecamp-popup-_6 {
   right: 12%;
-  top: 42%;
+  top: 47%;
 }
 
 @media (max-width: 1279px) {
@@ -1810,19 +1854,12 @@ a:focus-visible .wax-seal {
     min-height: 58rem;
   }
 
-  .skills-basecamp-heading {
-    font-size: 5rem;
-  }
-
+  /* Heading size and pin size are now fluid (clamp / cqw), so they no longer
+     need per-breakpoint overrides — only the decorative cloud is repositioned. */
   .skills-basecamp-cloud {
     left: calc(50% - 8rem);
     top: 14.8rem;
     width: 4.2rem;
-  }
-
-  .skills-basecamp-pin {
-    height: 5.5rem;
-    width: 5.5rem;
   }
 }
 
@@ -1835,7 +1872,6 @@ a:focus-visible .wax-seal {
   }
 
   .skills-basecamp-heading {
-    font-size: 3rem;
     padding-left: 1rem;
     padding-right: 1rem;
   }
@@ -1847,7 +1883,9 @@ a:focus-visible .wax-seal {
   }
 
   .skills-basecamp-map-stage {
-    margin-top: -1.8rem;
+    /* Map goes full-width on phones; keep --map-w in sync (it's consumed here,
+       on the stage, so the heading↔map gap stays proportional to the real map). */
+    --map-w: 100vw;
   }
 
   .skills-basecamp-map-wrap {
@@ -1855,45 +1893,9 @@ a:focus-visible .wax-seal {
     width: 100%;
   }
 
-  .skills-basecamp-lottie {
-    margin-top: -2rem;
-  }
-
-  .skills-basecamp-pin {
-    height: 3.75rem;
-    width: 3.75rem;
-  }
-
-  .skills-basecamp-pin-_1 {
-    left: 10%;
-    top: 46%;
-  }
-
-  .skills-basecamp-pin-_2 {
-    left: 31%;
-    top: 43%;
-  }
-
-  .skills-basecamp-pin-_3 {
-    left: 28%;
-    top: 78%;
-  }
-
-  .skills-basecamp-pin-_4 {
-    left: 50%;
-    top: 58%;
-  }
-
-  .skills-basecamp-pin-_5 {
-    right: 16%;
-    top: 38%;
-  }
-
-  .skills-basecamp-pin-_6 {
-    right: 4%;
-    top: 69%;
-  }
-
+  /* Pin size and pin positions are fully fluid now (cqw + %), and the lottie
+     lift is cqw — so the old phone-specific pin re-layout and margin overrides
+     are gone; the desktop coordinates scale down correctly on their own. */
   .skills-basecamp-popup {
     padding: 0.9rem 1.1rem 1rem;
     transform: translate(-4%, -98%) rotate(-1.2deg);

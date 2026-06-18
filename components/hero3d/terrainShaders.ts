@@ -70,14 +70,23 @@ void main() {
   // UVs in "main map" units so all hand-drawn frequencies match across maps.
   vec2 suv = vUv * uUvScale;
 
-  // --- Paper base: grain + the page's ruled lines (they ARE the ocean) ---
+  // --- Paper base + the ocean as water (not the page's ruled lines) ---
+  // Straight ruled lines drawn on this tilted plane project as diagonals and
+  // fight the real page rules behind the map, breaking immersion. So the sea
+  // reads as a soft blue-grey watercolour wash with gentle, noise-wobbled
+  // ripples — water, not notebook paper — which sidesteps the alignment clash.
   float grain = noise(suv * 700.0);
   vec3 paper = uPaper * (0.972 + 0.028 * grain);
 
-  float band = abs(fract(suv.y * 18.0) - 0.5);
-  float bandW = fwidth(suv.y * 18.0) + 1e-4;
-  float ruled = smoothstep(0.5 - bandW * 1.6, 0.5 - bandW * 0.4, band);
-  vec3 page = mix(paper, uPaperLine, ruled * 0.5);
+  vec3 water = mix(paper, uPaperLine, 0.42);
+  // Hand-drawn ripples: a slow meander (low-freq noise drifts the whole band)
+  // plus per-stroke wobble, so the crests wander like brushed water and never
+  // line up into straight rules. Stronger contrast than a flat wash for visible
+  // surface texture, while the base tint stays soft.
+  float meander = noise(suv * vec2(2.0, 6.0)) * 2.4;
+  float wavePhase = suv.y * 58.0 + noise(suv * vec2(4.0, 22.0)) * 13.0 + meander;
+  float ripple = smoothstep(0.5, 0.9, sin(wavePhase) * 0.5 + 0.5);
+  vec3 page = mix(water, uPaperLine, ripple * 0.36);
 
   // --- Land tint: soft crayon wash by elevation, snow above ~2800m ---
   vec3 lowland = vec3(0.879, 0.911, 0.795);   // washed green

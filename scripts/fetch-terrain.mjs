@@ -11,12 +11,17 @@ import sharp from "sharp";
 // Each region becomes <name>-heightmap.png/json in public/terrain/.
 const REGIONS = [
   {
-    // The Tokaido corridor: Kobe and Osaka Bay in the west, past Mt. Fuji,
-    // to Tokyo Bay and the Boso peninsula in the east.
+    // Central Honshu, coast to coast: Kobe/Osaka Bay in the west, past Mt.
+    // Fuji and the inland Alps, to Tokyo Bay and the Boso peninsula in the
+    // east — and crucially the full north–south waist of the island, from the
+    // Pacific (south) to the Sea of Japan (north). The old short strip clipped
+    // the inland mountains at its north edge, which read as a hard straight
+    // "cut" in the portrait hero; coast-to-coast lets the land fade naturally
+    // into sea (= the blank page) on every visible edge.
     name: "tokaido",
     zoom: 9,
     scale: 2,
-    bounds: { west: 134.65, east: 140.55, south: 34.2, north: 35.95 },
+    bounds: { west: 133.0, east: 141.5, south: 33.0, north: 37.6 },
   },
   {
     // Mumbai inset: the peninsula, harbour and the Sanjay Gandhi hills.

@@ -126,6 +126,11 @@ export interface MapPin {
   kind: "job" | "landmark" | "offmap";
   /** Pixel offset for the label so neighbouring labels don't collide */
   labelOffset?: [number, number];
+  /** Portrait/phone label offset — the close hero framing on a narrow column
+   *  pushes the east/west cities toward (or past) the screen edges, so their
+   *  floating name-pills are pulled further inward here than on desktop. The
+   *  3D teardrop marker stays on the city; only the pill tag moves. */
+  labelOffsetMobile?: [number, number];
   /** Marker colour — also used for the company name on the timeline card */
   color: string;
 }
@@ -179,6 +184,11 @@ export const MAP_PINS: MapPin[] = [
     kind: "job",
     labelKey: "hero.pin_stealth",
     labelOffset: [95, -45],
+    // Portrait: Osaka & Kobe are co-located (Kansai) and sit centre-bottom in
+    // the corridor-aligned view; fan both pills to the right of the pins and
+    // stack them (Stealth above Kobe) so they read as two tags clear of the
+    // polaroid (left) and the scroll hint (centre).
+    labelOffsetMobile: [90, -48],
   },
   {
     id: "pin-softbank",
@@ -190,6 +200,10 @@ export const MAP_PINS: MapPin[] = [
     kind: "job",
     labelKey: "hero.pin_softbank",
     labelOffset: [-95, -30],
+    // Portrait: the cartographer photo is taped top-left, where the desktop
+    // left-pushed label would sit. Flip the pill to the right of the Tokyo pin
+    // so it stays clear of the photo (the teardrop itself is already clear).
+    labelOffsetMobile: [38, -26],
   },
   {
     id: "pin-khi",
@@ -200,9 +214,17 @@ export const MAP_PINS: MapPin[] = [
     elevation: 5,
     kind: "job",
     labelKey: "hero.pin_khi",
-    // Shifted east — the pin sits at the chart's west edge, so a centred
-    // label clips off-screen at the hero pose.
-    labelOffset: [120, 58],
+    // Desktop (broadside): Kobe/KHI sits just west of Osaka/Stealth, so the two
+    // pins nearly stack. Stealth's pill goes up-right; KHI's hangs straight
+    // below its own teardrop — the pill's dot is offset ~91px left of centre,
+    // so +90 here lands that dot directly under the blue pin (not drifting
+    // right toward the red Stealth pin as the old [120,58] did). The label
+    // extends right past the Stealth column but sits well below it, clear.
+    labelOffset: [90, 44],
+    // Portrait: Kobe sits just below Stealth/Osaka (co-located Kansai); stack
+    // its pill to the right of the pin, below Stealth's, clear of the scroll
+    // hint at the bottom.
+    labelOffsetMobile: [95, -10],
   },
   {
     id: "pin-fuji",
@@ -214,6 +236,10 @@ export const MAP_PINS: MapPin[] = [
     kind: "landmark",
     // Below the summit so it can't collide with the hero subtitle pill.
     labelOffset: [40, 85],
+    // Portrait: the close corridor framing leaves the desktop 85px drop reading
+    // as a big gap between the floating teardrop and its pill. Tuck the pill
+    // just under the pin tip instead — still clear of the body copy below.
+    labelOffsetMobile: [20, 26],
   },
   {
     // A real pin on the Mumbai inset map — the camera flies off the main

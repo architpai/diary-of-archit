@@ -20,6 +20,16 @@ import { useTranslation } from "@/hooks/useTranslation";
 
 const INTRO_SECONDS = 2.8;
 
+// Dev-only live-tuning handle for the portrait hero pose. In the browser
+// console: `__heroTune.py = 4.2` etc. mutates the same object the camera loop
+// reads, so the framing can be dialled in without edit/reload cycles. Empty
+// (no overrides) in production — the baked defaults in CameraRig win.
+const HERO_TUNE: Record<string, number> =
+  typeof window !== "undefined" && process.env.NODE_ENV !== "production"
+    ? (((window as unknown as Record<string, unknown>).__heroTune ??=
+        {}) as Record<string, number>)
+    : {};
+
 function Terrain({
   map,
   reduceMotion,
@@ -173,13 +183,45 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
     const portrait = aspect < 1;
 
     // Overview pose (the hero framing) — intro drops from high to oblique.
-    // Rests a touch higher + closer than a pure horizon view so the terrain
-    // fills more of the frame top-to-bottom (less blank paper above/below).
-    scratch.overviewPos.set(
-      0.2 + pointer.current.x * 0.45 + drift,
-      (6.2 - ease * 2.0 - pointer.current.y * 0.3) * fit,
-      (4.6 + ease * 0.4) * fit
-    );
+    if (portrait) {
+      // Portrait flips the hero 90°. The landscape pose views the Kobe→Tokyo
+      // corridor broadside, which crams its long axis into the narrow column
+      // and clips the end cities off the sides. Instead the camera sits off
+      // the *southwest* end behind Kobe/Osaka and looks down the corridor
+      // toward Tokyo, so the journey runs bottom→top: Kansai in the
+      // foreground, Fuji mid-route, Tokyo receding near the title. The camera
+      // is aligned with the corridor's heading (~15° N of E) so the diagonal
+      // projects vertical and centred rather than leaning. The coast-to-coast
+      // heightmap means land fills the frame and fades into sea (= blank page)
+      // on every visible edge — no hard plane-edge cut as the old short strip
+      // had when it sliced through the inland mountains at its north edge.
+      const T = HERO_TUNE;
+      // Look-at: a point on the corridor toward Fuji, lifted a touch (ty>0) so
+      // the far land tucks under the title instead of sinking to the bottom.
+      const tx = T.tx ?? 0.2;
+      const ty = T.ty ?? 0.3;
+      const tz = T.tz ?? 0.0;
+      // Narrower columns see less of the corridor before it runs past the top
+      // edge, so ease the camera back (scaling its offset from the look-at, so
+      // the framing only shrinks, never re-aims) as the aspect narrows below
+      // the tuning reference (~390×844). 1.0 keeps the hand-tuned pose there.
+      const pfit = Math.min(1.4, Math.max(1, 0.462 / aspect));
+      scratch.overviewPos.set(
+        tx + ((T.px ?? -6.3) - tx) * pfit + pointer.current.x * 0.3 + drift,
+        ty + ((T.py ?? 5.0) - ty) * pfit + (1 - ease) * 3.5 - pointer.current.y * 0.2,
+        tz + ((T.pz ?? 1.78) - tz) * pfit
+      );
+      scratch.overviewTgt.set(tx, ty, tz);
+    } else {
+      // Rests a touch higher + closer than a pure horizon view so the terrain
+      // fills more of the frame top-to-bottom (less blank paper above/below).
+      scratch.overviewPos.set(
+        0.2 + pointer.current.x * 0.45 + drift,
+        (6.2 - ease * 2.0 - pointer.current.y * 0.3) * fit,
+        (4.6 + ease * 0.4) * fit
+      );
+      scratch.overviewTgt.set(0, 0, -0.45);
+    }
 
     // Blend toward pin views based on which [data-map-waypoint] element is
     // nearest the viewport centre — scrolling the timeline flies the camera.
@@ -274,13 +316,97 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
   return null;
 }
 
-/** Classic pushpin: teardrop head on a needle, bobbing gently. */
+// ── Hand-drawn pennant marker ──────────────────────────────────────────
+// Plane size (world units) and where the pole sits across the texture. The
+// flag is offset so the pole lands exactly on the pin's x/z — i.e. on the
+// Y-billboard axis, so it stays planted while the flag faces the camera.
+const FLAG_W = 0.24;
+const FLAG_H = 0.32;
+const FLAG_POLE_U = 0.16; // pole's horizontal position in the texture (0..1)
+const FLAG_OFFSET_X = (0.5 - FLAG_POLE_U) * FLAG_W;
+// Wave: amplitude grows from the hoist (pole) to the fly end so the pole is
+// motionless and the tail flutters. Vertical (local-Y) displacement reads from
+// any camera azimuth on an unlit billboarded plane (a Z ripple would not).
+const FLAG_AMP = 0.04;
+const FLAG_FREQ = 7.0;
+const FLAG_SPEED = 3.2;
+
+const PENNANT_CACHE = new Map<string, THREE.Texture>();
+
+/** A wobbly-inked swallowtail pennant on a pole, drawn once per colour. */
+function pennantTexture(color: string): THREE.Texture {
+  const cached = PENNANT_CACHE.get(color);
+  if (cached) return cached;
+
+  const w = 180;
+  const h = 240;
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d")!;
+  const ink = "#2D2D2D";
+
+  const poleX = w * FLAG_POLE_U;
+  const flagTop = h * 0.07;
+  const flagBot = h * 0.34;
+  const flyX = w * 0.94;
+  const flagMid = (flagTop + flagBot) / 2;
+
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+
+  // Swallowtail pennant — slightly wavy edges so it reads hand-drawn.
+  ctx.beginPath();
+  ctx.moveTo(poleX, flagTop);
+  ctx.quadraticCurveTo(w * 0.55, flagTop - h * 0.012, flyX, flagTop + h * 0.05);
+  ctx.lineTo(flyX - w * 0.16, flagMid); // notch
+  ctx.lineTo(flyX, flagBot - h * 0.05);
+  ctx.quadraticCurveTo(w * 0.55, flagBot + h * 0.012, poleX, flagBot);
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.strokeStyle = ink;
+  ctx.lineWidth = 4;
+  ctx.stroke();
+
+  // A soft fold line gives the cloth some body.
+  ctx.strokeStyle = "rgba(45,45,45,0.22)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(poleX + w * 0.06, flagTop + h * 0.025);
+  ctx.quadraticCurveTo(w * 0.5, flagMid, flyX - w * 0.22, flagBot - h * 0.03);
+  ctx.stroke();
+
+  // The pole: a wobbly ink stroke with a little finial knob on top.
+  ctx.strokeStyle = ink;
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(poleX, flagTop - h * 0.02);
+  ctx.quadraticCurveTo(poleX - w * 0.018, h * 0.45, poleX + w * 0.012, h * 0.72);
+  ctx.quadraticCurveTo(poleX + w * 0.02, h * 0.88, poleX, h * 0.98);
+  ctx.stroke();
+  ctx.fillStyle = ink;
+  ctx.beginPath();
+  ctx.arc(poleX, flagTop - h * 0.02, 5, 0, Math.PI * 2);
+  ctx.fill();
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  PENNANT_CACHE.set(color, tex);
+  return tex;
+}
+
+/** Hand-drawn pennant, planted at the location and fluttering in the
+ *  prevailing wind. Billboards (Y-axis only) so it reads from any angle. */
 function PinMarker({
   pin,
   onSelect,
+  reduceMotion,
 }: {
   pin: MapPin;
   onSelect: (pin: MapPin) => void;
+  reduceMotion: boolean;
 }) {
   const { content, t, isJapanese } = useTranslation();
   const [hovered, setHovered] = useState(false);
@@ -288,6 +414,12 @@ function PinMarker({
   const markerRef = useRef<THREE.Group>(null);
   const labelRef = useRef<HTMLButtonElement>(null);
   const ringMatRef = useRef<THREE.MeshBasicMaterial>(null);
+  const flagRef = useRef<THREE.Mesh>(null);
+  // Rest-pose vertex Y + horizontal UV, captured once for the flutter loop.
+  const flagBaseRef = useRef<{ baseY: Float32Array; u: Float32Array } | null>(
+    null
+  );
+  const pennant = useMemo(() => pennantTexture(pin.color), [pin.color]);
 
   const experience = pin.experienceId
     ? content.experiences.find((e) => e.id === pin.experienceId)
@@ -300,7 +432,8 @@ function PinMarker({
 
   const position = pinToWorld(pin);
   const interactive = pin.kind === "job";
-  const phase = useMemo(() => position[0] * 7.3 + position[2] * 3.1, [position]);
+  // Per-pin phase so neighbouring flags don't flutter in lockstep.
+  const phase = useMemo(() => position[0] * 5.1 + position[2] * 2.3, [position]);
   const worldPos = useMemo(
     () => new THREE.Vector3(...position),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -313,9 +446,16 @@ function PinMarker({
     // shrink away during closeups — at low altitude they read as floating
     // balls rather than pins.
     if (markerRef.current) {
-      const bob =
-        Math.sin(state.clock.elapsedTime * 1.6 + phase) * 0.018 * (1 + w);
-      markerRef.current.position.y = bob + w * 0.05;
+      // Y-axis billboard: face the camera horizontally while staying upright,
+      // so the pennant reads in both the portrait and desktop camera poses.
+      // The pole sits on this axis (x=z=0), so it stays planted on its pin.
+      const cam = state.camera.position;
+      markerRef.current.rotation.y = Math.atan2(
+        cam.x - position[0],
+        cam.z - position[2]
+      );
+      // Lift only when focused (scroll-driven) — no idle bob/pulse.
+      markerRef.current.position.y = w * 0.05;
       const landmarkShrink =
         pin.kind === "landmark"
           ? 1 -
@@ -334,6 +474,33 @@ function PinMarker({
       // The ground shadow ring reads as a grey smudge at low altitude.
       ringMatRef.current.opacity = 0.18 * (1 - w * 0.75);
     }
+    // Flag flutter — a traveling vertical wave whose amplitude grows from the
+    // hoist (pole, motionless) to the fly end. Mutated through the mesh ref.
+    if (flagRef.current && !reduceMotion) {
+      const pos = flagRef.current.geometry.attributes
+        .position as THREE.BufferAttribute;
+      if (!flagBaseRef.current) {
+        const uv = flagRef.current.geometry.attributes.uv as THREE.BufferAttribute;
+        const baseY = new Float32Array(pos.count);
+        const u = new Float32Array(pos.count);
+        for (let i = 0; i < pos.count; i++) {
+          baseY[i] = pos.getY(i);
+          u[i] = uv.getX(i);
+        }
+        flagBaseRef.current = { baseY, u };
+      }
+      const { baseY, u } = flagBaseRef.current;
+      const t = state.clock.elapsedTime;
+      for (let i = 0; i < pos.count; i++) {
+        const uu = u[i];
+        const amp =
+          uu <= FLAG_POLE_U + 0.02
+            ? 0
+            : FLAG_AMP * Math.pow((uu - FLAG_POLE_U - 0.02) / 0.8, 1.4);
+        pos.setY(i, baseY[i] + amp * Math.sin(uu * FLAG_FREQ - t * FLAG_SPEED + phase));
+      }
+      pos.needsUpdate = true;
+    }
     if (labelRef.current) {
       // Unfocused labels fade during closeups; the focused pin's pill stays,
       // glides to sit directly above its marker, and counter-scales against
@@ -344,8 +511,12 @@ function PinMarker({
         sceneState.uncharted
       );
       const opacity = (1 - fade * 0.92) * (1 - w) + w;
-      const baseX = pin.labelOffset?.[0] ?? 0;
-      const baseY = pin.labelOffset?.[1] ?? 0;
+      // On a phone-width canvas use the pulled-in portrait offset so the pill
+      // stays on-screen; fall back to the desktop offset otherwise.
+      const offset =
+        (state.size.width < 640 && pin.labelOffsetMobile) || pin.labelOffset;
+      const baseX = offset?.[0] ?? 0;
+      const baseY = offset?.[1] ?? 0;
       const ox = baseX * (1 - w);
       const oy = baseY * (1 - w) - 95 * w;
       const dist = state.camera.position.distanceTo(worldPos);
@@ -399,24 +570,21 @@ function PinMarker({
 
       {pin.kind !== "offmap" && (
         <group ref={markerRef}>
-          {/* needle */}
-          <mesh position={[0, 0.075, 0]} rotation={[Math.PI, 0, 0]}>
-            <coneGeometry args={[0.02, 0.15, 10]} />
-            <meshBasicMaterial color="#2D2D2D" />
+          {/* Pennant on a pole — pole edge sits on the billboard axis so it
+              stays planted; the fly end flutters (see useFrame). */}
+          <mesh ref={flagRef} position={[FLAG_OFFSET_X, FLAG_H / 2, 0]}>
+            <planeGeometry args={[FLAG_W, FLAG_H, 24, 4]} />
+            <meshBasicMaterial
+              map={pennant}
+              transparent
+              alphaTest={0.4}
+              side={THREE.DoubleSide}
+              toneMapped={false}
+            />
           </mesh>
-          {/* teardrop head */}
-          <mesh position={[0, 0.175, 0]}>
-            <sphereGeometry args={[0.055, 18, 18]} />
-            <meshBasicMaterial color={pin.color} />
-          </mesh>
-          {/* paper-white glint so the head reads hand-drawn, not flat */}
-          <mesh position={[-0.018, 0.192, 0.038]}>
-            <sphereGeometry args={[0.016, 10, 10]} />
-            <meshBasicMaterial color="#FFF9E5" />
-          </mesh>
-          {/* ink shadow ring on the ground */}
+          {/* faint ink ground-mark so the flag reads as planted */}
           <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.004, 0]}>
-            <ringGeometry args={[0.02, 0.05, 20]} />
+            <ringGeometry args={[0.018, 0.04, 18]} />
             <meshBasicMaterial
               ref={ringMatRef}
               color="#2D2D2D"
@@ -519,7 +687,7 @@ function MumbaiTrail() {
   );
 }
 
-function Pins() {
+function Pins({ reduceMotion }: { reduceMotion: boolean }) {
   const handleSelect = (pin: MapPin) => {
     const el =
       (pin.experienceId && document.getElementById(pin.experienceId)) ||
@@ -529,7 +697,12 @@ function Pins() {
   return (
     <>
       {MAP_PINS.map((pin) => (
-        <PinMarker key={pin.id} pin={pin} onSelect={handleSelect} />
+        <PinMarker
+          key={pin.id}
+          pin={pin}
+          onSelect={handleSelect}
+          reduceMotion={reduceMotion}
+        />
       ))}
     </>
   );
@@ -557,7 +730,7 @@ export default function TerrainScene({
       <Terrain map={TERRAIN_MAPS.tokaido} reduceMotion={reduceMotion} />
       <Terrain map={TERRAIN_MAPS.mumbai} reduceMotion={reduceMotion} />
       <CameraRig reduceMotion={reduceMotion} />
-      <Pins />
+      <Pins reduceMotion={reduceMotion} />
       <MumbaiTrail />
       <UnchartedWaters />
     </Canvas>
