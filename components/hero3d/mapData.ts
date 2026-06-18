@@ -5,7 +5,7 @@ import mumbaiBounds from "@/public/terrain/mumbai-heightmap.json";
 export const WORLD_WIDTH = 10;
 export const WORLD_DEPTH = WORLD_WIDTH * (tokaidoBounds.height / tokaidoBounds.width);
 
-export const VERTICAL_EXAGGERATION = 3.2;
+export const VERTICAL_EXAGGERATION = 6.5;
 
 export interface HeightmapBounds {
   zoom: number;

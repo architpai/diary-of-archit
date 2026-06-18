@@ -397,8 +397,95 @@ function pennantTexture(color: string): THREE.Texture {
   return tex;
 }
 
+// ── Mt. Fuji landmark glyph ────────────────────────────────────────────
+// A landmark, not a workplace: instead of a flag, an inked snow-capped peak.
+// The terrain only renders Fuji as faint contour rings, so this icon makes it
+// instantly read as the mountain. Wider than a flag, sits on the summit.
+const FUJI_W = 0.46;
+const FUJI_H = FUJI_W * (210 / 240);
+
+let FUJI_TEX: THREE.Texture | null = null;
+
+/** Hand-inked snow-capped Mt. Fuji silhouette. */
+function fujiTexture(body: string): THREE.Texture {
+  if (FUJI_TEX) return FUJI_TEX;
+  const w = 240;
+  const h = 210;
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d")!;
+  const ink = "#2D2D2D";
+  const snow = "#F3F6FB";
+
+  // Fuji's signature concave slopes + flat summit.
+  const mountain = () => {
+    ctx.beginPath();
+    ctx.moveTo(w * 0.05, h * 0.95);
+    ctx.quadraticCurveTo(w * 0.28, h * 0.52, w * 0.43, h * 0.2);
+    ctx.quadraticCurveTo(w * 0.47, h * 0.14, w * 0.5, h * 0.15);
+    ctx.quadraticCurveTo(w * 0.53, h * 0.14, w * 0.57, h * 0.2);
+    ctx.quadraticCurveTo(w * 0.72, h * 0.52, w * 0.95, h * 0.95);
+    ctx.closePath();
+  };
+
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+
+  // body
+  mountain();
+  ctx.fillStyle = body;
+  ctx.fill();
+
+  // snow cap — clipped to the mountain, with a jagged lower edge (snow streaks)
+  ctx.save();
+  mountain();
+  ctx.clip();
+  ctx.fillStyle = snow;
+  ctx.beginPath();
+  ctx.moveTo(-2, -2);
+  ctx.lineTo(w + 2, -2);
+  ctx.lineTo(w + 2, h * 0.34);
+  ctx.lineTo(w * 0.7, h * 0.4);
+  ctx.lineTo(w * 0.63, h * 0.53);
+  ctx.lineTo(w * 0.57, h * 0.39);
+  ctx.lineTo(w * 0.5, h * 0.56);
+  ctx.lineTo(w * 0.44, h * 0.39);
+  ctx.lineTo(w * 0.37, h * 0.51);
+  ctx.lineTo(w * 0.3, h * 0.4);
+  ctx.lineTo(-2, h * 0.34);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+
+  // faint slope shading
+  ctx.strokeStyle = "rgba(45,45,45,0.16)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(w * 0.5, h * 0.34);
+  ctx.quadraticCurveTo(w * 0.4, h * 0.62, w * 0.3, h * 0.9);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(w * 0.52, h * 0.34);
+  ctx.quadraticCurveTo(w * 0.63, h * 0.62, w * 0.73, h * 0.9);
+  ctx.stroke();
+
+  // confident inked outline
+  ctx.strokeStyle = ink;
+  ctx.lineWidth = 4.5;
+  mountain();
+  ctx.stroke();
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  FUJI_TEX = tex;
+  return tex;
+}
+
 /** Hand-drawn pennant, planted at the location and fluttering in the
- *  prevailing wind. Billboards (Y-axis only) so it reads from any angle. */
+ *  prevailing wind. Billboards (Y-axis only) so it reads from any angle.
+ *  Landmarks (Fuji) render an inked peak instead of a flag. */
 function PinMarker({
   pin,
   onSelect,
@@ -419,7 +506,15 @@ function PinMarker({
   const flagBaseRef = useRef<{ baseY: Float32Array; u: Float32Array } | null>(
     null
   );
-  const pennant = useMemo(() => pennantTexture(pin.color), [pin.color]);
+  const isLandmark = pin.kind === "landmark";
+  const pennant = useMemo(
+    () => (isLandmark ? null : pennantTexture(pin.color)),
+    [isLandmark, pin.color]
+  );
+  const fuji = useMemo(
+    () => (isLandmark ? fujiTexture(pin.color) : null),
+    [isLandmark, pin.color]
+  );
 
   const experience = pin.experienceId
     ? content.experiences.find((e) => e.id === pin.experienceId)
@@ -570,28 +665,44 @@ function PinMarker({
 
       {pin.kind !== "offmap" && (
         <group ref={markerRef}>
-          {/* Pennant on a pole — pole edge sits on the billboard axis so it
-              stays planted; the fly end flutters (see useFrame). */}
-          <mesh ref={flagRef} position={[FLAG_OFFSET_X, FLAG_H / 2, 0]}>
-            <planeGeometry args={[FLAG_W, FLAG_H, 24, 4]} />
-            <meshBasicMaterial
-              map={pennant}
-              transparent
-              alphaTest={0.4}
-              side={THREE.DoubleSide}
-              toneMapped={false}
-            />
-          </mesh>
-          {/* faint ink ground-mark so the flag reads as planted */}
-          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.004, 0]}>
-            <ringGeometry args={[0.018, 0.04, 18]} />
-            <meshBasicMaterial
-              ref={ringMatRef}
-              color="#2D2D2D"
-              transparent
-              opacity={0.18}
-            />
-          </mesh>
+          {isLandmark ? (
+            /* Mt. Fuji — an inked snow-capped peak instead of a flag. */
+            <mesh position={[0, FUJI_H * 0.34, 0]}>
+              <planeGeometry args={[FUJI_W, FUJI_H]} />
+              <meshBasicMaterial
+                map={fuji ?? undefined}
+                transparent
+                alphaTest={0.4}
+                side={THREE.DoubleSide}
+                toneMapped={false}
+              />
+            </mesh>
+          ) : (
+            <>
+              {/* Pennant on a pole — pole edge sits on the billboard axis so
+                  it stays planted; the fly end flutters (see useFrame). */}
+              <mesh ref={flagRef} position={[FLAG_OFFSET_X, FLAG_H / 2, 0]}>
+                <planeGeometry args={[FLAG_W, FLAG_H, 24, 4]} />
+                <meshBasicMaterial
+                  map={pennant ?? undefined}
+                  transparent
+                  alphaTest={0.4}
+                  side={THREE.DoubleSide}
+                  toneMapped={false}
+                />
+              </mesh>
+              {/* faint ink ground-mark so the flag reads as planted */}
+              <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.004, 0]}>
+                <ringGeometry args={[0.018, 0.04, 18]} />
+                <meshBasicMaterial
+                  ref={ringMatRef}
+                  color="#2D2D2D"
+                  transparent
+                  opacity={0.18}
+                />
+              </mesh>
+            </>
+          )}
         </group>
       )}
     </group>
