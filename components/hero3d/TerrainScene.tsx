@@ -247,12 +247,14 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
         if (!view) continue;
         const rect = el.getBoundingClientRect();
         const center = rect.top + rect.height / 2;
-        // Narrow window: only the card actually near the viewport centre
-        // drives the camera, so neighbouring cards can't drag the frame.
-        // The dead zone keeps the weight pinned at 1 while the card is near
-        // the centre, so small rect changes (entrance animation, typing,
-        // hover) can't jiggle the camera mid-read.
-        const dist = Math.abs(center - vh * 0.5);
+        // Narrow window: only the card actually near the focus line drives the
+        // camera, so neighbouring cards can't drag the frame. The dead zone
+        // keeps the weight pinned at 1 while the card sits near the line, so
+        // small rect changes (entrance animation, typing, hover) can't jiggle
+        // the camera mid-read. On portrait the card docks to the lower band, so
+        // the focus line sits low and the marker frames into the map above it.
+        const focus = portrait ? vh * 0.66 : vh * 0.5;
+        const dist = Math.abs(center - focus);
         const dead = vh * 0.1;
         const span = vh * 0.55;
         let w = dist <= dead ? 1 : 1 - (dist - dead) / (span - dead);

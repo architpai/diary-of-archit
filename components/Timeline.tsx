@@ -123,9 +123,7 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
   return (
       <motion.div
         id={exp.id}
-        data-map-waypoint={EXPERIENCE_PIN[exp.id]}
-        data-waypoint-side={index % 2 === 0 ? 'right' : 'left'}
-        className={`flex flex-col items-center md:flex-row pointer-events-auto ${
+        className={`flex flex-col items-center justify-end min-h-[100svh] pb-[7svh] md:min-h-0 md:pb-0 md:flex-row pointer-events-auto ${
           index % 2 === 0 ? 'md:justify-end' : 'md:justify-start'
         }`}
         initial={shouldReduceMotion ? false : { opacity: 0, y: 50 }}
@@ -136,6 +134,8 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
       {/* Experience Card — one journal sheet, narrow and docked to the edge
           so the map (and the marker we just flew to) stays visible beside it */}
       <motion.div
+        data-map-waypoint={EXPERIENCE_PIN[exp.id]}
+        data-waypoint-side={index % 2 === 0 ? 'right' : 'left'}
         className="w-full md:w-[26rem] lg:w-[30rem] flex-none"
         whileHover={shouldReduceMotion ? undefined : { scale: 1.01, rotate: index % 2 === 0 ? 0.5 : -0.5 }}
         transition={shouldReduceMotion ? undefined : { type: "spring", stiffness: 300 }}
@@ -203,7 +203,16 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
             }}
           />
 
-          {/* Survey notes — top bullets plotted like route waypoints */}
+          {/* Survey notes — top bullets plotted like route waypoints. On
+              mobile the whole block stays folded so the card is a compact band
+              at the bottom and the map (with the marker we flew to) reads above
+              it; on desktop it's always open beside the map. */}
+          <div
+            className={`grid transition-[grid-template-rows] duration-300 ease-out md:grid-rows-[1fr] ${
+              expanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+            }`}
+          >
+          <div className="overflow-hidden">
           <motion.ul
             className="space-y-3 handwritten text-sm text-ink/70"
             style={jpFont}
@@ -250,26 +259,38 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
               );
             })}
           </motion.ul>
+          </div>
+          </div>
 
-          {/* Unfold the rest of the notes */}
-          {hiddenCount > 0 && (
-            <button
-              type="button"
-              onClick={() => setExpanded((v) => !v)}
-              aria-expanded={expanded}
-              className="mt-4 handwritten text-sm text-ink/60 hover:text-ink transition-colors cursor-pointer"
-              style={{
-                textDecoration: 'underline dashed',
-                textDecorationColor: `${pinColor}88`,
-                textUnderlineOffset: '4px',
-                ...jpFont,
-              }}
-            >
-              {expanded
-                ? `${t('timeline.notes_less')} ↑`
-                : `${t('timeline.notes_more')} (+${hiddenCount}) ↓`}
-            </button>
-          )}
+          {/* Unfold — on mobile reveals the whole folded notes block; on desktop
+              only appears when there are notes beyond the fold. */}
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
+            className={`mt-4 handwritten text-sm text-ink/60 hover:text-ink transition-colors cursor-pointer ${
+              hiddenCount > 0 ? '' : 'md:hidden'
+            }`}
+            style={{
+              textDecoration: 'underline dashed',
+              textDecorationColor: `${pinColor}88`,
+              textUnderlineOffset: '4px',
+              ...jpFont,
+            }}
+          >
+            {expanded ? (
+              `${t('timeline.notes_less')} ↑`
+            ) : (
+              <>
+                {t('timeline.notes_more')}{' '}
+                <span className="md:hidden">({bullets.length})</span>
+                {hiddenCount > 0 && (
+                  <span className="hidden md:inline">(+{hiddenCount})</span>
+                )}{' '}
+                ↓
+              </>
+            )}
+          </button>
         </div>
       </motion.div>
     </motion.div>
