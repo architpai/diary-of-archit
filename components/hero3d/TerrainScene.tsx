@@ -401,7 +401,7 @@ function pennantTexture(color: string): THREE.Texture {
 // A landmark, not a workplace: instead of a flag, an inked snow-capped peak.
 // The terrain only renders Fuji as faint contour rings, so this icon makes it
 // instantly read as the mountain. Wider than a flag, sits on the summit.
-const FUJI_W = 0.46;
+const FUJI_W = 0.34;
 const FUJI_H = FUJI_W * (210 / 240);
 
 let FUJI_TEX: THREE.Texture | null = null;
@@ -605,7 +605,13 @@ function PinMarker({
         sceneState.network,
         sceneState.uncharted
       );
-      const opacity = (1 - fade * 0.92) * (1 - w) + w;
+      // Non-focused labels clear out fast once the camera commits to any place,
+      // so the focused pin's pill never competes with stray captions drifting
+      // in behind a card (e.g. Fuji's long "…showing off" tail orphaned in open
+      // water once its marker shrinks away). The focused pin (w high) is held up
+      // by the `+ w` term regardless of fade.
+      const ambient = Math.max(0, 1 - fade * 2.2);
+      const opacity = ambient * (1 - w) + w;
       // On a phone-width canvas use the pulled-in portrait offset so the pill
       // stays on-screen; fall back to the desktop offset otherwise.
       const offset =
