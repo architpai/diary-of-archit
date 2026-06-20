@@ -1774,7 +1774,14 @@ a:focus-visible .wax-seal {
   padding: 1.1rem 1.35rem 1.25rem;
   pointer-events: none;
   position: absolute;
-  transform: translate(-8%, -96%) rotate(-1.2deg);
+  /* --pop-dx/--pop-dy are set by Skills.tsx to nudge the card back on-screen
+     when it would otherwise overshoot a viewport edge (e.g. a high pin on the
+     small mobile map). They default to 0 = anchored above the pin. */
+  transform: translate(
+      calc(-8% + var(--pop-dx, 0px)),
+      calc(-96% + var(--pop-dy, 0px))
+    )
+    rotate(-1.2deg);
   width: min(22rem, 78vw);
   z-index: 8;
 }
@@ -1897,7 +1904,11 @@ a:focus-visible .wax-seal {
      are gone; the desktop coordinates scale down correctly on their own. */
   .skills-basecamp-popup {
     padding: 0.9rem 1.1rem 1rem;
-    transform: translate(-4%, -98%) rotate(-1.2deg);
+    transform: translate(
+        calc(-4% + var(--pop-dx, 0px)),
+        calc(-98% + var(--pop-dy, 0px))
+      )
+      rotate(-1.2deg);
   }
 
   .skills-basecamp-popup-head {

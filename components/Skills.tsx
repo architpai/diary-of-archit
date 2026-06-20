@@ -1,6 +1,14 @@
 'use client';
 
-import { type ComponentType, type CSSProperties, useMemo, useState } from 'react';
+import {
+  type ComponentType,
+  type CSSProperties,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
@@ -15,6 +23,10 @@ import {
   InkServer,
 } from '@/components/icons/InkIcons';
 import BasecampLottie from './BasecampLottie';
+
+// Run the clamp before paint on the client (no flash of the off-screen popup),
+// but fall back to useEffect on the server so SSR doesn't warn.
+const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 interface Skill {
   id?: string;
@@ -117,6 +129,29 @@ export default function Skills() {
   }, [skills]);
 
   const activeGroup = SKILL_GROUPS.find((group) => group.id === activeGroupId);
+
+  // The popup opens above its pin (translate -98%), so a pin sitting high in
+  // the viewport (common on the small mobile map) pushes it off the top edge —
+  // and it can't escape via position:fixed because the container-type map-wrap
+  // is its containing block. So once it's open, nudge it back fully on-screen
+  // via --pop-dx/--pop-dy (consumed by the CSS transform).
+  const popupRef = useRef<HTMLDivElement>(null);
+  useIsoLayoutEffect(() => {
+    const el = popupRef.current;
+    if (!el) return;
+    el.style.setProperty('--pop-dx', '0px');
+    el.style.setProperty('--pop-dy', '0px');
+    const r = el.getBoundingClientRect();
+    const m = 8; // keep this much clear of every edge
+    let dx = 0;
+    let dy = 0;
+    if (r.top < m) dy = m - r.top;
+    else if (r.bottom > window.innerHeight - m) dy = window.innerHeight - m - r.bottom;
+    if (r.left < m) dx = m - r.left;
+    else if (r.right > window.innerWidth - m) dx = window.innerWidth - m - r.right;
+    el.style.setProperty('--pop-dx', `${dx}px`);
+    el.style.setProperty('--pop-dy', `${dy}px`);
+  }, [activeGroupId]);
 
   const groupSkillNames = (group: SkillGroup): string[] => [
     ...group.skillIds.map((id) => skillNameById[id]).filter(Boolean),
@@ -280,6 +315,7 @@ export default function Skills() {
 
               {activeGroup && (
                 <div
+                  ref={popupRef}
                   className={`skills-basecamp-popup skills-basecamp-popup-${activeGroup.className}`}
                   style={{ '--pin-color': activeGroup.color } as CSSProperties}
                   role="status"
