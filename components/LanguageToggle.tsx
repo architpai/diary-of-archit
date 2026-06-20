@@ -11,7 +11,10 @@ export default function LanguageToggle() {
   };
 
   return (
-    <div className="fixed top-2 right-2 md:top-4 md:right-4 z-50">
+    // will-change:transform promotes this to its own compositor layer so it
+    // stays pinned during momentum/async scroll over the continuously-
+    // repainting 3D canvas (mobile would otherwise drift it out and back).
+    <div className="fixed top-2 right-2 md:top-4 md:right-4 z-50 will-change-transform">
       <button
         onClick={toggleLanguage}
         disabled={isTransitioning}
