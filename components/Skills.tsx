@@ -124,7 +124,13 @@ export default function Skills() {
   ];
 
   return (
-    <section className={isSerious ? 'py-20 relative' : 'skills-basecamp-section relative'}>
+    <section
+      className={isSerious ? 'py-20 relative' : 'skills-basecamp-section relative'}
+      // While this section is centred, the persistent terrain backdrop dims its
+      // pin labels + markers (CameraRig reads this) so they don't bleed through
+      // the basecamp illustration. Inert in serious mode (no 3D backdrop).
+      data-map-waypoint={isSerious ? undefined : 'view-network'}
+    >
       {isSerious && (
         <motion.h2
           className="text-3xl md:text-4xl text-center mb-16 pt-16 font-sans font-bold text-ink"

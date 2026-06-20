@@ -122,12 +122,6 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
       const tgt = new THREE.Vector3(...pinToWorld(pin));
       v[pin.id] = { tgt, pos: tgt.clone().add(PIN_VIEW_OFFSET) };
     }
-    // Skills section: tilt up into the night sky — the constellation IS
-    // the section now (no panel), so the stars fill the frame.
-    v["view-network"] = {
-      tgt: new THREE.Vector3(0, 1.75, -0.6),
-      pos: new THREE.Vector3(0.2, 2.15, 7.5),
-    };
     // Sneak peek: sail south past the chart's edge into uncharted waters —
     // the serpent and compass rose live on the blank page down there.
     v["view-uncharted"] = {
@@ -243,8 +237,6 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
       const vh = window.innerHeight;
       for (const el of waypointEls.current) {
         const id = el.dataset.mapWaypoint ?? "";
-        const view = views[id];
-        if (!view) continue;
         const rect = el.getBoundingClientRect();
         const center = rect.top + rect.height / 2;
         // Narrow window: only the card actually near the focus line drives the
@@ -253,7 +245,10 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
         // small rect changes (entrance animation, typing, hover) can't jiggle
         // the camera mid-read. On portrait the card docks to the lower band, so
         // the focus line sits low and the marker frames into the map above it.
-        const focus = portrait ? vh * 0.66 : vh * 0.5;
+        // The skills section isn't a docked card — it's centred — so it keys
+        // off mid-screen on every orientation.
+        const focus =
+          id === "view-network" ? vh * 0.5 : portrait ? vh * 0.66 : vh * 0.5;
         const dist = Math.abs(center - focus);
         const dead = vh * 0.1;
         const span = vh * 0.55;
@@ -261,11 +256,19 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
         if (w <= 0) continue;
         w = w * w * (3 - 2 * w); // smoothstep
 
-        scratch.pos.addScaledVector(view.pos, w);
-        scratch.tgt.addScaledVector(view.tgt, w);
+        // The skills "basecamp" section dims the terrain (labels + markers, see
+        // PinMarker) but holds the camera at its overview pose — the hand-drawn
+        // illustration IS the section, so there's nowhere to fly to.
         if (id === "view-network") {
           network = Math.min(1, network + w);
-        } else if (id === "view-uncharted") {
+          continue;
+        }
+
+        const view = views[id];
+        if (!view) continue;
+        scratch.pos.addScaledVector(view.pos, w);
+        scratch.tgt.addScaledVector(view.tgt, w);
+        if (id === "view-uncharted") {
           uncharted = Math.min(1, uncharted + w);
         } else {
           // Shift the look-at point so the marker shows beside the card,
@@ -554,18 +557,18 @@ function PinMarker({
       // Lift only when focused (scroll-driven) — no idle bob/pulse.
       markerRef.current.position.y = w * 0.05;
       const landmarkShrink =
-        pin.kind === "landmark"
-          ? 1 -
-            Math.max(
-              sceneState.closeup,
-              sceneState.network,
-              sceneState.uncharted
-            ) *
-              0.9
-          : 1;
+        pin.kind === "landmark" ? 1 - sceneState.closeup * 0.9 : 1;
+      // Every pin recedes when a section's own illustration takes over the page
+      // (skills basecamp / uncharted waters), so pennants and the Fuji glyph
+      // don't poke through the art in the held overview pose. Closeup is
+      // excluded here — flying TO a timeline pin must never shrink it.
+      const coverShrink =
+        1 - Math.max(sceneState.network, sceneState.uncharted) * 0.95;
       // Modest growth only — the closeup camera is already near the pin, so
       // big scale multipliers read as a flat blob filling the frame.
-      markerRef.current.scale.setScalar((1 + w * 0.28) * landmarkShrink);
+      markerRef.current.scale.setScalar(
+        (1 + w * 0.28) * landmarkShrink * coverShrink
+      );
     }
     if (ringMatRef.current) {
       // The ground shadow ring reads as a grey smudge at low altitude.
