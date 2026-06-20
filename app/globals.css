@@ -1726,43 +1726,40 @@ a:focus-visible .wax-seal {
   transform: translateY(6%);
 }
 
-/* Each pin sits on a map feature (camp / pond / mountains). Positions are % of
-   the wrap, so they scale with the drawing at every width (the popup follows
-   the pin via Skills.tsx, so these are the single source of truth). */
+/* The pins are trail markers — each sits ON the dotted path that winds across
+   the map (in the gaps, not on the scenery like the campfire or deer), spread
+   from the left panel to the frontier loop on the right. Positions are % of the
+   wrap so they scale with the drawing at every width; the popup follows the pin
+   via Skills.tsx, so these are the single source of truth. */
 .skills-basecamp-pin-_1 {
-  /* left-panel camp */
-  left: 8%;
-  top: 29%;
+  left: 20%;
+  top: 36%;
 }
 
 .skills-basecamp-pin-_2 {
-  /* second-panel mountains */
-  left: 41%;
-  top: 43%;
+  left: 33%;
+  top: 40%;
 }
 
 .skills-basecamp-pin-_3 {
-  /* by the deer/river */
-  left: 32%;
-  top: 50%;
+  left: 46%;
+  top: 34%;
 }
 
 .skills-basecamp-pin-_4 {
-  /* third-panel camp */
   left: 56%;
-  top: 42%;
+  top: 35%;
 }
 
 .skills-basecamp-pin-_5 {
-  /* right-panel camp */
-  right: 15%;
-  top: 25%;
+  right: 23%;
+  top: 31%;
 }
 
 .skills-basecamp-pin-_6 {
-  /* the frontier pond where the trail loop closes */
-  right: 12%;
-  top: 48%;
+  /* on the frontier loop, by the pond */
+  right: 17%;
+  top: 51%;
 }
 
 .skills-basecamp-popup {
