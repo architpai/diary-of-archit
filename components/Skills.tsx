@@ -130,15 +130,29 @@ export default function Skills() {
 
   const activeGroup = SKILL_GROUPS.find((group) => group.id === activeGroupId);
 
-  // The popup opens above its pin (translate -98%), so a pin sitting high in
-  // the viewport (common on the small mobile map) pushes it off the top edge —
-  // and it can't escape via position:fixed because the container-type map-wrap
-  // is its containing block. So once it's open, nudge it back fully on-screen
-  // via --pop-dx/--pop-dy (consumed by the CSS transform).
+  // The popup is anchored to its pin's actual position so it always tracks the
+  // pin wherever it sits on the map, then nudged fully on-screen via
+  // --pop-dx/--pop-dy (it opens above the pin via translate -96%, and a high pin
+  // on the small mobile map would otherwise push it off the top edge — it can't
+  // escape clipping with position:fixed because the container-type map-wrap is
+  // its containing block).
   const popupRef = useRef<HTMLDivElement>(null);
   useIsoLayoutEffect(() => {
     const el = popupRef.current;
-    if (!el) return;
+    if (!el || !activeGroup) return;
+    // Anchor to the active pin's top-left within the map-wrap.
+    const pin = document.querySelector<HTMLElement>(
+      `.skills-basecamp-pin-${activeGroup.className}`
+    );
+    const wrap = el.parentElement;
+    if (pin && wrap) {
+      const pr = pin.getBoundingClientRect();
+      const wr = wrap.getBoundingClientRect();
+      el.style.left = `${pr.left - wr.left}px`;
+      el.style.top = `${pr.top - wr.top}px`;
+      el.style.right = 'auto';
+    }
+    // Nudge fully on-screen.
     el.style.setProperty('--pop-dx', '0px');
     el.style.setProperty('--pop-dy', '0px');
     const r = el.getBoundingClientRect();

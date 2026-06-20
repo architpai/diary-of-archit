@@ -1726,39 +1726,43 @@ a:focus-visible .wax-seal {
   transform: translateY(6%);
 }
 
+/* Each pin sits on a map feature (camp / pond / mountains). Positions are % of
+   the wrap, so they scale with the drawing at every width (the popup follows
+   the pin via Skills.tsx, so these are the single source of truth). */
 .skills-basecamp-pin-_1 {
-  left: 0;
-  top: 31%;
+  /* left-panel camp */
+  left: 8%;
+  top: 29%;
 }
 
 .skills-basecamp-pin-_2 {
-  left: 30%;
-  top: 31%;
+  /* second-panel mountains */
+  left: 41%;
+  top: 43%;
 }
 
 .skills-basecamp-pin-_3 {
-  /* Sits at the end of the southern trail (by the deer/river), not off the
-     bottom fold of the map. */
-  left: 35%;
-  top: 58%;
+  /* by the deer/river */
+  left: 32%;
+  top: 50%;
 }
 
 .skills-basecamp-pin-_4 {
-  left: 63%;
-  top: 33%;
+  /* third-panel camp */
+  left: 56%;
+  top: 42%;
 }
 
 .skills-basecamp-pin-_5 {
-  right: 8%;
-  top: 17%;
+  /* right-panel camp */
+  right: 15%;
+  top: 25%;
 }
 
 .skills-basecamp-pin-_6 {
-  /* Was a fixed 7rem — the one pin that didn't track the map. Now a % like the
-     rest so it stays on its panel as the map scales. Lands on the pond where the
-     frontier trail loop closes — the end of the trail. */
-  right: 6.5%;
-  top: 47%;
+  /* the frontier pond where the trail loop closes */
+  right: 12%;
+  top: 48%;
 }
 
 .skills-basecamp-popup {
@@ -1840,31 +1844,8 @@ a:focus-visible .wax-seal {
   opacity: 0.85;
 }
 
-.skills-basecamp-popup-_1,
-.skills-basecamp-popup-_2 {
-  left: 12%;
-  top: 31%;
-}
-
-.skills-basecamp-popup-_3 {
-  left: 38%;
-  top: 58%;
-}
-
-.skills-basecamp-popup-_4 {
-  left: 66%;
-  top: 33%;
-}
-
-.skills-basecamp-popup-_5 {
-  right: 12%;
-  top: 17%;
-}
-
-.skills-basecamp-popup-_6 {
-  right: 12%;
-  top: 47%;
-}
+/* Popup position is set by Skills.tsx (anchored to the active pin, then clamped
+   on-screen) — no per-pin coordinates to keep in sync with the pins. */
 
 @media (max-width: 1279px) {
   /* Heading size and pin size are now fluid (clamp / cqw), so they no longer
