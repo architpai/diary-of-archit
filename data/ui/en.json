@@ -58,7 +58,7 @@
     "tier_charting": "still charting",
     "chart_1": "Local LLMs & RAG",
     "chart_2": "Autonomous agents",
-    "map_hint": "hover a marker to see what's in each kit (tap on mobile)",
+    "map_hint": "open a marker — each one's a kit",
     "group_mapping": "Geospatial & Mapping",
     "group_data": "Databases & Caching",
     "group_frontend": "Frontend & Visualisation",

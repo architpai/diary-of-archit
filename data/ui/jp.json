@@ -58,7 +58,7 @@
     "tier_charting": "開拓中",
     "chart_1": "ローカルLLM・RAG",
     "chart_2": "自律エージェント",
-    "map_hint": "マーカーにカーソルを乗せると、その道具箱の中身が見えます（モバイルはタップ）",
+    "map_hint": "マーカーはどれも道具箱 — ひらいてみて",
     "group_mapping": "地理空間・地図",
     "group_data": "データベース・キャッシュ",
     "group_frontend": "フロントエンド・可視化",

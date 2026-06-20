@@ -1555,7 +1555,9 @@ a:focus-visible .wax-seal {
      every other diary section instead of walling it off with opaque paper. */
   background: transparent;
   color: var(--bc-ink);
-  min-height: 70rem;
+  /* Content-driven height (heading + hint + map + padding) — no fixed
+     min-height, which used to leave a tall empty terrain gap before the next
+     section. padding-bottom is the coastline band the map sits on. */
   overflow: hidden;
   padding: 2.5rem 0 7rem;
   isolation: isolate;
@@ -1616,17 +1618,14 @@ a:focus-visible .wax-seal {
 }
 
 .skills-basecamp-map-stage {
-  /* Mirrors the wrap's own sizing so the heading↔map gap can be expressed as a
-     fraction of the map width (cqw only resolves *inside* the wrap, not here). */
-  --map-w: min(92vw, 96rem);
-
   align-items: flex-start;
   display: flex;
   justify-content: center;
-  /* Heading↔map gap. Proportional to the map so it tracks the fluid heading
-     instead of jumping at breakpoints. Moves pins + drawing together, so it
-     has no effect on pin↔drawing alignment. */
-  margin-top: calc(var(--map-w) * -0.069);
+  /* Map sits in natural flow right below the hint. The old negative pull
+     overlapped the hint with the map's top fold; 0 keeps a clean band for the
+     hint. Stage margin moves pins + drawing together, so it has no effect on
+     pin↔drawing alignment. */
+  margin-top: 0;
   position: relative;
   z-index: 4;
 }
@@ -1679,6 +1678,17 @@ a:focus-visible .wax-seal {
     box-shadow 0.18s ease;
   width: 6cqw;
   z-index: 6;
+}
+
+/* The drawn pin stays small so it sits on its map feature, but the tappable
+   target shouldn't: this transparent halo extends the hit (and hover) area
+   ~10px on every side — ~43px on a phone-width map, harmlessly large on
+   desktop. Edge pins (_1, _5, _6) get the outer side clipped by the section's
+   overflow:hidden; the other three sides still help. */
+.skills-basecamp-pin::after {
+  content: "";
+  inset: -10px;
+  position: absolute;
 }
 
 .skills-basecamp-pin:hover,
@@ -1850,10 +1860,6 @@ a:focus-visible .wax-seal {
 }
 
 @media (max-width: 1279px) {
-  .skills-basecamp-section {
-    min-height: 58rem;
-  }
-
   /* Heading size and pin size are now fluid (clamp / cqw), so they no longer
      need per-breakpoint overrides — only the decorative cloud is repositioned. */
   .skills-basecamp-cloud {
@@ -1865,7 +1871,6 @@ a:focus-visible .wax-seal {
 
 @media (max-width: 767px) {
   .skills-basecamp-section {
-    min-height: 34rem;
     /* Clean ending before the Sneak Peek cartouche on narrow viewports. */
     padding-bottom: 7rem;
     padding-top: 5rem;
@@ -1880,12 +1885,6 @@ a:focus-visible .wax-seal {
     left: calc(50% - 4.8rem);
     top: 7.4rem;
     width: 2.6rem;
-  }
-
-  .skills-basecamp-map-stage {
-    /* Map goes full-width on phones; keep --map-w in sync (it's consumed here,
-       on the stage, so the heading↔map gap stays proportional to the real map). */
-    --map-w: 100vw;
   }
 
   .skills-basecamp-map-wrap {
