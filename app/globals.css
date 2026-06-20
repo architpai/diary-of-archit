@@ -1726,40 +1726,41 @@ a:focus-visible .wax-seal {
   transform: translateY(6%);
 }
 
-/* The pins are trail markers — each sits ON the dotted path that winds across
-   the map (in the gaps, not on the scenery like the campfire or deer), spread
-   from the left panel to the frontier loop on the right. Positions are % of the
-   wrap so they scale with the drawing at every width; the popup follows the pin
-   via Skills.tsx, so these are the single source of truth. */
+/* The pins are trail markers sitting ON the dotted path's centreline (points
+   sampled from the Lottie "Path" layer), chosen where the path is clear of the
+   tents / deer / pond / campfire, spread left→right. Positions are % of the
+   wrap, and the SVG drawing fills the wrap exactly (svg height == wrap height at
+   every width, verified), so a pin holds the same point on the drawing at every
+   screen size — no resize drift. The popup follows the pin via Skills.tsx, so
+   these are the single source of truth. */
 .skills-basecamp-pin-_1 {
-  left: 20%;
-  top: 36%;
+  left: 25%;
+  top: 21%;
 }
 
 .skills-basecamp-pin-_2 {
-  left: 33%;
-  top: 40%;
+  left: 37%;
+  top: 26%;
 }
 
 .skills-basecamp-pin-_3 {
-  left: 46%;
-  top: 34%;
+  left: 50%;
+  top: 29%;
 }
 
 .skills-basecamp-pin-_4 {
-  left: 56%;
-  top: 35%;
+  left: 62%;
+  top: 25%;
 }
 
 .skills-basecamp-pin-_5 {
-  right: 23%;
-  top: 31%;
+  left: 72%;
+  top: 35%;
 }
 
 .skills-basecamp-pin-_6 {
-  /* on the frontier loop, by the pond */
-  right: 17%;
-  top: 51%;
+  left: 85%;
+  top: 26%;
 }
 
 .skills-basecamp-popup {
