@@ -89,7 +89,7 @@ const WATER_FRAGMENT = /* glsl */ `
 
   const float FCX = ${FRAME.cx.toFixed(3)};
   const float FCZ = ${FRAME.cz.toFixed(3)};
-  const float SCALE = 0.82; // the leviathan is the star of this view now
+  const float SCALE = 0.5; // a shadow under the surface, not a billboard
 
   vec2 rot(vec2 p, float a) {
     float c = cos(a), s = sin(a);
@@ -106,7 +106,7 @@ const WATER_FRAGMENT = /* glsl */ `
     float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
     return mix(b, a, h) - k * h * (1.0 - h);
   }
-  float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+  float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
   float vnoise(vec2 p) {
     vec2 i = floor(p), f = fract(p);
     vec2 u = f * f * (3.0 - 2.0 * f);
@@ -139,16 +139,18 @@ const WATER_FRAGMENT = /* glsl */ `
     vec2 W = vWorld;       // (worldX, worldZ)
     float Wx = W.x, Wz = W.y;
 
-    // — base sea wash: the exact same ocean colour the terrain draws —
-    vec3 water = mix(uPaper, uPaperLine, 0.42);
-
-    // — ambient hand-drawn ripples (world-space frequencies matched to the
-    //   terrain's sea, with a slow drift so the open water breathes) —
-    float meander = vnoise(vec2(Wx * 0.2 + 1.0, Wz * 0.867)) * 2.4;
-    float wavePhase = Wz * 8.38 + vnoise(vec2(Wx * 0.4, Wz * 3.18)) * 13.0
-                    + meander + uWaterTime * 0.45;
+    // — base sea wash + ambient ripples: the terrain's ocean recipe ported
+    //   VERBATIM, evaluated in the terrain's own UV basis (tokaido footprint:
+    //   x∈[-5,5], z∈[±WORLD_DEPTH/2]). So the open water is literally the same
+    //   water as the sea beside the map — calm, pale, and static (no drift). —
+    vec2 suv = vec2((Wx + 5.0) / 10.0, (3.46154 - Wz) / 6.92308);
+    float grain = vnoise(suv * 700.0);
+    vec3 paper = uPaper * (0.972 + 0.028 * grain);
+    vec3 water = mix(paper, uPaperLine, 0.42);
+    float meander = vnoise(suv * vec2(2.0, 6.0)) * 2.4;
+    float wavePhase = suv.y * 58.0 + vnoise(suv * vec2(4.0, 22.0)) * 13.0 + meander;
     float ripple = smoothstep(0.5, 0.9, sin(wavePhase) * 0.5 + 0.5);
-    vec3 col = mix(water, uPaperLine, ripple * 0.30);
+    vec3 col = mix(water, uPaperLine, ripple * 0.36);
 
     // — the creature's working frame —
     vec2 vp = vec2(Wx - FCX, FCZ - Wz);
@@ -160,25 +162,21 @@ const WATER_FRAGMENT = /* glsl */ `
     float along = dot(toC, -fwd);   // distance behind the body
     float crossv = dot(toC, sideV); // signed offset across the wake
 
-    // concentric ripples radiating off the body — continuous, never popping
-    float rings = sin(dC * 10.0 - uWaterTime * 2.2) * 0.5 + 0.5;
-    float ringAmt = smoothstep(0.45, 1.0, rings) * smoothstep(2.8, 0.25, dC) * pres;
+    // — the wake it leaves: a SOFT, noise-broken disturbance kept in key with
+    //   the pale wash. Disturbed/aerated water reads slightly LIGHTER (foam),
+    //   not as bright blue lines — the old crisp V + perfect rings looked
+    //   synthetic. A turbulent trail widening behind, plus warped bow ripples. —
+    float wedge = exp(-(crossv * crossv) / (0.12 + along * 0.18));
+    float trailMask = wedge * smoothstep(0.0, 0.35, along) * smoothstep(5.5, 0.0, along) * pres;
+    float trailTex = vnoise(vec2(along * 2.6 - uWaterTime * 1.5, crossv * 5.0 + uWaterTime * 0.6));
+    float trail = trailMask * (0.35 + 0.65 * trailTex) * (0.55 + 0.9 * uSpeed);
 
-    // a V-wake behind the head (~19°): two diverging crests, ripples travelling
-    float vEdge = abs(crossv) - along * 0.34;
-    float vLine = smoothstep(0.16, 0.0, abs(vEdge))
-                * smoothstep(0.0, 0.2, along) * smoothstep(4.5, 0.0, along);
-    float wakeRip = sin(along * 7.0 - uWaterTime * 3.0) * 0.5 + 0.5;
-    float wakeAmt = vLine * wakeRip * pres;
+    float warp = (vnoise(vp * 3.0 + uWaterTime * 0.25) - 0.5) * 0.5;
+    float bow = sin((dC + warp) * 6.0 - uWaterTime * 1.8) * 0.5 + 0.5;
+    float bowAmt = smoothstep(0.6, 1.0, bow) * smoothstep(1.5, 0.12, dC) * pres;
 
-    // churn directly behind the body, stronger the faster it travels
-    float churn = exp(-(crossv * crossv) / (0.07 + along * 0.06))
-                * smoothstep(2.6, 0.0, along) * step(0.0, along)
-                * pres * (0.35 + uSpeed);
-
-    float disturb = clamp(ringAmt * 0.55 + wakeAmt * 0.8 + churn * 0.5, 0.0, 1.0);
-    col = mix(col, uPaperLine, disturb * 0.5);
-    col = mix(col, uInk, wakeAmt * 0.10); // a hint of pen in the strongest crest
+    float foam = clamp(trail * 0.55 + bowAmt * 0.3, 0.0, 1.0);
+    col = mix(col, mix(uPaper, uPaperLine, 0.22), foam * 0.4);
 
     // — the leviathan shadow, drawn into the same surface —
     vec2 lp = rot(toC, -uLurker.z) / SCALE;
