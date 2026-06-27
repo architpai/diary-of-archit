@@ -196,6 +196,9 @@ const WATER_FRAGMENT = /* glsl */ `
     a += (hash(gl_FragCoord.xy) - 0.5) * 0.01; // dither — no banding on the wash
     if (a < 0.004) discard;
     gl_FragColor = vec4(col, a);
+    // Same linear->sRGB output conversion the terrain shader applies; without
+    // it the wash renders darker/more saturated than the sea beside the map.
+    #include <colorspace_fragment>
   }
 `;
 
