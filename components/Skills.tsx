@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -22,6 +23,7 @@ import {
   InkSerpent,
   InkServer,
 } from '@/components/icons/InkIcons';
+import BasecampLottie from './BasecampLottie';
 
 // Run the clamp before paint on the client (no flash of the off-screen popup),
 // but fall back to useEffect on the server so SSR doesn't warn.
@@ -37,20 +39,15 @@ interface Skill {
 
 type InkGlyph = ComponentType<{ className?: string; color?: string }>;
 
-/** A worn sepia for the unsurveyed "frontier" station — it has no entry in
- *  CATEGORY_COLORS because it isn't a charted category yet. */
+/** A worn sepia for the unexplored "here be dragons" frontier — it has no
+ *  entry in CATEGORY_COLORS because it isn't a charted category yet. */
 const FRONTIER_COLOR = '#7E5A3C';
-/** Cream the pin glyphs are drawn in, so the ink reads on the solid station. */
+/** Cream the pin glyphs are drawn in, so the ink reads on the solid marker. */
 const PIN_GLYPH_INK = '#FFF9E5';
-
-// The survey chart is drawn in a 1000×446 viewBox (≈ the wrap's 3250/1450
-// aspect), so a station's % position maps straight onto chart coordinates.
-const VIEW_W = 1000;
-const VIEW_H = 446;
 
 interface SkillGroup {
   id: string;
-  /** Identifier hook for the popup anchor query + position class. */
+  /** Maps to the .skills-basecamp-pin-_N position slots in globals.css */
   className: string;
   labelKey: string;
   color: string;
@@ -60,14 +57,11 @@ interface SkillGroup {
   /** ui-copy keys for skills not in content.skills (the frontier two) */
   chartKeys?: string[];
   frontier?: boolean;
-  /** Station position as a % of the chart wrap (x = left, y = top). */
-  xPct: number;
-  yPct: number;
 }
 
-// Six stations triangulated across the survey of the toolkit. Coloured by
-// CATEGORY_COLORS so they read against the rest of the map's legend; the
-// frontier station is the uncharted AI edge (dashed, "still charting").
+// Six kits laid out as regions on the map — the diary's real skill
+// categories grouped, coloured by CATEGORY_COLORS so they match the rest of
+// the map's legend. The frontier kit is the uncharted AI edge.
 const SKILL_GROUPS: SkillGroup[] = [
   {
     id: 'mapping',
@@ -76,8 +70,6 @@ const SKILL_GROUPS: SkillGroup[] = [
     color: CATEGORY_COLORS.mapping,
     Icon: InkCompass,
     skillIds: ['geo', 'mvt', 'wayfinding', 'maplibre'],
-    xPct: 9,
-    yPct: 36,
   },
   {
     id: 'data',
@@ -86,8 +78,6 @@ const SKILL_GROUPS: SkillGroup[] = [
     color: CATEGORY_COLORS.database,
     Icon: InkDatabase,
     skillIds: ['postgis', 'redis'],
-    xPct: 27,
-    yPct: 16,
   },
   {
     id: 'frontend',
@@ -96,8 +86,6 @@ const SKILL_GROUPS: SkillGroup[] = [
     color: CATEGORY_COLORS.frontend,
     Icon: InkBrackets,
     skillIds: ['react', 'ts', 'redux', 'threejs'],
-    xPct: 45,
-    yPct: 38,
   },
   {
     id: 'backend',
@@ -106,8 +94,6 @@ const SKILL_GROUPS: SkillGroup[] = [
     color: CATEGORY_COLORS.backend,
     Icon: InkServer,
     skillIds: ['node', 'python', 'sysdesign'],
-    xPct: 60,
-    yPct: 18,
   },
   {
     id: 'cloud',
@@ -116,8 +102,6 @@ const SKILL_GROUPS: SkillGroup[] = [
     color: CATEGORY_COLORS.cloud,
     Icon: InkCloud,
     skillIds: ['azure', 'docker', 'cicd'],
-    xPct: 74,
-    yPct: 40,
   },
   {
     id: 'frontier',
@@ -128,91 +112,8 @@ const SKILL_GROUPS: SkillGroup[] = [
     skillIds: [],
     chartKeys: ['skills.chart_1', 'skills.chart_2'],
     frontier: true,
-    xPct: 89,
-    yPct: 22,
   },
 ];
-
-// Station centre in chart coordinates (the pin sits centred on its %).
-const stationXY = (g: SkillGroup) => ({
-  x: (g.xPct / 100) * VIEW_W,
-  y: (g.yPct / 100) * VIEW_H,
-});
-
-/** A faint hand-inked survey chart: contour summits, the traverse that threads
- *  the stations, a north mark + scale bar. Purely decorative (the stations on
- *  top are the interactive layer), so it's aria-hidden. */
-function SurveyChart() {
-  const pts = SKILL_GROUPS.map(stationXY);
-  // The traverse: a dashed survey line threading the stations in order, so the
-  // route and the stations tell ONE story (the stations ARE the stops).
-  const traverse = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(0)} ${p.y.toFixed(0)}`).join(' ');
-
-  // A few contour "summits" sat under stations so they read as charted ground.
-  const summits = [
-    { cx: 150, cy: 250, n: 4, rx: 70, ry: 40, rot: -8 },
-    { cx: 470, cy: 250, n: 5, rx: 95, ry: 52, rot: 6 },
-    { cx: 760, cy: 150, n: 4, rx: 78, ry: 44, rot: -4 },
-    { cx: 880, cy: 320, n: 3, rx: 52, ry: 30, rot: 10 },
-  ];
-
-  return (
-    <svg
-      className="survey-chart"
-      viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
-      preserveAspectRatio="xMidYMid meet"
-      role="img"
-      aria-hidden="true"
-    >
-      {/* sheet + neat-line border (the survey sheet frame) */}
-      <rect x="3" y="3" width={VIEW_W - 6} height={VIEW_H - 6} className="survey-sheet" />
-      <rect x="12" y="12" width={VIEW_W - 24} height={VIEW_H - 24} className="survey-neatline" />
-
-      {/* contour summits — concentric rings = charted elevation */}
-      {summits.map((s, si) => (
-        <g key={si} transform={`rotate(${s.rot} ${s.cx} ${s.cy})`} className="survey-contour-group">
-          {Array.from({ length: s.n }).map((_, ri) => (
-            <ellipse
-              key={ri}
-              cx={s.cx}
-              cy={s.cy}
-              rx={s.rx - ri * (s.rx / (s.n + 0.6))}
-              ry={s.ry - ri * (s.ry / (s.n + 0.6))}
-              className="survey-contour"
-            />
-          ))}
-        </g>
-      ))}
-
-      {/* a low coastline/hatched valley sweeping across the lower sheet */}
-      <path
-        d="M40 360 Q220 330 400 362 T760 356 T980 372"
-        className="survey-valley"
-      />
-
-      {/* the traverse threading the stations */}
-      <path d={traverse} className="survey-traverse" />
-      {/* a small bearing tick at each station node */}
-      {pts.map((p, i) => (
-        <g key={i} className="survey-node">
-          <path d={`M${p.x - 13} ${p.y} L${p.x + 13} ${p.y} M${p.x} ${p.y - 13} L${p.x} ${p.y + 13}`} className="survey-node-cross" />
-        </g>
-      ))}
-
-      {/* marginalia — north mark (top-left) + scale bar (bottom-right) */}
-      <g className="survey-north" transform="translate(56 60)">
-        <path d="M0 -22 L7 8 L0 1 L-7 8 Z" className="survey-north-needle" />
-        <text x="0" y="-26" className="survey-north-label">N</text>
-      </g>
-      <g className="survey-scale" transform={`translate(${VIEW_W - 200} ${VIEW_H - 40})`}>
-        <path d="M0 0 H140" className="survey-scale-bar" />
-        {[0, 35, 70, 105, 140].map((x) => (
-          <path key={x} d={`M${x} -5 V5`} className="survey-scale-tick" />
-        ))}
-      </g>
-    </svg>
-  );
-}
 
 export default function Skills() {
   const { isSerious } = useSeriousMode();
@@ -221,7 +122,7 @@ export default function Skills() {
   const [activeGroupId, setActiveGroupId] = useState<string | null>(null);
   const skills = content.skills as Skill[];
 
-  // id → localized skill name, so a station's popup can list its tools.
+  // id → localized skill name, so a group's pins can list their tools.
   const skillNameById = useMemo(() => {
     const map: Record<string, string> = {};
     for (const skill of skills) if (skill.id) map[skill.id] = skill.name;
@@ -229,13 +130,19 @@ export default function Skills() {
   }, [skills]);
 
   const activeGroup = SKILL_GROUPS.find((group) => group.id === activeGroupId);
-  const popupId = 'skills-station-popup';
-
-  const close = useCallback(() => setActiveGroupId(null), []);
 
   // The popup is anchored to its pin's actual position so it always tracks the
-  // station wherever it sits, then nudged fully on-screen via --pop-dx/--pop-dy.
+  // pin wherever it sits on the map, then nudged fully on-screen via
+  // --pop-dx/--pop-dy (it opens above the pin via translate -96%, and a high pin
+  // on the small mobile map would otherwise push it off the top edge — it can't
+  // escape clipping with position:fixed because the container-type map-wrap is
+  // its containing block).
   const popupRef = useRef<HTMLDivElement>(null);
+  const popupId = 'skills-basecamp-popup';
+  const close = useCallback(() => setActiveGroupId(null), []);
+
+  // Anchor the popup to its pin (top-left within the map-wrap), then nudge it
+  // fully on-screen via --pop-dx/--pop-dy.
   const reposition = useCallback(() => {
     const el = popupRef.current;
     if (!el || !activeGroup) return;
@@ -246,11 +153,10 @@ export default function Skills() {
     if (pin && wrap) {
       const pr = pin.getBoundingClientRect();
       const wr = wrap.getBoundingClientRect();
-      el.style.left = `${pr.left - wr.left + pr.width / 2}px`;
+      el.style.left = `${pr.left - wr.left}px`;
       el.style.top = `${pr.top - wr.top}px`;
       el.style.right = 'auto';
     }
-    // Nudge fully on-screen.
     el.style.setProperty('--pop-dx', '0px');
     el.style.setProperty('--pop-dy', '0px');
     const r = el.getBoundingClientRect();
@@ -270,13 +176,12 @@ export default function Skills() {
     reposition();
   }, [activeGroup, reposition]);
 
-  // Keep the popup anchored + on-screen while it's open: recompute on resize and
-  // scroll (the clamp was previously open-once and could drift off the edge),
-  // and close on Escape or an outside tap (the reliable touch-dismiss path).
+  // Keep the popup on-screen + dismissable: re-anchor on resize/scroll, and
+  // close on Escape or an outside tap (the reliable touch-dismiss path the
+  // hover-only model lacked).
   useEffect(() => {
     if (!activeGroup) return;
-    const onResize = () => reposition();
-    const onScroll = () => reposition();
+    const onMove = () => reposition();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         const pin = document.querySelector<HTMLElement>(
@@ -290,13 +195,13 @@ export default function Skills() {
       const wrap = popupRef.current?.parentElement;
       if (wrap && !wrap.contains(e.target as Node)) close();
     };
-    window.addEventListener('resize', onResize);
-    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onMove);
+    window.addEventListener('scroll', onMove, { passive: true });
     window.addEventListener('keydown', onKey);
     window.addEventListener('pointerdown', onPointerDown);
     return () => {
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onMove);
+      window.removeEventListener('scroll', onMove);
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('pointerdown', onPointerDown);
     };
@@ -309,10 +214,10 @@ export default function Skills() {
 
   return (
     <section
-      className={isSerious ? 'py-20 relative' : 'skills-survey-section relative'}
+      className={isSerious ? 'py-20 relative' : 'skills-basecamp-section relative'}
       // While this section is centred, the persistent terrain backdrop dims its
       // pin labels + markers (CameraRig reads this) so they don't bleed through
-      // the survey chart. Inert in serious mode (no 3D backdrop).
+      // the basecamp illustration. Inert in serious mode (no 3D backdrop).
       data-map-waypoint={isSerious ? undefined : 'view-network'}
     >
       {isSerious && (
@@ -380,66 +285,80 @@ export default function Skills() {
           </div>
         </div>
       ) : (
-        <div className="skills-survey-inner">
-          {/* Section header — shares the cartouche system with every other
-              section so the four headers read as one designed set. */}
+        <div className="skills-basecamp-inner">
           <motion.div
-            className="text-center mb-6 px-4 relative z-10"
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5 }}
+            className="skills-basecamp-heading"
+            initial={shouldReduceMotion ? false : { opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, amount: 0.35 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6 }}
           >
-            <div className="map-cartouche inline-block px-8 py-4 pointer-events-auto">
-              <h2 className="diary-title text-3xl md:text-4xl text-ink inline-flex items-center gap-3">
-                <InkCompass className="w-9 h-9 shrink-0 text-ink/80" />
-                {t('skills.title_diary')}
-              </h2>
-            </div>
-            {/* The hint fades out once a station is open, so it never competes
-                with the popup card for the same patch of screen. */}
-            <p
-              className="section-subhint"
-              style={{ opacity: activeGroup ? 0 : 1 }}
-              aria-hidden={activeGroup ? true : undefined}
+            {/* Hand-surveyed, not campaign-poster: the diary's brush type with
+                a gentle wobble on each line, no mechanical scroll-parallax. */}
+            <motion.span
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 16, rotate: -2.5 }}
+              whileInView={{ opacity: 1, y: 0, rotate: -1.5 }}
+              viewport={{ once: true }}
+              transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: 0.05 }}
             >
-              {t('skills.map_hint')}
-            </p>
+              there&apos;s always
+            </motion.span>
+            <motion.span
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 16, rotate: 2.5 }}
+              whileInView={{ opacity: 1, y: 0, rotate: 1 }}
+              viewport={{ once: true }}
+              transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: 0.2 }}
+            >
+              more to explore
+            </motion.span>
+            <Image
+              className="skills-basecamp-cloud"
+              src="/basecamp/cloud01.svg"
+              alt=""
+              aria-hidden="true"
+              width={90}
+              height={60}
+            />
           </motion.div>
 
-          <div className="skills-survey-stage">
-            <motion.div
-              className="skills-basecamp-map-wrap skills-survey-wrap"
-              onMouseLeave={close}
-              initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.985 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.55, ease: 'easeOut' }}
+          {/* The hint fades out once a kit is open, so it never competes with
+              the popup card for the same patch of screen. */}
+          <p
+            className="skills-basecamp-hint"
+            style={{ opacity: activeGroup ? 0 : 1 }}
+            aria-hidden={activeGroup ? true : undefined}
+          >
+            {t('skills.map_hint')}
+          </p>
+
+          <div className="skills-basecamp-map-stage">
+            <div
+              className="skills-basecamp-map-wrap"
+              onMouseLeave={() => setActiveGroupId(null)}
             >
-              <SurveyChart />
+              <BasecampLottie
+                className="skills-basecamp-lottie"
+                path="/basecamp/kaart-loop.json"
+              />
 
               {SKILL_GROUPS.map((group) => {
                 const Icon = group.Icon;
-                const isActive = group.id === activeGroupId;
                 return (
                   <button
                     key={group.id}
                     type="button"
                     className={`skills-basecamp-pin skills-basecamp-pin-${group.className}${
                       group.frontier ? ' skills-basecamp-pin-frontier' : ''
-                    }${isActive ? ' skills-basecamp-pin-active' : ''}`}
-                    style={{
-                      backgroundColor: group.color,
-                      left: `${group.xPct}%`,
-                      top: `${group.yPct}%`,
-                    }}
+                    }`}
+                    style={{ backgroundColor: group.color }}
                     aria-label={t(group.labelKey)}
                     title={t(group.labelKey)}
-                    aria-expanded={isActive}
-                    aria-controls={isActive ? popupId : undefined}
-                    // Hover/focus/tap all OPEN this station; the wrap's
-                    // onMouseLeave + Escape + an outside tap close it. (A toggle
-                    // on click would cancel the open that mouseenter/focus set.)
+                    aria-expanded={group.id === activeGroupId}
+                    aria-controls={group.id === activeGroupId ? popupId : undefined}
+                    // One model: hover, focus, or tap all OPEN this group; the
+                    // wrap's onMouseLeave + onBlur close it. (A toggle on click
+                    // would cancel the open that mouseenter/focus just set,
+                    // breaking "tap on mobile".)
                     onFocus={() => setActiveGroupId(group.id)}
                     onBlur={() => setActiveGroupId((cur) => (cur === group.id ? null : cur))}
                     onMouseEnter={() => setActiveGroupId(group.id)}
@@ -474,22 +393,9 @@ export default function Skills() {
                   {activeGroup.frontier && (
                     <span className="skills-basecamp-popup-note">{t('skills.tier_charting')}</span>
                   )}
-                  {/* tether caret pointing down toward the station */}
-                  <span className="skills-basecamp-popup-caret" aria-hidden="true" />
                 </div>
               )}
-            </motion.div>
-
-            {/* Legend — names each station so a kit is identifiable before you
-                open it (and survives the small station glyphs on mobile). */}
-            <ul className="survey-legend">
-              {SKILL_GROUPS.map((group) => (
-                <li key={group.id}>
-                  <span className="survey-legend-swatch" style={{ backgroundColor: group.color }} />
-                  {t(group.labelKey)}
-                </li>
-              ))}
-            </ul>
+            </div>
           </div>
         </div>
       )}

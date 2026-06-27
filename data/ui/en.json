@@ -53,7 +53,7 @@
     "tier_charting": "still charting",
     "chart_1": "Local LLMs & RAG",
     "chart_2": "Autonomous agents",
-    "map_hint": "open a station — each holds a kit",
+    "map_hint": "open a marker — each holds a kit",
     "group_mapping": "Geospatial & Mapping",
     "group_data": "Databases & Caching",
     "group_frontend": "Frontend & Visualisation",

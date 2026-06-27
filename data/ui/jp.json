@@ -53,7 +53,7 @@
     "tier_charting": "開拓中",
     "chart_1": "ローカルLLM・RAG",
     "chart_2": "自律エージェント",
-    "map_hint": "測量点をひらく — どれも道具箱",
+    "map_hint": "マーカーをひらく — どれも道具箱",
     "group_mapping": "地理空間・地図",
     "group_data": "データベース・キャッシュ",
     "group_frontend": "フロントエンド・可視化",
