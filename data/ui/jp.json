@@ -3,9 +3,9 @@
     "diary": "アーチット",
     "of": "の",
     "name": "日記",
-    "subtitle": "作って、壊して、たまに直す。",
+    "subtitle": "地図・バックエンド・クラウドのあいだを測量して、そこに必要なものを築く。",
     "subtitle_role": "地図・バックエンドシステム・クラウドアプリを横断して作るフルスタックエンジニア",
-    "credit": "測量・作図 アーチット・パイ · MMXXVI",
+    "credit": "測量・作図 アーチット・パイ · 2026",
     "scale_note": "精度は気分次第",
     "wind_note": "卓越風 · 北東",
     "scroll": "↓ スクロールして続きを見る ↓",
@@ -15,7 +15,7 @@
     "pin_fuji": "富士山 — 標高3,776mのドヤ顔",
     "pin_mumbai": "スコーピオ・グループ ’19",
     "mumbai_inset": "ムンバイ — ページの西へ6,700km（縮尺は気にしない）",
-    "map_note": "本物の標高データをシェーダーで手描き風に（地図が本業なので、ページも地図にしました）",
+    "map_note": "関東 — 本物の標高データから測量。地図づくりが本業です。",
     "cartographer": "図1 — 地図職人（私）"
   },
   "timeline": {
@@ -50,15 +50,10 @@
   "skills": {
     "title_diary": "測量士の道具箱",
     "title_serious": "技術スキル",
-    "legend_sub": "天測航法 — 私が頼りにする道具たち",
-    "sky_hint": "星にカーソルを乗せると、相棒の星が軌道に乗ります（モバイルはタップ）",
-    "disclaimer": "※ 軌道は100%科学的です（たぶん）",
-    "key_title": "この空の読み方",
-    "size_note": "大きい星ほど、よく手に取る道具",
     "tier_charting": "開拓中",
     "chart_1": "ローカルLLM・RAG",
     "chart_2": "自律エージェント",
-    "map_hint": "マーカーはどれも道具箱 — ひらいてみて",
+    "map_hint": "測量点をひらく — どれも道具箱",
     "group_mapping": "地理空間・地図",
     "group_data": "データベース・キャッシュ",
     "group_frontend": "フロントエンド・可視化",
@@ -67,11 +62,11 @@
     "group_frontier": "未踏地・AI"
   },
   "sneakpeek": {
-    "title": "ここだけの話",
-    "subtitle": "（履歴書には書けないけど... 本当は書きたいこと）",
-    "stamp": "この先、竜がいるかも",
+    "title": "地図の外",
+    "subtitle": "正式な測量には載らない場所",
+    "stamp": "この先、竜あり",
     "stamp_latin": "· hic svnt dracones ·",
-    "current_setup": "愛用の船",
+    "current_setup": "愛用の道具",
     "flip_hint": "めくってみて ↻",
     "flip_back": "戻す ↩",
     "spec_label": "標本",
@@ -81,7 +76,7 @@
     "title_diary": "気軽に連絡して！",
     "title_serious": "連絡先",
     "message": "ここまで読んでくれたなら、きっと話が合うはず。",
-    "signoff": "以上！さあ、何か面白いもの作ろう。",
+    "signoff": "測量はここまで。次は、あなた自身の地図を描いて。",
     "pc_to": "宛先:",
     "pc_to_value": "これを読んでいるあなた",
     "pc_from": "差出人:",
@@ -107,11 +102,11 @@
     "serious": "ビジネスモード"
   },
   "footer": {
-    "copyright": "© 2024 アーチット・パイ 無断転載禁止",
+    "copyright": "© 2026 アーチット・パイ 無断転載禁止",
     "scribbled": "心を込めて制作 | アーチット・パイ",
-    "colophon": "測量・作図 アーチット・パイ · 大阪にて発行",
-    "edition": "初版 · MMXXVI",
-    "tech": "three.js と実際のSRTM標高データで描画"
+    "colophon": "測量・作図 アーチット・パイ · 大阪",
+    "edition": "野帳 · 2026",
+    "tech": "three.js と WebGL で描画"
   },
   "resume": {
     "summary_title": "職務要約",

@@ -29,7 +29,7 @@ export default function DiaryFooter() {
     <footer className="relative pt-4 pb-14 overflow-hidden">
       {/* Colophon — the mapmaker's imprint at the foot of the chart */}
       <motion.div
-        className="relative z-10 flex flex-col items-center gap-1.5 pt-10 px-4 pointer-events-auto text-center"
+        className="relative z-10 mx-auto max-w-md flex flex-col items-center gap-1.5 pt-8 pb-6 px-6 pointer-events-auto text-center bg-[rgba(255,249,229,0.55)] rounded-2xl shadow-[2px_4px_0_rgba(45,45,45,0.07)]"
         initial={shouldReduceMotion ? false : { opacity: 0, y: 15 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}

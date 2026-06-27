@@ -206,7 +206,7 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese, scrollVelocit
           {/* survey detail — where this specimen was logged */}
           {coord && (
             <span
-              className="self-start mt-1 mb-3 handwritten text-[0.7rem] tracking-wide inline-flex items-center gap-1"
+              className="self-start mt-1 mb-3 font-mono text-[0.66rem] tracking-tight inline-flex items-center gap-1"
               style={{ color: accent, opacity: 0.8 }}
             >
               <span aria-hidden="true">⌖</span>
@@ -236,7 +236,7 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese, scrollVelocit
           </h3>
 
           <p
-            className="handwritten text-ink/85 text-center leading-relaxed text-sm"
+            className="handwritten text-ink/85 text-center leading-relaxed text-sm min-h-[3.5rem] flex items-center"
             style={jpFont}
           >
             {hobby.narrative}
@@ -349,7 +349,7 @@ export default function SneakPeek() {
           </p>
           {/* Old-map warning stamp */}
           <span
-            className="stamp-seal absolute -top-7 -right-10 rotate-6 hidden sm:inline-flex items-center gap-2"
+            className="stamp-seal absolute -top-7 -right-1 sm:-right-8 rotate-6 inline-flex items-center gap-2"
             aria-hidden="true"
           >
             <InkSerpent className="w-9 h-6 shrink-0" color="#B05F66" />

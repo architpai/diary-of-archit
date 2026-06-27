@@ -7,7 +7,9 @@ import { useReducedMotion } from "framer-motion";
 import { sceneState } from "./sceneState";
 import { mulberry32 } from "./prng";
 
-const SEA_GREEN = "#3E6B5E";
+// Slate-blue, the same water family as the terrain map (was a clashing teal
+// #3E6B5E) — one inkwell for every body of water across the diary.
+const SEA_GREEN = "#6E8BA8";
 
 // ── The thing below ─────────────────────────────────────────────────────
 // Never shown, only implied: a soft analytic-SDF shadow (Inigo Quilez's

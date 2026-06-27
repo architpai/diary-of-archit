@@ -21,15 +21,8 @@ function HeroTitle({ compact }: { compact?: boolean }) {
         {t("hero.diary")}
       </span>
       <span
-        className={`block ${!isSerious ? "text-white" : "text-margin-blue"}${shouldReduceMotion ? "" : " handwrite-reveal-delay-1"}`}
-        style={
-          !isSerious
-            ? {
-                textShadow:
-                  "2px 2px 0 #2D2D2D, -2px -2px 0 #2D2D2D, 2px -2px 0 #2D2D2D, -2px 2px 0 #2D2D2D",
-              }
-            : {}
-        }
+        className={`block ${!isSerious ? "text-ink/70 italic" : "text-margin-blue"}${shouldReduceMotion ? "" : " handwrite-reveal-delay-1"}`}
+        style={!isSerious ? { fontSize: "0.5em" } : {}}
       >
         {t("hero.of")}
       </span>
@@ -122,15 +115,16 @@ function FieldNotebookHero() {
         >
           <HeroTitle compact />
 
-          {/* Cartouche imprint — every proper chart credits its surveyor */}
+          {/* What he does sits directly under the title — the substance read
+              first, ahead of the surveyor's credit (now in the chart margin). */}
           <motion.p
-            className="mt-2 handwritten text-ink/55 text-xs md:text-sm uppercase tracking-[0.18em]"
+            className="mt-2.5 mx-auto max-w-[28rem] handwritten text-ink/75 text-sm md:text-base tracking-wide leading-snug"
             style={jpFont}
             initial={shouldReduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 1.6 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 0.9 }}
           >
-            {t("hero.credit")}
+            {t("hero.subtitle_role")}
           </motion.p>
         </motion.div>
 
@@ -171,6 +165,10 @@ function FieldNotebookHero() {
           <p className="scale-bar-caption -mt-1" style={jpFont}>
             ({t("hero.scale_note")})
           </p>
+          {/* the surveyor's credit, where it belongs — in the chart margin */}
+          <p className="handwritten text-ink/45 text-[0.62rem] uppercase tracking-[0.18em] mt-2 text-center" style={jpFont}>
+            {t("hero.credit")}
+          </p>
         </motion.div>
 
         {/* Subtitle — inked across the bottom of the chart, not stacked under
@@ -183,9 +181,6 @@ function FieldNotebookHero() {
         >
           <p className="diary-subtitle handwritten" style={jpFont}>
             {t("hero.subtitle")}
-          </p>
-          <p className="mt-1 text-ink/65 handwritten text-sm md:text-base tracking-wide" style={jpFont}>
-            {t("hero.subtitle_role")}
           </p>
         </motion.div>
 

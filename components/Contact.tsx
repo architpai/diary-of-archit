@@ -103,7 +103,7 @@ function ContactChip({
     >
       <span className="shrink-0 text-sepia">{icon}</span>
       <span
-        className="handwritten text-sm font-bold"
+        className="font-mono text-[0.8rem] font-semibold tracking-tight"
         style={{
           textDecoration: 'underline wavy',
           textDecorationColor: 'rgba(100,81,59,0.45)',
@@ -241,7 +241,7 @@ export default function Contact() {
             viewport={{ once: true }}
             transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.35 }}
           >
-            <Link href="/resume" className="group inline-flex items-center gap-4" style={{ textDecoration: 'none' }}>
+            <Link href="/resume" className="group inline-flex items-center gap-4 bg-parchment/90 px-4 py-2.5 wobbly-border-light shadow-[2px_3px_0_rgba(45,45,45,0.12)]" style={{ textDecoration: 'none' }}>
               <span className="wax-seal shrink-0">AP</span>
               <span>
                 <span

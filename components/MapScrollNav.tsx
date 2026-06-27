@@ -86,31 +86,36 @@ export default function MapScrollNav() {
             <motion.button
               key={s.id}
               onClick={() => scrollToSection(i)}
-              className="relative cursor-pointer block text-right"
+              className="relative cursor-pointer block text-right rounded-l-lg focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ink"
               style={{ transformOrigin: 'right center' }}
               animate={{
                 x: isActive ? 0 : 55,
                 rotate: isActive ? 0 : tilt,
               }}
               whileHover={{ x: 0, rotate: 0 }}
+              whileFocus={{ x: 0, rotate: 0 }}
               transition={
                 shouldReduceMotion
                   ? { duration: 0 }
                   : { type: 'spring', stiffness: 300, damping: 25 }
               }
               aria-label={s.label}
+              aria-current={isActive ? 'true' : undefined}
               title={s.label}
             >
+              {/* hand-cut paper index tab: irregular radius + ink stroke + the
+                  offset hard ink-shadow used across the diary (not flat UI). */}
               <div
-                className="px-4 py-2.5 handwritten text-sm font-bold whitespace-nowrap shadow-md"
+                className="px-4 py-2.5 handwritten text-sm font-bold whitespace-nowrap"
                 style={{
                   backgroundColor: color.bg,
                   color: color.text,
-                  opacity: isActive ? 1 : 0.7,
-                  borderRadius: '8px 0 0 8px',
+                  opacity: isActive ? 1 : 0.78,
+                  border: '2px solid #2D2D2D',
+                  borderRadius: '13px 5px 9px 7px',
                   boxShadow: isActive
-                    ? '-3px 3px 8px rgba(0,0,0,0.25)'
-                    : '-2px 2px 4px rgba(0,0,0,0.15)',
+                    ? '-3px 3px 0 rgba(45,45,45,0.28)'
+                    : '-2px 2px 0 rgba(45,45,45,0.2)',
                   minWidth: '80px',
                 }}
               >
@@ -121,11 +126,12 @@ export default function MapScrollNav() {
         })}
       </div>
 
-      {/* Mobile: colored dots, tucked top-left just past the red margin line.
-          (Centered would collide with the right-anchored language + serious
-          toggles on narrow in-app-browser widths; --margin-width is 60px.) */}
-      <div className="fixed top-3 left-16 z-50 flex md:hidden gap-2.5 px-4 py-2 rounded-full"
-        style={{ backgroundColor: 'rgba(255,249,229,0.85)', boxShadow: '0 2px 10px rgba(0,0,0,0.15)' }}
+      {/* Mobile: colored dots + the active section's name for wayfinding,
+          tucked top-left past the red margin line. Each dot carries a ~40px tap
+          target (the serious-mode toggle now lives bottom-right, so the top-
+          right is free of collisions). */}
+      <div className="fixed top-3 left-16 z-50 flex md:hidden items-center gap-0.5 pl-2 pr-3 py-1 rounded-full"
+        style={{ backgroundColor: 'rgba(255,249,229,0.9)', boxShadow: '0 2px 10px rgba(0,0,0,0.15)' }}
       >
         {sections.map((s, i) => {
           const isActive = activeSection === i;
@@ -134,18 +140,28 @@ export default function MapScrollNav() {
             <button
               key={s.id}
               onClick={() => scrollToSection(i)}
-              className="transition-[width,opacity,background-color] duration-300 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ink"
-              style={{
-                width: isActive ? '24px' : '10px',
-                height: '10px',
-                borderRadius: '5px',
-                backgroundColor: color.bg,
-                opacity: isActive ? 1 : 0.5,
-              }}
+              className="flex items-center justify-center rounded-full focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ink"
+              style={{ width: '28px', height: '40px' }}
               aria-label={s.label}
-            />
+              aria-current={isActive ? 'true' : undefined}
+            >
+              <span
+                className="block transition-[width,opacity] duration-300"
+                style={{
+                  width: isActive ? '22px' : '9px',
+                  height: '9px',
+                  borderRadius: '5px',
+                  backgroundColor: color.bg,
+                  border: '1px solid rgba(45,45,45,0.55)',
+                  opacity: isActive ? 1 : 0.6,
+                }}
+              />
+            </button>
           );
         })}
+        <span className="handwritten text-xs font-bold text-ink/80 whitespace-nowrap pl-1 pr-0.5" aria-hidden="true">
+          {sections[activeSection].label}
+        </span>
       </div>
     </>
   );

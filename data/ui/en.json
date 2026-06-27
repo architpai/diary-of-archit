@@ -3,9 +3,9 @@
     "diary": "DIARY",
     "of": "of",
     "name": "ARCHIT",
-    "subtitle": "I build things, break things, and occasionally fix them.",
+    "subtitle": "I chart the ground between maps, backend, and cloud — then build what belongs there.",
     "subtitle_role": "Full-Stack Engineer working across maps, backend systems, and cloud apps",
-    "credit": "surveyed & drawn by Archit Pai · MMXXVI",
+    "credit": "surveyed & drawn by Archit Pai · 2026",
     "scale_note": "not even slightly accurate",
     "wind_note": "prevailing winds · NE",
     "scroll": "↓ scroll for more ↓",
@@ -15,7 +15,7 @@
     "pin_fuji": "Mt. Fuji — 3,776m of showing off",
     "pin_mumbai": "Scorpio Group ’19",
     "mumbai_inset": "Mumbai — 6,700 km west of the page (not to scale)",
-    "map_note": "real elevation data, drawn by shaders — I make maps for a living, so of course this page is one",
+    "map_note": "Kantō — surveyed from real elevation data. I make maps for a living.",
     "cartographer": "fig. 1 — the cartographer"
   },
   "timeline": {
@@ -48,17 +48,12 @@
     "leg_3_note": "6,700 km across the sea to Japan"
   },
   "skills": {
-    "title_diary": "The Surveyor's Toolkit",
+    "title_diary": "The Surveyor’s Toolkit",
     "title_serious": "Technical Skills",
-    "legend_sub": "celestial navigation — the tools I steer by",
-    "sky_hint": "hover a star — its companions fall into orbit (tap on mobile)",
-    "disclaimer": "* orbits are 100% scientific and not at all made up",
-    "key_title": "how to read this sky",
-    "size_note": "bigger star = reached for more often",
     "tier_charting": "still charting",
     "chart_1": "Local LLMs & RAG",
     "chart_2": "Autonomous agents",
-    "map_hint": "open a marker — each one's a kit",
+    "map_hint": "open a station — each holds a kit",
     "group_mapping": "Geospatial & Mapping",
     "group_data": "Databases & Caching",
     "group_frontend": "Frontend & Visualisation",
@@ -67,21 +62,21 @@
     "group_frontier": "Frontier · AI"
   },
   "sneakpeek": {
-    "title": "The \"Sneak Peek\" Section",
-    "subtitle": "(The stuff that doesn't go on the resume... but should)",
+    "title": "Off the Chart",
+    "subtitle": "the ground the official survey leaves out",
     "stamp": "HERE BE DRAGONS",
     "stamp_latin": "· hic svnt dracones ·",
-    "current_setup": "Vessel of choice",
+    "current_setup": "Field instrument",
     "flip_hint": "flip me ↻",
     "flip_back": "flip back ↩",
     "spec_label": "Field Spec",
     "label_notes": "Field Notes"
   },
   "contact": {
-    "title_diary": "Let's Talk!",
+    "title_diary": "Let’s Talk!",
     "title_serious": "Contact Information",
     "message": "If you made it this far, we should probably talk.",
-    "signoff": "That's all folks. Now go build something cool.",
+    "signoff": "The survey ends here. Go chart something of your own.",
     "pc_to": "TO:",
     "pc_to_value": "you, the reader",
     "pc_from": "FROM:",
@@ -107,11 +102,11 @@
     "serious": "Serious Mode"
   },
   "footer": {
-    "copyright": "© 2024 Archit Pai. All rights reserved.",
+    "copyright": "© 2026 Archit Pai. All rights reserved.",
     "scribbled": "scribbled with ♥ | Archit Pai",
-    "colophon": "surveyed & drawn by Archit Pai · published at Osaka",
-    "edition": "first edition · MMXXVI",
-    "tech": "drawn with three.js on real SRTM elevation data"
+    "colophon": "surveyed & drawn by Archit Pai · Osaka",
+    "edition": "field journal · 2026",
+    "tech": "rendered with three.js & webgl"
   },
   "resume": {
     "summary_title": "PROFESSIONAL SUMMARY",
@@ -119,6 +114,6 @@
     "experience_title": "PROFESSIONAL EXPERIENCE",
     "skills_title": "TECHNICAL SKILLS",
     "print_button": "🖨️ Print / Save as PDF",
-    "print_hint": "Use your browser's print function (Cmd/Ctrl + P) for best results"
+    "print_hint": "Use your browser’s print function (Cmd/Ctrl + P) for best results"
   }
 }

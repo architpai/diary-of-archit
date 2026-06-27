@@ -123,7 +123,7 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
   return (
       <motion.div
         id={exp.id}
-        className={`flex flex-col items-center justify-end min-h-[100svh] pb-[7svh] md:min-h-0 md:pb-0 md:flex-row pointer-events-auto ${
+        className={`flex flex-col items-center justify-end min-h-[72svh] pb-[7svh] md:min-h-0 md:pb-0 md:flex-row pointer-events-auto ${
           index % 2 === 0 ? 'md:justify-end' : 'md:justify-start'
         }`}
         initial={shouldReduceMotion ? false : { opacity: 0, y: 50 }}
@@ -141,8 +141,17 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
         transition={shouldReduceMotion ? undefined : { type: "spring", stiffness: 300 }}
       >
         <div className="relative p-6 wobbly-border bg-paper/95 tape-corner shadow-xl">
-          {/* Header — avatar pose + year tucked into the corner */}
-          <div className="mb-4 relative pr-20">
+          {/* Header — avatar pose + year tucked into the corner. While the
+              notes are unfolded on mobile the card grows past the viewport, so
+              pin this identity block (title / @company / year) to the top with
+              an opaque paper backing; reset to normal flow on desktop. */}
+          <div
+            className={`mb-4 relative pr-20 ${
+              expanded
+                ? 'sticky top-0 z-20 bg-paper pb-3 shadow-[0_8px_8px_-6px_rgba(100,81,59,0.25)] md:static md:bg-transparent md:pb-0 md:shadow-none'
+                : ''
+            }`}
+          >
             <div className="absolute top-0 right-0 flex flex-col items-center">
               <div
                 className="w-14 h-14 rounded-full border-[3px] bg-parchment overflow-hidden flex items-center justify-center"
@@ -305,7 +314,7 @@ function BoardingStub({ leg }: { leg: number }) {
     : ({} as React.CSSProperties);
 
   return (
-    <div className="route-leg py-16 md:py-28" style={jpFont}>
+    <div className="route-leg py-8 md:py-28" style={jpFont}>
       <p className="text-sm md:text-base text-ink/50 mb-3">
         {t(`timeline.leg_${leg}_rewind`)}
       </p>

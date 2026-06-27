@@ -503,6 +503,9 @@ function PinMarker({
   const { content, t, isJapanese } = useTranslation();
   const [hovered, setHovered] = useState(false);
   const hoveredRef = useRef(false);
+  const focusedRef = useRef(false);
+  // last applied focusable state — only touch tabIndex/aria-hidden on change
+  const lastFocusableRef = useRef<boolean | null>(null);
   const markerRef = useRef<THREE.Group>(null);
   const labelRef = useRef<HTMLButtonElement>(null);
   const ringMatRef = useRef<THREE.MeshBasicMaterial>(null);
@@ -627,9 +630,19 @@ function PinMarker({
       const oy = baseY * (1 - w) - 95 * w;
       const dist = state.camera.position.distanceTo(worldPos);
       const counter = Math.min(1, Math.max(0.22, dist / 8));
-      const s = (1 - w + counter * w) * (hoveredRef.current ? 1.08 : 1);
+      const s = (1 - w + counter * w) * (hoveredRef.current || focusedRef.current ? 1.08 : 1);
       labelRef.current.style.opacity = String(opacity);
       labelRef.current.style.transform = `translate(${ox}px, ${oy}px) scale(${s})`;
+      // a11y: keep faded labels (and decorative non-job pins) out of the tab
+      // order + a11y tree, so keyboard users don't land on invisible label
+      // buttons floating behind later sections' content.
+      const focusable = interactive && opacity > 0.06;
+      if (focusable !== lastFocusableRef.current) {
+        lastFocusableRef.current = focusable;
+        labelRef.current.tabIndex = focusable ? 0 : -1;
+        if (focusable) labelRef.current.removeAttribute("aria-hidden");
+        else labelRef.current.setAttribute("aria-hidden", "true");
+      }
     }
   });
 
@@ -653,7 +666,15 @@ function PinMarker({
             setHovered(false);
             hoveredRef.current = false;
           }}
+          onFocus={() => {
+            focusedRef.current = true;
+          }}
+          onBlur={() => {
+            focusedRef.current = false;
+          }}
           aria-label={label}
+          aria-hidden={interactive ? undefined : true}
+          tabIndex={interactive ? 0 : -1}
           className="terrain-pin"
           data-kind={pin.kind}
           data-hovered={hovered}

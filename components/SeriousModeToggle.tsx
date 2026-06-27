@@ -25,7 +25,7 @@ export default function SeriousModeToggle() {
       // stays pinned during momentum/async scroll over the continuously-
       // repainting 3D canvas (it's a pure hint — composes with the hover/wobble
       // transform below without the transition animating a base value).
-      className={`print:hidden fixed top-14 right-4 md:top-auto md:bottom-6 md:right-6 z-[9999] will-change-transform px-3 py-2 md:px-4 md:py-3 rounded-lg transition-[background-color,color,border-color,box-shadow,transform] duration-300 font-sans text-sm font-medium shadow-lg isolate focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ink ${
+      className={`print:hidden fixed bottom-5 right-4 md:bottom-6 md:right-6 z-[9999] will-change-transform px-3 py-2 md:px-4 md:py-3 rounded-lg transition-[background-color,color,border-color,box-shadow,transform] duration-300 font-sans text-sm font-medium shadow-lg isolate focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ink ${
         isOnResume ? '' : 'wobble-hover'
       }`}
       style={{
