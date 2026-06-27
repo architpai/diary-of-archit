@@ -1,59 +1,59 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useRef, useEffect } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useReducedMotion } from "framer-motion";
 import { sceneState } from "./sceneState";
-import { mulberry32 } from "./prng";
 
-// Slate-blue, the same water family as the terrain map (was a clashing teal
-// #3E6B5E) — one inkwell for every body of water across the diary.
-const SEA_GREEN = "#6E8BA8";
+// ── Off the chart: open water ───────────────────────────────────────────
+// South of the terrain plane the map runs out, so this is where the page
+// becomes sea. One big surface quad carries everything in a single fragment
+// shader, all evaluated in WORLD space so it reads as one continuous body of
+// water with the terrain's own ocean:
+//   • the slate-blue sea wash (the exact #FFF9E5↔#a8c5e2 mix the terrain uses),
+//   • slow hand-drawn ambient ripples,
+//   • a leviathan that STALKS THE CURSOR — an undulating analytic-SDF shadow
+//     (Inigo Quilez's 2D distance fields) steering like a real animal,
+//   • the wake it leaves: continuous radiating ripples + a V behind the head,
+//     folded straight into the surface (no popping ring sprites).
+// With no cursor (touch / idle mouse) the creature falls back to a slow patrol.
 
-// ── The thing below ─────────────────────────────────────────────────────
-// Never shown, only implied: a soft analytic-SDF shadow (Inigo Quilez's
-// 2D distance-field technique, evaluated per-pixel in one fragment
-// shader) that STALKS THE CURSOR. It steers like a real animal — capped
-// turn rate, slow approach, and when it reaches you it doesn't stop: it
-// circles beneath your pointer until you move again. Wake rings and a
-// bubble trail mark its surface line. With no cursor (touch, or an idle
-// mouse) it falls back to a slow patrol of the open water.
+// The water surface: a generous quad, centred on the open water and oversized
+// so its edges sit well off-screen through the whole scroll transition. It
+// underlaps the terrain to the north (the opaque land hides it there) so the
+// only visible seam is the coastline, where the wash colour matches exactly.
+const WATER = { cx: 0.4, cz: 4.0, width: 44, depth: 22, y: -0.02 };
 
-/** The shadow plane: one quad spanning the water band, oversized so the
- *  tail never crosses a visible edge. */
-const SHADOW_PLANE = { cx: 0.4, cz: 4.55, width: 12, depth: 5 };
+// The creature's working frame (world − centre, with z flipped) — kept
+// identical on the CPU and in the shader so the SDF maths needs no re-der.
+const FRAME = { cx: 0.4, cz: 4.55 };
 
-/** Hunting ground (world coords): the open water south of the hobby
- *  cards. Cursor targets are clamped here, so when you hover the cards
- *  the shadow paces the bank of visible water just beneath them. */
-const HUNT = { minX: -3.4, maxX: 4.0, minZ: 4.5, maxZ: 5.4 };
+/** Hunting ground (world coords): the open water just south of the chart,
+ *  now the whole visible band rather than a thin strip — room to roam reads
+ *  as more alive. Cursor targets are clamped here. */
+const HUNT = { minX: -3.6, maxX: 4.2, minZ: 3.9, maxZ: 6.6 };
 
-/** Steering: whale-like, never twitchy. The heading is driven through a
- *  smoothed angular velocity (not a hard slew clamp), so every turn
- *  eases in and out instead of pivoting at a constant mechanical rate. */
+/** Steering: whale-like, never twitchy. Heading runs through a smoothed
+ *  angular velocity (not a hard slew clamp) so every turn eases in and out. */
 const TURN_RATE = 0.85; // rad/s ceiling on angular velocity
-const TURN_EASE = 2.8; // 1/s — how quickly the turn itself builds/decays
-const SPEED_MAX = 0.7; // world units/s
+const TURN_EASE = 2.8; // 1/s — how quickly the turn builds/decays
+const SPEED_MAX = 0.72; // world units/s
 const SPEED_EASE = 2.2; // 1/s — acceleration smoothing
 /** Within this range it stops chasing and starts circling you. */
-const CIRCLE_DIST = 0.55;
-/** Idle fallback patrol (no cursor for a while / touch devices). */
-const WANDER_SPEED = 0.11;
-const ROUTE = { cx: 0.4, cz: 4.95, rx: 1.9, rz: 0.45 };
-
-/** Wake rings trailing the body. */
-const RING_COUNT = 4;
-const RING_DUR = 2.8;
-/** Bubble trail rising off its head. */
-const BUBBLE_COUNT = 10;
-const BUBBLE_DUR = 1.4;
+const CIRCLE_DIST = 0.7;
+/** Idle patrol (no cursor / touch): a wandering loop, de-regularised by noise
+ *  so it never traces the same figure-8 twice. */
+const WANDER_SPEED = 0.12;
+const ROUTE = { cx: 0.4, cz: 4.95, rx: 2.5, rz: 0.7 };
 
 function wanderPoint(th: number, out: THREE.Vector3): THREE.Vector3 {
+  // A loose loop plus two incommensurate wobbles, so the patrol drifts and
+  // never repeats exactly — a real animal mooching about, not a clockwork orbit.
   return out.set(
-    ROUTE.cx + Math.sin(th) * ROUTE.rx,
+    ROUTE.cx + Math.sin(th) * ROUTE.rx + Math.sin(th * 0.37 + 1.3) * 0.6,
     0,
-    ROUTE.cz + Math.sin(th) * Math.cos(th) * ROUTE.rz
+    ROUTE.cz + Math.sin(th) * Math.cos(th) * ROUTE.rz + Math.sin(th * 0.91 + 0.4) * 0.35
   );
 }
 
@@ -61,48 +61,61 @@ function wrapAngle(a: number): number {
   return ((((a + Math.PI) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)) - Math.PI;
 }
 
-const SHADOW_VERTEX = /* glsl */ `
-  varying vec2 vPos;
+const WATER_VERTEX = /* glsl */ `
+  varying vec2 vWorld;
+  varying vec2 vUv;
   void main() {
-    vPos = position.xy;
+    vUv = uv;
+    vec4 wp = modelMatrix * vec4(position, 1.0);
+    vWorld = wp.xz;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
 `;
 
-// The plane lies flat via rotation.x = -PI/2, so plane-local (x, y) maps
-// to world (x, -z); all CPU-side positions/headings are converted into
-// that local frame before being written to the uniforms.
-const SHADOW_FRAGMENT = /* glsl */ `
-  varying vec2 vPos;
-  uniform float uTime;
+// All effects live in WORLD space (vWorld = world x,z). The creature is drawn
+// in the same (world − centre, z-flipped) frame the CPU steers it in, so the
+// proven SDF code is reused verbatim.
+const WATER_FRAGMENT = /* glsl */ `
+  varying vec2 vWorld;
+  varying vec2 vUv;
   uniform float uOpacity;
-  uniform vec4 uLurker; // x, y (plane-local), heading, presence 0..1
+  uniform vec3  uPaper;
+  uniform vec3  uPaperLine;
+  uniform vec3  uInk;
+  uniform vec4  uLurker;   // local x, local y, local heading, presence 0..1
+  uniform float uSwim;     // tail-beat phase
+  uniform float uWaterTime;// ambient + wake clock
+  uniform float uSpeed;    // creature speed → wake intensity
+
+  const float FCX = ${FRAME.cx.toFixed(3)};
+  const float FCZ = ${FRAME.cz.toFixed(3)};
+  const float SCALE = 0.82; // the leviathan is the star of this view now
 
   vec2 rot(vec2 p, float a) {
     float c = cos(a), s = sin(a);
     return vec2(c * p.x - s * p.y, s * p.x + c * p.y);
   }
-
-  // iq: capsule between two points, with a lerped radius
+  // iq: capsule between two points, lerped radius
   float sdCapVar(vec2 p, vec2 a, vec2 b, float ra, float rb) {
     vec2 pa = p - a, ba = b - a;
     float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
     return length(pa - ba * h) - mix(ra, rb, h);
   }
-
   // iq: polynomial smooth minimum — organic blends between primitives
   float smin(float a, float b, float k) {
     float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
     return mix(b, a, h) - k * h * (1.0 - h);
   }
-
-  float hash(vec2 p) {
-    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+  float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+  float vnoise(vec2 p) {
+    vec2 i = floor(p), f = fract(p);
+    vec2 u = f * f * (3.0 - 2.0 * f);
+    return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),
+               mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
   }
 
-  // ── The stalker: an undulating capsule-chain spine, thick at the
-  // shoulder, whipping to nothing at the tail. p is creature-local,
-  // +x forward. ──
+  // The stalker: an undulating capsule-chain spine, thick at the shoulder,
+  // whipping to nothing at the tail. p is creature-local, +x forward.
   float lurkerSDF(vec2 p, float t) {
     float d = 1e5;
     vec2 prev = vec2(0.62, 0.0);
@@ -110,7 +123,6 @@ const SHADOW_FRAGMENT = /* glsl */ `
     for (int i = 1; i <= 9; i++) {
       float s = float(i) / 9.0;
       float x = 0.62 - s * 2.5;
-      // the swim: a travelling wave, pinned at the head, free at the tail
       float sway = 0.30 * sin(6.0 * s - t * 2.2) * (0.15 + 0.85 * s);
       vec2 pt = vec2(x, sway);
       float bulk = 0.75 + 0.5 * exp(-pow((s - 0.22) / 0.25, 2.0));
@@ -119,100 +131,92 @@ const SHADOW_FRAGMENT = /* glsl */ `
       prevR = r;
       prev = pt;
     }
-    // head bulb
     d = smin(d, length(p - vec2(0.62, 0.0)) - 0.17, 0.15);
     return d;
   }
 
   void main() {
-    vec2 p = vPos;
+    vec2 W = vWorld;       // (worldX, worldZ)
+    float Wx = W.x, Wz = W.y;
 
-    // Chart scale: keep the creature small against the Japan map behind.
-    const float SCALE = 0.45;
-    vec2 lp = rot(p - uLurker.xy, -uLurker.z) / SCALE;
-    float d = lurkerSDF(lp, uTime) * SCALE;
-    float presence = uLurker.w;
-    float blur = mix(0.3, 0.12, presence);
+    // — base sea wash: the exact same ocean colour the terrain draws —
+    vec3 water = mix(uPaper, uPaperLine, 0.42);
+
+    // — ambient hand-drawn ripples (world-space frequencies matched to the
+    //   terrain's sea, with a slow drift so the open water breathes) —
+    float meander = vnoise(vec2(Wx * 0.2 + 1.0, Wz * 0.867)) * 2.4;
+    float wavePhase = Wz * 8.38 + vnoise(vec2(Wx * 0.4, Wz * 3.18)) * 13.0
+                    + meander + uWaterTime * 0.45;
+    float ripple = smoothstep(0.5, 0.9, sin(wavePhase) * 0.5 + 0.5);
+    vec3 col = mix(water, uPaperLine, ripple * 0.30);
+
+    // — the creature's working frame —
+    vec2 vp = vec2(Wx - FCX, FCZ - Wz);
+    vec2 toC = vp - uLurker.xy;
+    float dC = length(toC);
+    float pres = uLurker.w;
+    vec2 fwd = vec2(cos(uLurker.z), sin(uLurker.z));
+    vec2 sideV = vec2(-fwd.y, fwd.x);
+    float along = dot(toC, -fwd);   // distance behind the body
+    float crossv = dot(toC, sideV); // signed offset across the wake
+
+    // concentric ripples radiating off the body — continuous, never popping
+    float rings = sin(dC * 10.0 - uWaterTime * 2.2) * 0.5 + 0.5;
+    float ringAmt = smoothstep(0.45, 1.0, rings) * smoothstep(2.8, 0.25, dC) * pres;
+
+    // a V-wake behind the head (~19°): two diverging crests, ripples travelling
+    float vEdge = abs(crossv) - along * 0.34;
+    float vLine = smoothstep(0.16, 0.0, abs(vEdge))
+                * smoothstep(0.0, 0.2, along) * smoothstep(4.5, 0.0, along);
+    float wakeRip = sin(along * 7.0 - uWaterTime * 3.0) * 0.5 + 0.5;
+    float wakeAmt = vLine * wakeRip * pres;
+
+    // churn directly behind the body, stronger the faster it travels
+    float churn = exp(-(crossv * crossv) / (0.07 + along * 0.06))
+                * smoothstep(2.6, 0.0, along) * step(0.0, along)
+                * pres * (0.35 + uSpeed);
+
+    float disturb = clamp(ringAmt * 0.55 + wakeAmt * 0.8 + churn * 0.5, 0.0, 1.0);
+    col = mix(col, uPaperLine, disturb * 0.5);
+    col = mix(col, uInk, wakeAmt * 0.10); // a hint of pen in the strongest crest
+
+    // — the leviathan shadow, drawn into the same surface —
+    vec2 lp = rot(toC, -uLurker.z) / SCALE;
+    float d = lurkerSDF(lp, uSwim) * SCALE;
+    float blur = mix(0.32, 0.12, pres);
     float core = 1.0 - smoothstep(-0.08, blur, d);
     float halo = 1.0 - smoothstep(0.0, blur * 2.4, d);
-    float a = (core * 0.62 + halo * 0.38) * (0.56 * presence) * uOpacity;
+    float shadow = (core * 0.64 + halo * 0.36) * (0.52 * pres);
+    col = mix(col, vec3(0.10, 0.15, 0.16), shadow);
 
-    // ordered-noise dither so the long soft gradients never band
-    a += (hash(gl_FragCoord.xy) - 0.5) * 0.012;
-    if (a < 0.003) discard;
-    gl_FragColor = vec4(0.1, 0.15, 0.14, a);
+    // — dissolve the plane's own edges into paper (kept off-screen normally,
+    //   but graceful if a corner ever peeks during a transition) —
+    float edge = smoothstep(0.0, 0.10, vUv.x) * smoothstep(1.0, 0.90, vUv.x)
+               * smoothstep(0.0, 0.06, vUv.y) * smoothstep(1.0, 0.94, vUv.y);
+
+    float a = uOpacity * edge;
+    a += (hash(gl_FragCoord.xy) - 0.5) * 0.01; // dither — no banding on the wash
+    if (a < 0.004) discard;
+    gl_FragColor = vec4(col, a);
   }
 `;
 
-// Every transparent material carries its full ("base") opacity in userData;
-// the frame loop traverses the group and fades them all with the section
-// weight. No shared mutable lists — lint- and R3F-friendly.
-function fadingLineMaterial(color: string, base: number) {
-  const mat = new THREE.LineBasicMaterial({
-    color,
-    transparent: true,
-    opacity: 0,
-  });
-  mat.userData.baseOpacity = base;
-  return mat;
-}
-
-function makeArcLine(
-  radiusX: number,
-  radiusY: number,
-  color: string,
-  opacity: number
-) {
-  const pts = new THREE.EllipseCurve(0, 0, radiusX, radiusY, 0, Math.PI)
-    .getPoints(24)
-    .map((p) => new THREE.Vector3(p.x, p.y, 0));
-  const geo = new THREE.BufferGeometry().setFromPoints(pts);
-  return new THREE.Line(geo, fadingLineMaterial(color, opacity));
-}
-
-interface SurfaceMark {
-  line: THREE.LineLoop;
-  mat: THREE.LineBasicMaterial;
-}
-
-interface MarkState {
-  x: number;
-  z: number;
-  prevAge: number;
-  spawns: number;
-}
-
-/** The uncharted waters south of the chart: scattered wave glyphs and a
- *  shadow that hunts your cursor. No labels — the "HERE BE DRAGONS"
- *  cartouche stamp does the naming; the water itself stays mute. */
 export default function UnchartedWaters() {
   const reduceMotion = useReducedMotion();
-  const groupRef = useRef<THREE.Group>(null);
-  const shadowMatRef = useRef<THREE.ShaderMaterial>(null);
+  const meshRef = useRef<THREE.Mesh>(null);
+  const matRef = useRef<THREE.ShaderMaterial>(null);
   const scratchA = useRef(new THREE.Vector3());
   /** Seconds since the water scrolled into view. */
   const seqT = useRef(0);
-  /** Swim-cycle phase — advances faster when it moves faster. */
+  /** Ambient + wake clock — advances whenever the water is on screen. */
+  const waterT = useRef(0);
+  /** Tail-beat phase — advances faster when the creature moves faster. */
   const swimPhase = useRef(0);
-  /** The stalker, in plane-local coords (y = -world z). `turn` and
-   *  `speed` are its smoothed angular/linear velocities. */
-  const stalker = useRef({
-    x: 0,
-    y: 0,
-    heading: 0,
-    turn: 0,
-    speed: 0,
-    init: false,
-  });
+  /** The stalker, in the working frame. `turn`/`speed` are smoothed velocities. */
+  const stalker = useRef({ x: 0, y: 0, heading: 0, turn: 0, speed: 0, init: false });
   const wanderTh = useRef(1.6);
   /** Last pointer position (NDC) + when it last moved. */
   const pointer = useRef({ x: 0, y: 0, movedAt: -1e9 });
-  const ringStates = useRef<MarkState[]>(
-    Array.from({ length: RING_COUNT }, () => ({ x: 0, z: 0, prevAge: 1e9, spawns: 0 }))
-  );
-  const bubbleStates = useRef<MarkState[]>(
-    Array.from({ length: BUBBLE_COUNT }, () => ({ x: 0, z: 0, prevAge: 1e9, spawns: 0 }))
-  );
 
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
@@ -224,111 +228,60 @@ export default function UnchartedWaters() {
     return () => window.removeEventListener("pointermove", onMove);
   }, []);
 
-  const shadowUniforms = useMemo(
+  const uniforms = useMemo(
     () => ({
-      uTime: { value: 0 },
       uOpacity: { value: 0 },
+      uPaper: { value: new THREE.Color("#FFF9E5") },
+      uPaperLine: { value: new THREE.Color("#a8c5e2") },
+      uInk: { value: new THREE.Color("#2D2D2D") },
       uLurker: { value: new THREE.Vector4(0, 0, 0, 0) },
+      uSwim: { value: 0 },
+      uWaterTime: { value: 0 },
+      uSpeed: { value: 0 },
     }),
     []
   );
 
-  const waves = useMemo(() => {
-    // — Wave glyphs: little seeded ink arcs, the classic "water" mark —
-    const rng = mulberry32(777);
-    const waves = new THREE.Group();
-    for (let i = 0; i < 16; i++) {
-      const r = 0.09 + rng() * 0.1;
-      const arc = makeArcLine(r, r * 0.55, SEA_GREEN, 0.5);
-      arc.position.set(-2.8 + rng() * 7.4, 0.015, 2.8 + rng() * 3.1);
-      arc.rotation.x = -Math.PI / 2;
-      waves.add(arc);
-      // Most marks are doubled, like a quick pen flourish.
-      if (rng() > 0.35) {
-        const arc2 = makeArcLine(r * 0.55, r * 0.3, SEA_GREEN, 0.4);
-        arc2.position.set(
-          arc.position.x + r * 0.5,
-          0.015,
-          arc.position.z + 0.05
-        );
-        arc2.rotation.x = -Math.PI / 2;
-        waves.add(arc2);
-      }
-    }
-    return waves;
-  }, []);
-
-  // — Wake rings + bubble rings: a shared squashed-circle geometry, one
-  //   manually-managed material each (no baseOpacity — the frame loop
-  //   owns their fades entirely). —
-  const surface = useMemo(() => {
-    const pts = new THREE.EllipseCurve(0, 0, 1, 0.62, 0, Math.PI * 2)
-      .getPoints(36)
-      .map((p) => new THREE.Vector3(p.x, p.y, 0));
-    const geo = new THREE.BufferGeometry().setFromPoints(pts);
-    const make = (): SurfaceMark => {
-      const mat = new THREE.LineBasicMaterial({
-        color: SEA_GREEN,
-        transparent: true,
-        opacity: 0,
-      });
-      const line = new THREE.LineLoop(geo, mat);
-      line.rotation.x = -Math.PI / 2;
-      return { line, mat };
-    };
-    return {
-      rings: Array.from({ length: RING_COUNT }, make),
-      bubbles: Array.from({ length: BUBBLE_COUNT }, make),
-    };
-  }, []);
-
   useFrame((state, delta) => {
     const w = sceneState.uncharted;
-    const group = groupRef.current;
-    if (!group) return;
-    group.visible = w > 0.02;
-    if (!group.visible) {
+    const mat = matRef.current;
+    const mesh = meshRef.current;
+    if (!mat || !mesh) return;
+    const visible = w > 0.02;
+    mesh.visible = visible;
+    if (!visible) {
       // Scrolled away — the hunt restarts from the bank next visit.
       seqT.current = 0;
       stalker.current.init = false;
       return;
     }
 
-    // Fade every registered material with the section weight.
-    group.traverse((obj) => {
-      const mat = (obj as THREE.Mesh).material as THREE.Material | undefined;
-      if (mat && mat.userData.baseOpacity !== undefined) {
-        mat.opacity = mat.userData.baseOpacity * w;
-      }
-    });
-
     const dt = Math.min(delta, 0.1);
-    const sm = shadowMatRef.current;
     const st = stalker.current;
 
     // Reduced motion: a still shadow resting in the open water, no hunt.
+    // (In practice the camera never flies here under reduced motion, so w≈0
+    // and this branch rarely shows — but keep it cheap and static.)
     if (reduceMotion) {
-      if (sm) {
-        sm.uniforms.uTime.value = 0;
-        sm.uniforms.uOpacity.value = w;
-        sm.uniforms.uLurker.value.set(1.0, -0.35, 2.7, 1);
-      }
-      surface.rings.forEach((m) => (m.mat.opacity = 0));
-      surface.bubbles.forEach((m) => (m.mat.opacity = 0));
+      mat.uniforms.uOpacity.value = w;
+      mat.uniforms.uWaterTime.value = 0;
+      mat.uniforms.uSwim.value = 0;
+      mat.uniforms.uSpeed.value = 0;
+      mat.uniforms.uLurker.value.set(1.0, -0.35, 2.7, 1);
       return;
     }
 
+    waterT.current += dt;
     if (w > 0.25) seqT.current += dt;
     const seq = seqT.current;
     // Rises out of the deep over the first beats, then breathes slightly.
     const presence =
-      THREE.MathUtils.smoothstep(seq, 0.5, 4) *
-      (0.88 + 0.12 * Math.sin(seq * 0.3));
+      THREE.MathUtils.smoothstep(seq, 0.5, 4) * (0.88 + 0.12 * Math.sin(seq * 0.3));
 
     if (!st.init) {
-      // Each visit it slips in from the south-west bank (local = world - centre).
-      st.x = -1.8 - SHADOW_PLANE.cx;
-      st.y = -(5.2 - SHADOW_PLANE.cz);
+      // Each visit it slips in from the south-west bank (local = world − centre).
+      st.x = -1.8 - FRAME.cx;
+      st.y = -(5.2 - FRAME.cz);
       st.heading = 0;
       st.turn = 0;
       st.speed = 0;
@@ -337,8 +290,8 @@ export default function UnchartedWaters() {
       swimPhase.current = 0;
     }
 
-    // ── Pick the prey: the cursor's landing point on the page, clamped
-    // to the visible water; or a slow patrol when there's no cursor. ──
+    // ── Pick the prey: the cursor's landing point on the page, clamped to the
+    // visible water; or a slow patrol when there's no cursor. ──
     const V = scratchA.current;
     let targetX = 0;
     let targetY = 0;
@@ -350,31 +303,22 @@ export default function UnchartedWaters() {
       V.sub(cam.position).normalize();
       if (V.y < -1e-4) {
         const hitT = -cam.position.y / V.y;
-        const hx = THREE.MathUtils.clamp(
-          cam.position.x + V.x * hitT,
-          HUNT.minX,
-          HUNT.maxX
-        );
-        const hz = THREE.MathUtils.clamp(
-          cam.position.z + V.z * hitT,
-          HUNT.minZ,
-          HUNT.maxZ
-        );
-        targetX = hx - SHADOW_PLANE.cx;
-        targetY = -(hz - SHADOW_PLANE.cz);
+        const hx = THREE.MathUtils.clamp(cam.position.x + V.x * hitT, HUNT.minX, HUNT.maxX);
+        const hz = THREE.MathUtils.clamp(cam.position.z + V.z * hitT, HUNT.minZ, HUNT.maxZ);
+        targetX = hx - FRAME.cx;
+        targetY = -(hz - FRAME.cz);
         hit = true;
       }
     }
     if (!hit) {
       wanderTh.current += dt * WANDER_SPEED;
       wanderPoint(wanderTh.current, V);
-      targetX = V.x - SHADOW_PLANE.cx;
-      targetY = -(V.z - SHADOW_PLANE.cz);
+      targetX = V.x - FRAME.cx;
+      targetY = -(V.z - FRAME.cz);
     }
 
-    // ── Steer like an animal: bounded turn toward the prey; inside
-    // CIRCLE_DIST the desired course bends sideways, so instead of
-    // parking under the cursor it slowly circles it. ──
+    // ── Steer like an animal: bounded turn toward the prey; inside CIRCLE_DIST
+    // the desired course bends sideways so it circles instead of parking. ──
     const toX = targetX - st.x;
     const toY = targetY - st.y;
     const dist = Math.hypot(toX, toY);
@@ -382,112 +326,71 @@ export default function UnchartedWaters() {
     if (dist < CIRCLE_DIST) {
       desired += (1 - dist / CIRCLE_DIST) * 1.35;
     }
+
+    // Soft turn-away from the edges of the hunting ground: instead of sliding
+    // along an invisible wall (a hard positional clamp), it banks back toward
+    // open water as it nears a boundary — far more lifelike.
+    const lbx0 = HUNT.minX - FRAME.cx;
+    const lbx1 = HUNT.maxX - FRAME.cx;
+    const lby0 = FRAME.cz - HUNT.maxZ;
+    const lby1 = FRAME.cz - HUNT.minZ;
+    const margin = 0.7;
+    const avoidX =
+      Math.max(0, lbx0 + margin - st.x) - Math.max(0, st.x - (lbx1 - margin));
+    const avoidY =
+      Math.max(0, lby0 + margin - st.y) - Math.max(0, st.y - (lby1 - margin));
+    if (avoidX !== 0 || avoidY !== 0) {
+      const avoidAng = Math.atan2(avoidY, avoidX);
+      const strength = Math.min(1, Math.hypot(avoidX, avoidY) / margin);
+      desired += wrapAngle(avoidAng - desired) * strength * 0.85;
+    }
+
     const dh = wrapAngle(desired - st.heading);
-    // Proportional steering through eased velocities: small errors get
-    // gentle corrections, and even hard turns build and release smoothly.
+    // Proportional steering through eased velocities: small errors get gentle
+    // corrections, and even hard turns build and release smoothly.
     const wantTurn = THREE.MathUtils.clamp(dh * 1.6, -TURN_RATE, TURN_RATE);
     st.turn += (wantTurn - st.turn) * (1 - Math.exp(-dt * TURN_EASE));
     st.heading += st.turn * dt;
-    const wantSpeed =
-      THREE.MathUtils.clamp(dist * 0.4, 0.08, SPEED_MAX) * presence;
+    const wantSpeed = THREE.MathUtils.clamp(dist * 0.4, 0.08, SPEED_MAX) * presence;
     st.speed += (wantSpeed - st.speed) * (1 - Math.exp(-dt * SPEED_EASE));
     st.x += Math.cos(st.heading) * st.speed * dt;
     st.y += Math.sin(st.heading) * st.speed * dt;
-    // Keep the body inside the hunting ground.
-    st.x = THREE.MathUtils.clamp(
-      st.x,
-      HUNT.minX - SHADOW_PLANE.cx,
-      HUNT.maxX - SHADOW_PLANE.cx
-    );
-    st.y = THREE.MathUtils.clamp(
-      st.y,
-      -(HUNT.maxZ - SHADOW_PLANE.cz),
-      -(HUNT.minZ - SHADOW_PLANE.cz)
-    );
+    // Final safety net well outside the soft-turn margin, so it can never
+    // wander out of frame even if the steering is overwhelmed.
+    st.x = THREE.MathUtils.clamp(st.x, lbx0 - 0.4, lbx1 + 0.4);
+    st.y = THREE.MathUtils.clamp(st.y, lby0 - 0.4, lby1 + 0.4);
     // The tail beats harder when it travels faster.
     swimPhase.current += dt * (1.0 + st.speed * 2.8);
 
-    // Looms a little darker the closer it gets to you.
-    const loom = presence * (0.8 + 0.2 * (1 - Math.min(dist / 3, 1)));
-
-    if (sm) {
-      sm.uniforms.uTime.value = swimPhase.current;
-      sm.uniforms.uOpacity.value = w;
-      sm.uniforms.uLurker.value.set(
-        st.x,
-        st.y,
-        st.heading + 0.05 * Math.sin(seq * 0.7),
-        loom
-      );
-    }
-
-    // ── Surface marks: each ring/bubble respawns at the body's current
-    // position when its cycle wraps, then stays put while it expands. ──
-    const worldX = st.x + SHADOW_PLANE.cx;
-    const worldZ = SHADOW_PLANE.cz - st.y;
-    const headX = worldX + Math.cos(st.heading) * 0.33;
-    const headZ = worldZ - Math.sin(st.heading) * 0.33;
-
-    surface.rings.forEach((ring, j) => {
-      const rs = ringStates.current[j];
-      const age = (seq + (j * RING_DUR) / RING_COUNT) % RING_DUR;
-      if (age < rs.prevAge) {
-        rs.x = worldX;
-        rs.z = worldZ;
-      }
-      rs.prevAge = age;
-      const ageN = age / RING_DUR;
-      ring.line.position.set(rs.x, 0.02, rs.z);
-      ring.line.scale.setScalar(0.04 + ageN * 0.24);
-      ring.mat.opacity = w * presence * (1 - ageN) * 0.4;
-    });
-
-    surface.bubbles.forEach((bubble, i) => {
-      const bs = bubbleStates.current[i];
-      const age = (seq + (i * BUBBLE_DUR) / BUBBLE_COUNT) % BUBBLE_DUR;
-      if (age < bs.prevAge) {
-        bs.spawns++;
-        const rng = mulberry32(bs.spawns * 977 + i * 131);
-        const jr = 0.04 + rng() * 0.17;
-        const ja = rng() * Math.PI * 2;
-        bs.x = headX + Math.cos(ja) * jr;
-        bs.z = headZ + Math.sin(ja) * jr * 0.6;
-      }
-      bs.prevAge = age;
-      const ageN = age / BUBBLE_DUR;
-      bubble.line.position.set(bs.x, 0.02, bs.z);
-      bubble.line.scale.setScalar(0.014 + ageN * 0.038);
-      bubble.mat.opacity = w * presence * (1 - ageN) * 0.5;
-    });
+    mat.uniforms.uOpacity.value = w;
+    mat.uniforms.uWaterTime.value = waterT.current;
+    mat.uniforms.uSwim.value = swimPhase.current;
+    mat.uniforms.uSpeed.value = st.speed;
+    mat.uniforms.uLurker.value.set(
+      st.x,
+      st.y,
+      st.heading + 0.05 * Math.sin(seq * 0.7),
+      presence
+    );
   });
 
   return (
-    <group ref={groupRef} visible={false}>
-      <primitive object={waves} />
-
-      {/* The shadow, evaluated analytically on one oversized quad */}
-      <mesh
-        position={[SHADOW_PLANE.cx, 0.005, SHADOW_PLANE.cz]}
-        rotation={[-Math.PI / 2, 0, 0]}
-      >
-        <planeGeometry args={[SHADOW_PLANE.width, SHADOW_PLANE.depth]} />
-        <shaderMaterial
-          ref={shadowMatRef}
-          transparent
-          depthWrite={false}
-          uniforms={shadowUniforms}
-          vertexShader={SHADOW_VERTEX}
-          fragmentShader={SHADOW_FRAGMENT}
-        />
-      </mesh>
-
-      {/* Wake + bubbles breaking the surface */}
-      {surface.rings.map((r, i) => (
-        <primitive key={`ring-${i}`} object={r.line} />
-      ))}
-      {surface.bubbles.map((b, i) => (
-        <primitive key={`bubble-${i}`} object={b.line} />
-      ))}
-    </group>
+    <mesh
+      ref={meshRef}
+      position={[WATER.cx, WATER.y, WATER.cz]}
+      rotation={[-Math.PI / 2, 0, 0]}
+      renderOrder={-1}
+      visible={false}
+    >
+      <planeGeometry args={[WATER.width, WATER.depth]} />
+      <shaderMaterial
+        ref={matRef}
+        transparent
+        depthWrite={false}
+        uniforms={uniforms}
+        vertexShader={WATER_VERTEX}
+        fragmentShader={WATER_FRAGMENT}
+      />
+    </mesh>
   );
 }
