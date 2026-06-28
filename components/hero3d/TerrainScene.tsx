@@ -113,7 +113,13 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
   const { camera } = useThree();
   const pointer = useRef({ x: 0, y: 0 });
   const targetPointer = useRef({ x: 0, y: 0 });
-  const waypointEls = useRef<HTMLElement[]>([]);
+  // Document-space geometry of the [data-map-waypoint] anchors, refreshed
+  // periodically. Caching docCenter lets the per-frame blend read window.scrollY
+  // (cheap) instead of getBoundingClientRect() (forces a synchronous layout —
+  // the scroll-jank culprit while framer mutates transforms).
+  const waypointGeom = useRef<{ id: string; side: string; docCenter: number }[]>(
+    []
+  );
   const frame = useRef(0);
 
   const views = useMemo(() => {
@@ -220,9 +226,17 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
     // Blend toward pin views based on which [data-map-waypoint] element is
     // nearest the viewport centre — scrolling the timeline flies the camera.
     if (frame.current % 30 === 0) {
-      waypointEls.current = Array.from(
+      const sy = window.scrollY;
+      waypointGeom.current = Array.from(
         document.querySelectorAll<HTMLElement>("[data-map-waypoint]")
-      );
+      ).map((el) => {
+        const rect = el.getBoundingClientRect();
+        return {
+          id: el.dataset.mapWaypoint ?? "",
+          side: el.dataset.waypointSide ?? "",
+          docCenter: rect.top + sy + rect.height / 2,
+        };
+      });
     }
     frame.current++;
 
@@ -235,10 +249,10 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
     const weights: Record<string, number> = {};
     if (!reduceMotion) {
       const vh = window.innerHeight;
-      for (const el of waypointEls.current) {
-        const id = el.dataset.mapWaypoint ?? "";
-        const rect = el.getBoundingClientRect();
-        const center = rect.top + rect.height / 2;
+      const sy = window.scrollY;
+      for (const wp of waypointGeom.current) {
+        const id = wp.id;
+        const center = wp.docCenter - sy;
         // Narrow window: only the card actually near the focus line drives the
         // camera, so neighbouring cards can't drag the frame. The dead zone
         // keeps the weight pinned at 1 while the card sits near the line, so
@@ -278,7 +292,7 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
           } else {
             // Card on the right → look-at point east of the pin → the pin
             // lands on the left half of the screen (and vice versa).
-            const side = el.dataset.waypointSide === "right" ? 1 : -1;
+            const side = wp.side === "right" ? 1 : -1;
             scratch.tgt.x += side * SIDE_SHIFT * w;
           }
           weights[id] = (weights[id] ?? 0) + w;
@@ -861,12 +875,24 @@ export default function TerrainScene({
   reduceMotion: boolean;
   active: boolean;
 }) {
+  // Mobile/touch GPUs are fragment-bound: a high device-pixel-ratio + MSAA on a
+  // full-screen backdrop that repaints every scroll frame is the main cause of
+  // scroll-jank there. Cap the render resolution and drop MSAA on touch — the
+  // terrain is a flat plane whose ink lines already anti-alias in-shader (fwidth),
+  // so the loss is near-invisible while fragment work roughly halves.
+  const isMobile = useMemo(
+    () =>
+      typeof window !== "undefined" &&
+      (window.matchMedia?.("(pointer: coarse)").matches ||
+        window.innerWidth < 768),
+    []
+  );
   return (
     <Canvas
       frameloop={active ? "always" : "never"}
-      dpr={[1, 1.75]}
+      dpr={isMobile ? [1, 1.25] : [1, 1.75]}
       camera={{ fov: 42, near: 0.1, far: 60, position: [0.5, 6.6, 5.4] }}
-      gl={{ antialias: true, alpha: true }}
+      gl={{ antialias: !isMobile, alpha: true }}
       style={{ background: "transparent" }}
       onPointerMissed={() => {
         // Tap/click on empty sky releases the orbiting stars.
