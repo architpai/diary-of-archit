@@ -15,7 +15,7 @@
     "pin_fuji": "Mt. Fuji — 3,776m of showing off",
     "pin_mumbai": "Scorpio Group ’19",
     "mumbai_inset": "Mumbai — 6,700 km west of the page (not to scale)",
-    "map_note": "Kantō — surveyed from real elevation data. I make maps for a living.",
+    "map_note": "Tōkaidō corridor — surveyed from real elevation data. I make maps for a living.",
     "cartographer": "fig. 1 — the cartographer"
   },
   "timeline": {
@@ -59,7 +59,18 @@
     "group_frontend": "Frontend & Visualisation",
     "group_backend": "Backend & Systems",
     "group_cloud": "Cloud & DevOps",
-    "group_frontier": "Frontier · AI"
+    "group_frontier": "Frontier · AI",
+    "heading_explore_1": "there’s always",
+    "heading_explore_2": "more to explore",
+    "cat_architecture": "Architecture",
+    "cat_backend": "Backend",
+    "cat_cloud": "Cloud",
+    "cat_database": "Database",
+    "cat_devops": "DevOps",
+    "cat_domain": "Domain",
+    "cat_frontend": "Frontend",
+    "cat_graphics": "Graphics",
+    "cat_mapping": "Mapping"
   },
   "sneakpeek": {
     "title": "Off the Chart",

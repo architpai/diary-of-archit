@@ -15,9 +15,12 @@ export default function MapBackdrop() {
 
   return (
     <>
-      <div className="fixed inset-0 z-0" aria-hidden="true">
+      <div className="fixed inset-0 z-0">
         <TerrainScene reduceMotion={!!shouldReduceMotion} active />
-        <div className="terrain-hero-vignette absolute inset-0 pointer-events-none" />
+        <div
+          className="terrain-hero-vignette absolute inset-0 pointer-events-none"
+          aria-hidden="true"
+        />
       </div>
       {/* Neatline — the double rule that bounds every proper chart.
           Nav tabs and toggles live "outside the neatline" (higher z). */}

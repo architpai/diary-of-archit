@@ -167,13 +167,13 @@ const WATER_FRAGMENT = /* glsl */ `
     //   not as bright blue lines — the old crisp V + perfect rings looked
     //   synthetic. A turbulent trail widening behind, plus warped bow ripples. —
     float wedge = exp(-(crossv * crossv) / (0.12 + along * 0.18));
-    float trailMask = wedge * smoothstep(0.0, 0.35, along) * smoothstep(5.5, 0.0, along) * pres;
+    float trailMask = wedge * smoothstep(0.0, 0.35, along) * (1.0 - smoothstep(0.0, 5.5, along)) * pres;
     float trailTex = vnoise(vec2(along * 2.6 - uWaterTime * 1.5, crossv * 5.0 + uWaterTime * 0.6));
     float trail = trailMask * (0.35 + 0.65 * trailTex) * (0.55 + 0.9 * uSpeed);
 
     float warp = (vnoise(vp * 3.0 + uWaterTime * 0.25) - 0.5) * 0.5;
     float bow = sin((dC + warp) * 6.0 - uWaterTime * 1.8) * 0.5 + 0.5;
-    float bowAmt = smoothstep(0.6, 1.0, bow) * smoothstep(1.5, 0.12, dC) * pres;
+    float bowAmt = smoothstep(0.6, 1.0, bow) * (1.0 - smoothstep(0.12, 1.5, dC)) * pres;
 
     float foam = clamp(trail * 0.55 + bowAmt * 0.3, 0.0, 1.0);
     col = mix(col, mix(uPaper, uPaperLine, 0.22), foam * 0.4);
@@ -189,8 +189,8 @@ const WATER_FRAGMENT = /* glsl */ `
 
     // — dissolve the plane's own edges into paper (kept off-screen normally,
     //   but graceful if a corner ever peeks during a transition) —
-    float edge = smoothstep(0.0, 0.10, vUv.x) * smoothstep(1.0, 0.90, vUv.x)
-               * smoothstep(0.0, 0.06, vUv.y) * smoothstep(1.0, 0.94, vUv.y);
+    float edge = smoothstep(0.0, 0.10, vUv.x) * (1.0 - smoothstep(0.90, 1.0, vUv.x))
+               * smoothstep(0.0, 0.06, vUv.y) * (1.0 - smoothstep(0.94, 1.0, vUv.y));
 
     float a = uOpacity * edge;
     a += (hash(gl_FragCoord.xy) - 0.5) * 0.01; // dither — no banding on the wash

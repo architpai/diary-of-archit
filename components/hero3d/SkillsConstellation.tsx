@@ -159,7 +159,7 @@ const STARFIELD_FRAGMENT = /* glsl */ `
     vec2 d = gl_PointCoord - 0.5;
     float r = length(d) * 2.0;
     if (r > 1.0) discard;
-    float core = smoothstep(1.0, 0.15, r);
+    float core = 1.0 - smoothstep(0.15, 1.0, r);
     float tw = 0.55 + 0.45 * sin(uTime * 1.3 + vPhase);
     gl_FragColor = vec4(1.0, 0.96, 0.85, core * tw * uOpacity);
   }

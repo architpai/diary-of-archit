@@ -15,7 +15,7 @@
     "pin_fuji": "富士山 — 標高3,776mのドヤ顔",
     "pin_mumbai": "スコーピオ・グループ ’19",
     "mumbai_inset": "ムンバイ — ページの西へ6,700km（縮尺は気にしない）",
-    "map_note": "関東 — 本物の標高データから測量。地図づくりが本業です。",
+    "map_note": "東海道 — 本物の標高データから測量。地図づくりが本業です。",
     "cartographer": "図1 — 地図職人（私）"
   },
   "timeline": {
@@ -59,7 +59,18 @@
     "group_frontend": "フロントエンド・可視化",
     "group_backend": "バックエンド・システム",
     "group_cloud": "クラウド・DevOps",
-    "group_frontier": "未踏地・AI"
+    "group_frontier": "未踏地・AI",
+    "heading_explore_1": "探索の余地は",
+    "heading_explore_2": "まだまだある",
+    "cat_architecture": "アーキテクチャ",
+    "cat_backend": "バックエンド",
+    "cat_cloud": "クラウド",
+    "cat_database": "データベース",
+    "cat_devops": "DevOps",
+    "cat_domain": "ドメイン",
+    "cat_frontend": "フロントエンド",
+    "cat_graphics": "グラフィックス",
+    "cat_mapping": "マッピング"
   },
   "sneakpeek": {
     "title": "地図の外",

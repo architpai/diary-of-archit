@@ -122,6 +122,14 @@ export default function Skills() {
   const [activeGroupId, setActiveGroupId] = useState<string | null>(null);
   const skills = content.skills as Skill[];
 
+  // Serious-mode groups by the raw category id; localize it, falling back to
+  // the id itself if a future category has no `skills.cat_*` key yet.
+  const catLabel = (category: string) => {
+    const key = `skills.cat_${category}`;
+    const label = t(key);
+    return label === key ? category : label;
+  };
+
   // id → localized skill name, so a group's pins can list their tools.
   const skillNameById = useMemo(() => {
     const map: Record<string, string> = {};
@@ -251,7 +259,7 @@ export default function Skills() {
                 transition={shouldReduceMotion ? { duration: 0 } : { delay: categoryIndex * 0.1 }}
               >
                 <h3 className="font-sans text-lg font-bold capitalize mb-4 text-gray-700 border-b border-gray-300 pb-2">
-                  {category}
+                  {catLabel(category)}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {categorySkills.map((skill, index) => (
@@ -301,7 +309,7 @@ export default function Skills() {
               viewport={{ once: true }}
               transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: 0.05 }}
             >
-              there&apos;s always
+              {t('skills.heading_explore_1')}
             </motion.span>
             <motion.span
               initial={shouldReduceMotion ? false : { opacity: 0, y: 16, rotate: 2.5 }}
@@ -309,7 +317,7 @@ export default function Skills() {
               viewport={{ once: true }}
               transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: 0.2 }}
             >
-              more to explore
+              {t('skills.heading_explore_2')}
             </motion.span>
             <Image
               className="skills-basecamp-cloud"

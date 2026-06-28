@@ -109,7 +109,7 @@ void main() {
   color = mix(color, uInk, coast * 0.85);
 
   // Lines draw in from the coast upward as the terrain rises.
-  float lineReveal = smoothstep(uReveal * 4000.0, uReveal * 4000.0 - 350.0, h)
+  float lineReveal = (1.0 - smoothstep(uReveal * 4000.0 - 350.0, uReveal * 4000.0, h))
     * smoothstep(0.02, 0.12, uReveal);
 
   // --- Contour lines: wobbly pen, heavier every 5th line ---

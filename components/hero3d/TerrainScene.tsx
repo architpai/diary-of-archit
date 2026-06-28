@@ -835,7 +835,10 @@ function Pins({ reduceMotion }: { reduceMotion: boolean }) {
     const el =
       (pin.experienceId && document.getElementById(pin.experienceId)) ||
       document.getElementById("timeline");
-    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+    el?.scrollIntoView({
+      behavior: reduceMotion ? "auto" : "smooth",
+      block: "center",
+    });
   };
   return (
     <>
