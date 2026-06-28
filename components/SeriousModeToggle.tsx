@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import { useTranslation } from '@/hooks/useTranslation';
+import { InkNib, InkTie } from './icons/InkIcons';
 
 export default function SeriousModeToggle() {
   const router = useRouter();
@@ -20,7 +21,11 @@ export default function SeriousModeToggle() {
   return (
     <button
       onClick={handleToggle}
-      className={`print:hidden fixed top-14 right-4 md:top-auto md:bottom-6 md:right-6 z-[9999] px-3 py-2 md:px-4 md:py-3 rounded-lg transition-[background-color,color,border-color,box-shadow,transform] duration-300 font-sans text-sm font-medium shadow-lg isolate focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ink ${
+      // will-change:transform keeps this on its own compositor layer so it
+      // stays pinned during momentum/async scroll over the continuously-
+      // repainting 3D canvas (it's a pure hint — composes with the hover/wobble
+      // transform below without the transition animating a base value).
+      className={`print:hidden fixed bottom-5 right-4 md:bottom-6 md:right-6 z-[9999] will-change-transform px-3 py-2 md:px-4 md:py-3 rounded-lg transition-[background-color,color,border-color,box-shadow,transform] duration-300 font-sans text-sm font-medium shadow-lg isolate focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ink ${
         isOnResume ? '' : 'wobble-hover'
       }`}
       style={{
@@ -36,16 +41,22 @@ export default function SeriousModeToggle() {
           className="flex items-center gap-2"
           style={isJapanese ? { fontFamily: 'var(--font-jp-clean)' } : {}}
         >
-          <span aria-hidden="true" className="md:hidden">🎨</span>
-          <span className="hidden md:inline">{t('mode.fun')}</span>
+          <InkNib className="w-5 h-5 md:hidden" color="#FFF9E5" />
+          <span className="hidden md:inline-flex items-center gap-2">
+            <InkNib className="w-4 h-4" color="#FFF9E5" />
+            {t('mode.fun')}
+          </span>
         </span>
       ) : (
         <span 
           className="flex items-center gap-2 text-lg" 
           style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : { fontFamily: "'Patrick Hand', cursive" }}
         >
-          <span aria-hidden="true" className="md:hidden">👔</span>
-          <span className="hidden md:inline">{t('mode.serious')}</span>
+          <InkTie className="w-5 h-5 md:hidden" color="#2D2D2D" />
+          <span className="hidden md:inline-flex items-center gap-2">
+            <InkTie className="w-4 h-4" color="#2D2D2D" />
+            {t('mode.serious')}
+          </span>
         </span>
       )}
     </button>

@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
+import { avatarBox } from './avatarDimensions';
 
 // Available poses with their image paths
 export const AVATAR_POSES = {
@@ -20,18 +21,19 @@ interface AvatarProps {
   className?: string;
   pose?: AvatarPose;
   animate?: boolean;
+  /** Desired rendered width in px; height is derived from the pose's true ratio. */
   width?: number;
-  height?: number;
 }
 
-export default function Avatar({ 
-  className = '', 
+export default function Avatar({
+  className = '',
   pose = 'hero',
   animate = true,
   width = 300,
-  height = 400,
 }: AvatarProps) {
   const shouldReduceMotion = useReducedMotion();
+  const src = AVATAR_POSES[pose];
+  const box = avatarBox(src, width);
   return (
     <motion.div
       className={`relative ${className}`}
@@ -49,10 +51,11 @@ export default function Avatar({
       }
     >
       <Image
-        src={AVATAR_POSES[pose]}
+        src={src}
         alt={`Avatar - ${pose} pose`}
-        width={width}
-        height={height}
+        width={box.width}
+        height={box.height}
+        style={box.style}
         className="object-contain"
         priority={pose === 'hero'}
       />

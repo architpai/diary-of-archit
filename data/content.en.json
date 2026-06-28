@@ -97,84 +97,116 @@
   ],
   "skills": [
     {
+      "id": "geo",
       "name": "Geospatial Systems & Mapping",
       "level": 88,
-      "category": "domain"
+      "category": "domain",
+      "tier": "daily"
     },
     {
+      "id": "mvt",
       "name": "Vector Tiles (MVT)",
       "level": 88,
-      "category": "mapping"
+      "category": "mapping",
+      "tier": "daily"
     },
     {
+      "id": "wayfinding",
       "name": "Wayfinding",
       "level": 88,
-      "category": "mapping"
+      "category": "mapping",
+      "tier": "shipped"
     },
     {
+      "id": "maplibre",
       "name": "MapLibre",
       "level": 88,
-      "category": "mapping"
+      "category": "mapping",
+      "tier": "weekly"
     },
     {
+      "id": "postgis",
       "name": "PostgreSQL (PostGIS)",
       "level": 86,
-      "category": "database"
+      "category": "database",
+      "tier": "daily"
     },
     {
+      "id": "redis",
       "name": "Redis & Caching",
       "level": 88,
-      "category": "database"
+      "category": "database",
+      "tier": "daily"
     },
     {
+      "id": "react",
       "name": "React",
       "level": 88,
-      "category": "frontend"
+      "category": "frontend",
+      "tier": "weekly"
     },
     {
+      "id": "ts",
       "name": "TypeScript",
       "level": 85,
-      "category": "frontend"
+      "category": "frontend",
+      "tier": "daily"
     },
     {
+      "id": "redux",
       "name": "State Management (Redux)",
       "level": 88,
-      "category": "frontend"
+      "category": "frontend",
+      "tier": "shipped"
     },
     {
+      "id": "node",
       "name": "Node.js (Express/Fastify)",
       "level": 85,
-      "category": "backend"
+      "category": "backend",
+      "tier": "daily"
     },
     {
+      "id": "python",
       "name": "Python",
       "level": 75,
-      "category": "backend"
+      "category": "backend",
+      "tier": "shipped"
     },
     {
+      "id": "azure",
       "name": "Azure Cloud Services",
       "level": 88,
-      "category": "cloud"
+      "category": "cloud",
+      "tier": "daily"
     },
     {
+      "id": "docker",
       "name": "Docker & Containerization",
       "level": 80,
-      "category": "devops"
+      "category": "devops",
+      "tier": "weekly"
     },
     {
+      "id": "cicd",
       "name": "CI/CD (Azure DevOps)",
       "level": 80,
-      "category": "devops"
+      "category": "devops",
+      "tier": "weekly"
     },
     {
+      "id": "threejs",
       "name": "Three.js (3D Visualization)",
       "level": 82,
-      "category": "graphics"
+      "category": "graphics",
+      "tier": "weekly"
     },
     {
+      "id": "sysdesign",
       "name": "System Design & Microservices",
       "level": 82,
-      "category": "architecture"
+      "category": "architecture",
+      "tier": "weekly"
     }
   ],
   "contact": {

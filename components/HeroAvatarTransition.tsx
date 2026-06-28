@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, useRef } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface HeroAvatarTransitionProps {
@@ -182,24 +182,8 @@ export default function HeroAvatarTransition({
   }, [targetLanguage, isLoaded, shouldReduceMotion]);
 
   return (
-    <motion.div
+    <div
       className={`relative ${className}`}
-      animate={
-        shouldReduceMotion
-          ? undefined
-          : {
-              y: [0, -15, 0],
-            }
-      }
-      transition={
-        shouldReduceMotion
-          ? undefined
-          : {
-              duration: 3,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }
-      }
       style={{ aspectRatio: `${width} / ${height}` }}
       aria-label="Archit's Avatar"
     >
@@ -209,6 +193,6 @@ export default function HeroAvatarTransition({
         height={height}
         className="w-full h-auto drop-shadow-2xl object-contain"
       />
-    </motion.div>
+    </div>
   );
 }
