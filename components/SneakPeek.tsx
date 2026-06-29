@@ -8,12 +8,14 @@ import {
   useVelocity,
   useSpring,
   useTransform,
+  useMotionValue,
   type MotionValue,
 } from 'framer-motion';
 import Image from 'next/image';
 import { avatarBox } from './avatarDimensions';
 import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useIsTouchDevice } from '@/hooks/useIsTouchDevice';
 import {
   InkChip,
   InkClaw,
@@ -312,10 +314,16 @@ export default function SneakPeek() {
   const shouldReduceMotion = useReducedMotion();
   const hobbies = content.personal.hobbies as Hobby[];
 
-  // Shared scroll velocity → each specimen tag swings from its twine.
+  // Shared scroll velocity → each specimen tag swings from its twine. On touch
+  // devices feed the cards a constant 0 instead: the per-card springs then sit
+  // idle (no rAF, no transform writes on every scroll frame) so they can't add
+  // to scroll-jank. The desktop swing the user tuned is untouched.
+  const isTouch = useIsTouchDevice();
   const { scrollY } = useScroll();
   const rawVelocity = useVelocity(scrollY);
-  const scrollVelocity = useSpring(rawVelocity, { damping: 50, stiffness: 350, mass: 0.6 });
+  const liveVelocity = useSpring(rawVelocity, { damping: 50, stiffness: 350, mass: 0.6 });
+  const zeroVelocity = useMotionValue(0);
+  const scrollVelocity = isTouch ? zeroVelocity : liveVelocity;
 
   const jpFont = isJapanese
     ? ({ fontFamily: 'var(--font-jp-handwritten)' } as React.CSSProperties)
