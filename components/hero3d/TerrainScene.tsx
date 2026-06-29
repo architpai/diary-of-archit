@@ -875,24 +875,17 @@ export default function TerrainScene({
   reduceMotion: boolean;
   active: boolean;
 }) {
-  // Mobile/touch GPUs are fragment-bound: a high device-pixel-ratio + MSAA on a
-  // full-screen backdrop that repaints every scroll frame is the main cause of
-  // scroll-jank there. Cap the render resolution and drop MSAA on touch — the
-  // terrain is a flat plane whose ink lines already anti-alias in-shader (fwidth),
-  // so the loss is near-invisible while fragment work roughly halves.
-  const isMobile = useMemo(
-    () =>
-      typeof window !== "undefined" &&
-      (window.matchMedia?.("(pointer: coarse)").matches ||
-        window.innerWidth < 768),
-    []
-  );
+  // NB: keep the render resolution + MSAA at full quality on mobile too — the
+  // terrain's fine ink contours need the pixels, and a lower DPR cap (tried 1.25)
+  // reads as blurry on dense phone screens. The mobile scroll-perf win comes from
+  // the zero-visual-cost fixes instead (camera-rig layout caching, the dropped
+  // creature, the idled sway, tab-hidden pause), not from downsampling the map.
   return (
     <Canvas
       frameloop={active ? "always" : "never"}
-      dpr={isMobile ? [1, 1.25] : [1, 1.75]}
+      dpr={[1, 1.75]}
       camera={{ fov: 42, near: 0.1, far: 60, position: [0.5, 6.6, 5.4] }}
-      gl={{ antialias: !isMobile, alpha: true }}
+      gl={{ antialias: true, alpha: true }}
       style={{ background: "transparent" }}
       onPointerMissed={() => {
         // Tap/click on empty sky releases the orbiting stars.
