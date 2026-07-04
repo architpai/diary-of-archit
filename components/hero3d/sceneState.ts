@@ -14,6 +14,10 @@ export const sceneState = {
   network: 0,
   /** Weight of the uncharted-waters view (sneak peek section) */
   uncharted: 0,
+  /** Ramps 0→1 as the viewport scrolls past the last map waypoint into the
+   *  contact/footer tail — fades the timeline pins so they don't bleed over
+   *  the closing content (which has no waypoint of its own to fly to). */
+  tail: 0,
   /** Skill name currently hovered in the legend panel (flares its star) */
   hoverSkill: null as string | null,
   /** Skill id hovered/tapped in the night sky — its companions orbit it */
