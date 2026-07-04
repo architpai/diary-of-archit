@@ -121,6 +121,11 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
     []
   );
   const frame = useRef(0);
+  // Document-space center of the LAST map waypoint on the page. Past it lies the
+  // contact/footer tail, which has no waypoint of its own — the camera returns
+  // to overview there, so we fade the pins out (see sceneState.tail) instead of
+  // letting every label bleed back over the closing content.
+  const lastWaypointCenter = useRef(0);
 
   const views = useMemo(() => {
     const v: Record<string, { pos: THREE.Vector3; tgt: THREE.Vector3 }> = {};
@@ -237,6 +242,10 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
           docCenter: rect.top + sy + rect.height / 2,
         };
       });
+      lastWaypointCenter.current = waypointGeom.current.reduce(
+        (max, wp) => Math.max(max, wp.docCenter),
+        0
+      );
     }
     frame.current++;
 
@@ -313,6 +322,15 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
     sceneState.closeup = Math.min(1, closeup);
     sceneState.network = network;
     sceneState.uncharted = uncharted;
+
+    // Tail fade: once the viewport centre passes the last waypoint, ramp to 1
+    // over ~0.4vh so the pins recede as the reader enters contact/footer.
+    const tvh = window.innerHeight;
+    const past = window.scrollY + tvh * 0.5 - lastWaypointCenter.current;
+    sceneState.tail =
+      lastWaypointCenter.current > 0
+        ? THREE.MathUtils.clamp(past / (tvh * 0.4), 0, 1)
+        : 0;
 
     const ow = 1 - sum;
     scratch.pos.addScaledVector(scratch.overviewPos, ow);
@@ -580,7 +598,9 @@ function PinMarker({
       // don't poke through the art in the held overview pose. Closeup is
       // excluded here — flying TO a timeline pin must never shrink it.
       const coverShrink =
-        1 - Math.max(sceneState.network, sceneState.uncharted) * 0.95;
+        1 -
+        Math.max(sceneState.network, sceneState.uncharted, sceneState.tail) *
+          0.95;
       // Modest growth only — the closeup camera is already near the pin, so
       // big scale multipliers read as a flat blob filling the frame.
       markerRef.current.scale.setScalar(
@@ -625,7 +645,8 @@ function PinMarker({
       const fade = Math.max(
         sceneState.closeup,
         sceneState.network,
-        sceneState.uncharted
+        sceneState.uncharted,
+        sceneState.tail
       );
       // Non-focused labels clear out fast once the camera commits to any place,
       // so the focused pin's pill never competes with stray captions drifting
