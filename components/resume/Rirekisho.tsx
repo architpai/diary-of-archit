@@ -28,11 +28,13 @@ export default function Rirekisho() {
   // precomputed in data so server and client HTML always agree.
   const ageText = SHOW_PERSONAL_FIELDS ? p.ageText : REDACTED;
 
+  // Fixed label widths compress below md so the JIS form fits 320–390px viewports.
   const labelCell = 'bg-gray-50 border border-black px-2 py-1 text-xs font-semibold';
+  const labelW = 'w-20 md:w-24';
 
   return (
     <main
-      className="max-w-[8.5in] mx-auto p-8 bg-white text-black print:p-0"
+      className="max-w-[8.5in] mx-auto p-4 md:p-8 bg-white text-black print:p-0"
       style={JP_FONT}
     >
       {/* Title + current date */}
@@ -46,36 +48,36 @@ export default function Rirekisho() {
         <div className="flex-1">
           {/* ふりがな / 性別 */}
           <div className="flex border-b border-black">
-            <div className={`${labelCell} w-24 shrink-0`}>ふりがな</div>
+            <div className={`${labelCell} ${labelW} shrink-0`}>ふりがな</div>
             <div className="flex-1 px-2 py-1 text-xs border-r border-black">{r.furigana}</div>
-            <div className={`${labelCell} w-16 shrink-0`}>性別</div>
-            <div className="w-16 shrink-0 px-2 py-1 text-sm">{r.gender}</div>
+            <div className={`${labelCell} w-12 md:w-16 shrink-0`}>性別</div>
+            <div className="w-10 md:w-16 shrink-0 px-2 py-1 text-sm">{r.gender}</div>
           </div>
           {/* 氏名 */}
           <div className="flex border-b border-black">
-            <div className={`${labelCell} w-24 shrink-0 flex items-center`}>氏名</div>
+            <div className={`${labelCell} ${labelW} shrink-0 flex items-center`}>氏名</div>
             <div className="flex-1 px-3 py-3 text-xl font-bold">{r.name}</div>
           </div>
           {/* 生年月日 */}
           <div className="flex">
-            <div className={`${labelCell} w-24 shrink-0 flex items-center`}>生年月日</div>
+            <div className={`${labelCell} ${labelW} shrink-0 flex items-center`}>生年月日</div>
             <div className="flex-1 px-2 py-2 text-sm">
               {show(p.dobText)}（{ageText}）
             </div>
           </div>
         </div>
         {/* 証明写真 */}
-        <div className="w-[3cm] border-l-2 border-black flex items-center justify-center p-1 shrink-0">
+        <div className="w-20 md:w-[3cm] border-l-2 border-black flex items-center justify-center p-1 shrink-0">
           {SHOW_PERSONAL_FIELDS ? (
             <Image
               src={p.photo}
               alt="証明写真"
               width={113}
               height={151}
-              className="object-cover"
+              className="object-cover w-full h-auto"
             />
           ) : (
-            <div className="w-[3cm] h-[4cm] flex items-center justify-center text-[10px] text-gray-400 text-center leading-tight">
+            <div className="w-full aspect-[3/4] flex items-center justify-center text-[10px] text-gray-400 text-center leading-tight">
               写真
               <br />
               {REDACTED}
@@ -87,7 +89,7 @@ export default function Rirekisho() {
       {/* Address / contact block */}
       <div className="border-2 border-t-0 border-black">
         <div className="flex border-b border-black">
-          <div className={`${labelCell} w-24 shrink-0 flex items-center`}>現住所</div>
+          <div className={`${labelCell} ${labelW} shrink-0 flex items-center`}>現住所</div>
           <div className="flex-1">
             <div className="px-2 py-1 text-xs border-b border-black text-gray-600">
               ふりがな　{show(p.addressFurigana)}
@@ -99,7 +101,7 @@ export default function Rirekisho() {
               </span>
             </div>
           </div>
-          <div className="w-52 shrink-0 border-l border-black text-xs">
+          <div className="w-36 md:w-52 shrink-0 border-l border-black text-xs">
             <div className="px-2 py-1 border-b border-black">TEL　{show(p.tel)}</div>
             <div className="px-2 py-1 border-b border-black">携帯電話　{show(p.mobile)}</div>
             <div className="px-2 py-1 border-b border-black">FAX　{show(p.fax)}</div>
@@ -107,7 +109,7 @@ export default function Rirekisho() {
           </div>
         </div>
         <div className="flex">
-          <div className={`${labelCell} w-24 shrink-0 flex items-center`}>母国での<br />連絡先</div>
+          <div className={`${labelCell} ${labelW} shrink-0 flex items-center`}>母国での<br />連絡先</div>
           <div className="flex-1 px-2 py-2 text-sm">{show(p.homeCountryContact)}</div>
         </div>
       </div>
@@ -213,7 +215,7 @@ export default function Rirekisho() {
       {/* 言語能力 / 趣味 */}
       <div className="border-2 border-black border-t-0 mt-4">
         <div className="flex border-b border-black">
-          <div className={`${labelCell} w-24 shrink-0 flex items-center`}>言語能力</div>
+          <div className={`${labelCell} ${labelW} shrink-0 flex items-center`}>言語能力</div>
           <div className="flex-1 px-3 py-2 text-sm space-y-0.5">
             {r.languages.map((l) => (
               <div key={l.name}>
@@ -224,7 +226,7 @@ export default function Rirekisho() {
           </div>
         </div>
         <div className="flex">
-          <div className={`${labelCell} w-24 shrink-0 flex items-center`}>趣味</div>
+          <div className={`${labelCell} ${labelW} shrink-0 flex items-center`}>趣味</div>
           <div className="flex-1 px-3 py-2 text-sm">{r.hobbies.join(' ／ ')}</div>
         </div>
       </div>

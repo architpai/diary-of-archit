@@ -21,7 +21,7 @@ export default function ResumeEN() {
   const resume = content.resumeEn;
 
   return (
-    <main className="max-w-[8.5in] mx-auto p-8 bg-white text-black font-sans print:p-0">
+    <main className="max-w-[8.5in] mx-auto p-4 md:p-8 bg-white text-black font-sans print:p-0">
       {/* Header */}
       <header className="border-b-2 border-black pb-4 mb-6">
         <h1 className="text-3xl font-bold">{content.personal.name}</h1>
@@ -96,7 +96,7 @@ export default function ResumeEN() {
           {resume.skillGroups.map((group) => (
             <div key={group.label} className="flex gap-2">
               <span className="font-semibold min-w-[150px] shrink-0">{group.label}:</span>
-              <span className="text-gray-700">{group.items}</span>
+              <span className="text-gray-700 min-w-0 break-words">{group.items}</span>
             </div>
           ))}
         </div>
@@ -123,19 +123,19 @@ export default function ResumeEN() {
           {resume.languages.map((lang) => (
             <div key={lang.name} className="flex gap-2">
               <span className="font-semibold min-w-[110px] shrink-0">{lang.name}:</span>
-              <span className="text-gray-700">{lang.level}</span>
+              <span className="text-gray-700 min-w-0 break-words">{lang.level}</span>
             </div>
           ))}
           <div className="flex gap-2">
             <span className="font-semibold min-w-[110px] shrink-0">{t('resume.certifications_title')}:</span>
-            <span className="text-gray-700">
+            <span className="text-gray-700 min-w-0 break-words">
               {resume.certifications.map((c) => `${c.name} (${c.date})`).join(' · ')}
               {resume.certificationsNote ? ` · ${resume.certificationsNote}` : ''}
             </span>
           </div>
           <div className="flex gap-2">
             <span className="font-semibold min-w-[110px] shrink-0">{t('resume.work_auth_title')}:</span>
-            <span className="text-gray-700">{resume.workAuthorization}</span>
+            <span className="text-gray-700 min-w-0 break-words">{resume.workAuthorization}</span>
           </div>
         </div>
       </section>

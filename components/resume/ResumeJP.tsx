@@ -22,7 +22,7 @@ export default function ResumeJP() {
 
   return (
     <main
-      className="max-w-[8.5in] mx-auto p-8 bg-white text-black print:p-0"
+      className="max-w-[8.5in] mx-auto p-4 md:p-8 bg-white text-black print:p-0"
       style={JP_FONT}
     >
       {/* Header */}
