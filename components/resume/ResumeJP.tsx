@@ -1,196 +1,205 @@
 'use client';
 
 import { useTranslation } from '@/hooks/useTranslation';
-import { GitHubIcon, LinkedInIcon, MailIcon } from '@/components/icons/SocialIcons';
+import contentJP from '@/data/content.jp.json';
 
-interface TechStack {
-  os: string[];
-  languages: string[];
-  databases: string[];
-  cloud: string[];
-  frameworks: string[];
-  tools: string[];
-}
+const JP_FONT = { fontFamily: 'var(--font-jp-clean), "Noto Sans JP", sans-serif' };
 
-interface Experience {
-  id: string;
-  date: string;
-  professionalTitle: string;
-  company: string;
-  resumeBulletPoints: string[];
-  techStack?: TechStack;
-  isResumeWorthy: boolean;
-}
-
-interface Skill {
-  name: string;
-  level: number;
-  category: string;
+/** A labelled 【…】 row: value skipped when empty so unused tech fields collapse. */
+function SpecRow({ label, value }: { label: string; value?: string }) {
+  if (!value) return null;
+  return (
+    <div className="flex text-xs">
+      <span className="font-semibold whitespace-nowrap">【{label}】</span>
+      <span className="text-gray-700">{value}</span>
+    </div>
+  );
 }
 
 export default function ResumeJP() {
-  const { content, t } = useTranslation();
-  const experiences = (content.experiences as Experience[]).filter(exp => exp.isResumeWorthy);
-  const skills = content.skills as Skill[];
-
-  // Japanese category labels
-  const categoryLabels: Record<string, string> = {
-    domain: 'ドメイン',
-    mapping: 'マッピング',
-    database: 'データベース',
-    frontend: 'フロントエンド',
-    backend: 'バックエンド',
-    cloud: 'クラウド',
-    devops: 'DevOps',
-    graphics: 'グラフィックス',
-    architecture: 'アーキテクチャ'
-  };
+  const { t } = useTranslation();
+  const shokumu = contentJP.shokumu;
 
   return (
-    <main 
-      className="max-w-[8.5in] mx-auto p-8 bg-white text-black print:p-0" 
-      style={{ fontFamily: 'var(--font-jp-clean), "Noto Sans JP", sans-serif' }}
+    <main
+      className="max-w-[8.5in] mx-auto p-8 bg-white text-black print:p-0"
+      style={JP_FONT}
     >
       {/* Header */}
-      <header className="border-b-2 border-black pb-4 mb-6">
-        <h1 className="text-3xl font-bold">{content.personal.name}</h1>
-        <p className="text-xl text-gray-700">{content.personal.title}</p>
-        
-        <div className="mt-3 flex flex-wrap gap-4 text-sm">
-          <a href={`mailto:${content.contact.email}`} className="text-blue-700 hover:underline">
-            <span className="inline-flex items-center gap-1.5">
-              <MailIcon className="h-4 w-4 shrink-0" />
-              {content.contact.email}
-            </span>
-          </a>
-          <span>|</span>
-          <a href={`https://${content.contact.github}`} className="text-blue-700 hover:underline" target="_blank" rel="noopener noreferrer">
-            <span className="inline-flex items-center gap-1.5">
-              <GitHubIcon className="h-4 w-4 shrink-0" />
-              {content.contact.github}
-            </span>
-          </a>
-          <span>|</span>
-          <a href={`https://${content.contact.linkedin}`} className="text-blue-700 hover:underline" target="_blank" rel="noopener noreferrer">
-            <span className="inline-flex items-center gap-1.5">
-              <LinkedInIcon className="h-4 w-4 shrink-0" />
-              {content.contact.linkedin}
-            </span>
-          </a>
+      <header className="mb-6">
+        <div className="flex items-end justify-between border-b-2 border-black pb-2">
+          <h1 className="text-2xl font-bold tracking-[0.3em]">職 務 経 歴 書</h1>
+          <span className="text-sm text-gray-700">{shokumu.docDate}</span>
         </div>
+        <p className="mt-2 text-right text-sm">氏名　{shokumu.name}</p>
       </header>
 
-      {/* Professional Summary */}
+      {/* ■職務要約 */}
       <section className="mb-6">
-        <h2 className="text-lg font-bold border-b-2 border-black mb-3">{t('resume.summary_title')}</h2>
-        <p className="text-sm leading-relaxed">
-          {t('resume.summary_text')}
-        </p>
+        <div className="font-bold text-base border-b border-black mb-2">■職務要約</div>
+        <p className="text-sm leading-relaxed">{shokumu.summary}</p>
       </section>
 
-      {/* Experience - Japanese 職務経歴書 style */}
+      {/* ■活かせる経験・知識・技術 */}
       <section className="mb-6">
-        <h2 className="text-lg font-bold border-b-2 border-black mb-3">{t('resume.experience_title')}</h2>
-        
-        {experiences.map((exp, index) => (
-          <div key={exp.id} className="mb-6 border border-gray-300 p-4 break-inside-avoid">
-            {/* Project Header */}
-            <div className="mb-3">
-              <h3 className="font-bold text-base mb-1">
-                ■ プロジェクト {index + 1}: {exp.professionalTitle}
-              </h3>
-              <div className="text-sm text-gray-600 flex gap-4">
-                <span>【期間】{exp.date}</span>
-                <span>【会社】{exp.company}</span>
-              </div>
+        <div className="font-bold text-base border-b border-black mb-2">■活かせる経験・知識・技術</div>
+        <ul className="list-none text-sm space-y-1 ml-1">
+          {shokumu.strengths.map((s, i) => (
+            <li key={i} className="before:content-['・'] before:mr-1">{s}</li>
+          ))}
+        </ul>
+      </section>
+
+      {/* ■会社履歴 */}
+      <section className="mb-6">
+        <div className="font-bold text-base border-b border-black mb-2">■会社履歴</div>
+        <div className="text-sm">
+          {shokumu.companyHistory.map((c, i) => (
+            <div key={i} className="flex gap-3 py-0.5">
+              <span className="whitespace-nowrap text-gray-700 min-w-[190px]">{c.period}</span>
+              <span>{c.company}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ■職務経歴 */}
+      <section className="mb-6">
+        <div className="font-bold text-base border-b border-black mb-3">■職務経歴</div>
+
+        {shokumu.employers.map((emp, ei) => (
+          <div key={ei} className="mb-6 break-inside-avoid">
+            {/* Employer header */}
+            <div className="bg-gray-50 border border-gray-300 px-3 py-2 mb-3">
+              <p className="font-bold text-sm">▼{emp.period}　{emp.name}</p>
+              {emp.meta.map((m, mi) => (
+                <p key={mi} className="text-xs text-gray-700 mt-0.5">{m}</p>
+              ))}
             </div>
 
-            {/* Responsibilities */}
-            <div className="mb-3">
-              <p className="font-semibold text-sm mb-2">【担当業務】</p>
-              <ul className="list-none text-sm space-y-1 ml-4">
-                {exp.resumeBulletPoints.map((point: string, i: number) => (
-                  <li key={i} className="before:content-['・'] before:mr-1">{point}</li>
-                ))}
-              </ul>
-            </div>
+            {/* Projects */}
+            {emp.projects.map((proj, pi) => (
+              <div key={pi} className="mb-4 border border-gray-300 p-3 break-inside-avoid">
+                <p className="font-semibold text-sm mb-2">
+                  {emp.projects.length > 1 ? `【プロジェクト${pi + 1}】` : '【プロジェクト】'}{proj.name}
+                </p>
 
-            {/* Tech Stack Table - Only if techStack exists */}
-            {exp.techStack && (
-              <div className="bg-gray-50 p-3 rounded border border-gray-200">
-                <p className="font-semibold text-sm mb-2">【使用技術】</p>
-                <div className="grid grid-cols-1 gap-1.5 text-xs">
-                  {exp.techStack.os && exp.techStack.os.length > 0 && (
-                    <div className="flex">
-                      <span className="font-semibold min-w-[120px]">OS:</span>
-                      <span className="text-gray-700">{exp.techStack.os.join(', ')}</span>
-                    </div>
-                  )}
-                  {exp.techStack.languages && exp.techStack.languages.length > 0 && (
-                    <div className="flex">
-                      <span className="font-semibold min-w-[120px]">言語:</span>
-                      <span className="text-gray-700">{exp.techStack.languages.join(', ')}</span>
-                    </div>
-                  )}
-                  {exp.techStack.databases && exp.techStack.databases.length > 0 && (
-                    <div className="flex">
-                      <span className="font-semibold min-w-[120px]">データベース:</span>
-                      <span className="text-gray-700">{exp.techStack.databases.join(', ')}</span>
-                    </div>
-                  )}
-                  {exp.techStack.cloud && exp.techStack.cloud.length > 0 && (
-                    <div className="flex">
-                      <span className="font-semibold min-w-[120px]">クラウド:</span>
-                      <span className="text-gray-700">{exp.techStack.cloud.join(', ')}</span>
-                    </div>
-                  )}
-                  {exp.techStack.frameworks && exp.techStack.frameworks.length > 0 && (
-                    <div className="flex">
-                      <span className="font-semibold min-w-[120px]">フレームワーク:</span>
-                      <span className="text-gray-700">{exp.techStack.frameworks.join(', ')}</span>
-                    </div>
-                  )}
-                  {exp.techStack.tools && exp.techStack.tools.length > 0 && (
-                    <div className="flex">
-                      <span className="font-semibold min-w-[120px]">ツール:</span>
-                      <span className="text-gray-700">{exp.techStack.tools.join(', ')}</span>
-                    </div>
+                <div className="mb-2">
+                  <p className="text-xs font-semibold">【プロジェクト概要】</p>
+                  <p className="text-xs text-gray-700">{proj.overview}</p>
+                  {'overviewBullets' in proj && proj.overviewBullets && (
+                    <ul className="list-none text-xs text-gray-700 mt-1 ml-1 space-y-0.5">
+                      {proj.overviewBullets.map((b, bi) => (
+                        <li key={bi} className="before:content-['・'] before:mr-1">{b}</li>
+                      ))}
+                    </ul>
                   )}
                 </div>
+
+                <div className="mb-2">
+                  <p className="text-xs font-semibold">【担当業務】</p>
+                  <ul className="list-none text-xs text-gray-700 ml-1 space-y-0.5">
+                    {proj.responsibilities.map((r, ri) => (
+                      <li key={ri} className="before:content-['・'] before:mr-1">{r}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                {'achievements' in proj && proj.achievements && (
+                  <div className="mb-2">
+                    <p className="text-xs font-semibold">【実績】</p>
+                    <p className="text-xs text-gray-700">{proj.achievements}</p>
+                  </div>
+                )}
+
+                <div className="bg-gray-50 border border-gray-200 rounded p-2 grid grid-cols-1 gap-0.5">
+                  <SpecRow label="言語" value={'languages' in proj ? proj.languages : undefined} />
+                  <SpecRow label="技術" value={'tech' in proj ? proj.tech : undefined} />
+                  <SpecRow label="DB" value={'db' in proj ? proj.db : undefined} />
+                  <SpecRow label="OS" value={'os' in proj ? proj.os : undefined} />
+                  <SpecRow label="クラウド" value={'cloud' in proj ? proj.cloud : undefined} />
+                  <SpecRow label="Bundler" value={'bundler' in proj ? proj.bundler : undefined} />
+                  <SpecRow label="規模" value={'scale' in proj ? proj.scale : undefined} />
+                </div>
+              </div>
+            ))}
+
+            {/* Footnotes */}
+            {'footnotes' in emp && emp.footnotes && (
+              <div className="text-xs text-gray-600 space-y-0.5">
+                {emp.footnotes.map((f, fi) => (
+                  <p key={fi}>{f}</p>
+                ))}
               </div>
             )}
           </div>
         ))}
       </section>
 
-      {/* Skills - Grouped by category with Japanese labels */}
-      <section className="mb-6">
-        <h2 className="text-lg font-bold border-b-2 border-black mb-3">{t('resume.skills_title')}</h2>
-        
-        <div className="grid grid-cols-1 gap-2 text-sm">
-          {['domain', 'mapping', 'database', 'frontend', 'backend', 'cloud', 'devops', 'graphics', 'architecture'].map(category => {
-            const categorySkills = skills.filter(s => s.category === category);
-            if (categorySkills.length === 0) return null;
-            
-            return (
-              <div key={category} className="flex gap-2">
-                <span className="font-semibold min-w-[140px] shrink-0">
-                  【{categoryLabels[category] || category}】
-                </span>
-                <span className="text-gray-700">{categorySkills.map(s => s.name).join('、')}</span>
-              </div>
-            );
-          })}
+      {/* ■テクニカルスキル */}
+      <section className="mb-6 break-inside-avoid">
+        <div className="font-bold text-base border-b border-black mb-2">■テクニカルスキル</div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                <th className="border border-gray-300 px-2 py-1 text-left w-[110px]">種類</th>
+                <th className="border border-gray-300 px-2 py-1 text-left">技術</th>
+                <th className="border border-gray-300 px-2 py-1 text-left w-[90px]">使用期間</th>
+                <th className="border border-gray-300 px-2 py-1 text-left">レベル</th>
+              </tr>
+            </thead>
+            <tbody>
+              {shokumu.technicalSkills.map((group) =>
+                group.rows.map((row, ri) => (
+                  <tr key={`${group.type}-${ri}`}>
+                    {ri === 0 && (
+                      <td
+                        className="border border-gray-300 px-2 py-1 font-semibold align-top bg-gray-50"
+                        rowSpan={group.rows.length}
+                      >
+                        {group.type}
+                      </td>
+                    )}
+                    <td className="border border-gray-300 px-2 py-1">{row.tech}</td>
+                    <td className="border border-gray-300 px-2 py-1 whitespace-nowrap">{row.duration}</td>
+                    <td className="border border-gray-300 px-2 py-1">{row.level}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* ■資格 */}
+      <section className="mb-6 break-inside-avoid">
+        <div className="font-bold text-base border-b border-black mb-2">■資格</div>
+        <ul className="text-sm space-y-0.5">
+          {shokumu.certifications.map((c, i) => (
+            <li key={i}>{c.date}　{c.name}</li>
+          ))}
+          {shokumu.certificationsNote && <li>{shokumu.certificationsNote}</li>}
+        </ul>
+      </section>
+
+      {/* ■自己PR */}
+      <section className="mb-6 break-inside-avoid">
+        <div className="font-bold text-base border-b border-black mb-2">■自己PR</div>
+        <div className="text-sm leading-relaxed space-y-3">
+          {shokumu.selfPR.map((para, i) => (
+            <p key={i}>{para}</p>
+          ))}
         </div>
       </section>
 
       {/* Print Button - Hidden when printing */}
       <div className="print:hidden mt-8 text-center">
-        <button 
+        <button
           onClick={() => window.print()}
           className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
         >
-          {t('resume.print_button')}
+          {t('resume.download_button')}
         </button>
         <p className="mt-4 text-sm text-gray-500">
           {t('resume.print_hint')}

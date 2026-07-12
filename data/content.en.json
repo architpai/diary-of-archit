@@ -1,8 +1,8 @@
 {
   "personal": {
     "name": "Archit Pai",
-    "title": "Full-Stack Engineer | Maps, Backend & Cloud",
-    "tagline": "Building scalable systems through steady experimentation",
+    "title": "Software Engineer — Geospatial Platforms & Applied AI",
+    "tagline": "0→1 across maps, logistics, and applied AI",
     "hobbies": [
       {
         "id": "gym",
@@ -12,18 +12,11 @@
         "icon": "💪"
       },
       {
-        "id": "llm",
-        "title": "Local LLM Experiments",
-        "narrative": "Running LLMs locally and experimenting with fine-tuning, RAG pipelines, and my own \"Claude-like\" coding assistant. Pretty sure my M4 is plotting revenge at this point.",
-        "details": "Stack: Ollama + llama.cpp on M4 Pro. Built a RAG pipeline over my own codebase. Fine-tuned a 7B model on geospatial Q&A. Inference at 40 tok/s.",
-        "icon": "🤖"
-      },
-      {
-        "id": "agents",
-        "title": "Autonomous Agent Tinkering",
-        "narrative": "Obsessed with fully autonomous agents like OpenClaw, ZeroClaw, and Hermes Agents. Currently building simple versions for very specific goals. Next on the list: world domination. (Just kidding... unless?)",
-        "details": "Building task-specific agents with tool use and memory. Exploring Hermes Agents for multi-agent orchestration. Current project: an agent that monitors deployments and auto-fixes common failures. Uses Claude as the brain.",
-        "icon": "🦞"
+        "id": "mythology",
+        "title": "Mythology & Folklore",
+        "narrative": "Endlessly reading the old stories — Greek, Hindu, Norse, whatever I can get my hands on. Turns out every civilization was just running the same epic on different hardware.",
+        "details": "Currently deep in comparative mythology: flood myths, trickster gods, and the way the same archetypes reappear across cultures that never met. It's basically distributed systems, but for meaning.",
+        "icon": "🐍"
       }
     ],
     "currentSetup": "MacBook Pro M4 Pro"
@@ -31,65 +24,62 @@
   "experiences": [
     {
       "id": "exp-1",
-      "date": "2025",
-      "professionalTitle": "Developer-2",
-      "company": "Stealth Startup",
-      "diaryNarrative": "Finally got promoted. Mom was so proud she called all the relatives. All of them. My phone didn't stop ringing for a week. Worth it.",
+      "date": "Dec 2024 – Present",
+      "location": "Osaka",
+      "professionalTitle": "First Engineering Hire",
+      "company": "Stealth Geospatial Startup",
+      "diaryNarrative": "SoftBank shut the division down, and a stealth map startup asked me to be their first engineer. So I said yes to a blank repo and a mandate: build the whole platform. 220 million map features later, I'm still saying yes to blank repos.",
       "resumeBulletPoints": [
-        "First engineering hire; helped build and scale the company's core geospatial product stack from early implementation to production across map rendering, routing, analytics, positioning, and data pipelines",
-        "Architected and owned the hybrid map tile delivery system, balancing real-time updates, database load, and infrastructure cost for high-density geospatial datasets",
-        "Drove the implementation from static to dynamic to hybrid tile generation, benchmarking each approach and pivoting mid-implementation to a cache-layered architecture to avoid long-term scalability failures",
-        "Designed trigger-based tile regeneration and cache invalidation across cold storage and Redis hot cache, enabling near-real-time updates while preventing low-zoom regeneration cascades",
-        "Solved low-zoom performance bottlenecks involving millions of features by introducing category-aware zoom visibility and locality-based invalidation strategies",
-        "Served as technical lead for the tile pipeline, defining architectural conventions, reviewing PRs, and mentoring two mid-level engineers end-to-end"
+        "First engineering hire; lead 3 engineers and own the platform architecture, CI/CD, and code review",
+        "Designed and shipped the flagship map-tile serving architecture — a hybrid pipeline (pre-emptive regeneration on data change + cache-on-serve) that delivers live-updating tiles at static-tile cost. Serves 220M+ features (70M building frames, 8K+ indoor sites, 150M+ outdoor POIs); cut worst-case tile latency from >1 min to ~50 ms; load-tested to 200K users",
+        "Own and lead, end-to-end, a waste-collection logistics platform: route planning, collection-point management, truck scheduling, an iPad driver app, real-time GPS tracking, a self-built LiveKit calling server, and an analytics dashboard — in production with 3 commercial sanitation operators, 24/7",
+        "Self-initiated and shipped applied-AI systems: a voice LLM concierge for a large Hokkaido commercial complex (STT/TTS + GPT-4o; ~12K logged interactions in 3 months), a natural-language GIS exploration + internal-support agent (locally fine-tuned Qwen-3.5-27B + RAG over internal docs), and a computer-vision inventory pipeline (SAM + DINO) that lets one operator do the counting work of five"
       ],
       "isResumeWorthy": true,
       "doodleType": "celebration"
     },
     {
       "id": "exp-2",
-      "date": "2024",
-      "professionalTitle": "Developer-1",
-      "company": "SoftBank",
-      "diaryNarrative": "Discovered the magic of PostGIS. Spent way too many late nights debugging polygons with holes in all the wrong places. Geometry broke me before I learned to tame it.",
+      "date": "Jan 2024 – Nov 2024",
+      "location": "Tokyo",
+      "professionalTitle": "Software Development Engineer (SDE-2)",
+      "company": "SoftBank Corp.",
+      "diaryNarrative": "Discovered the magic — and the menace — of PostGIS. Spent too many late nights debugging polygons with holes in all the wrong places. Just four of us at the start, building one basemap for all of Japan. Geometry broke me before I learned to tame it.",
       "resumeBulletPoints": [
-        "Founding member of a new geospatial platform team, building systems from early proof-of-concept to production deployments serving enterprise clients",
-        "Designed and implemented core GIS infrastructure using PostgreSQL/PostGIS, vector tiles, and OSM data, building strong practical experience in spatial data modeling and querying",
-        "Built end-to-end web mapping applications delivering POI search, indoor wayfinding, and location data management",
-        "Transitioned toward backend and infrastructure ownership as the team scaled, contributing to API design, database architecture, and Azure deployments while reviewing frontend contributions",
-        "Built key parts of an indoor geofencing system for a major automotive client PoC under production-grade timelines and constraints"
+        "Founding member (1 of 4) of an in-house indoor/outdoor location platform owning the full mapping stack — basemap, indoor rendering, POI, and wayfinding — built 0→1",
+        "Sole hands-on engineer for the first 4 months; built the PoCs and demos that won division funding, then became the largest individual contributor across web, backend, and iOS as the team grew 4→11",
+        "Delivered a Japan-wide basemap and ~100 indoor venues; the platform secured 7 paying company contracts",
+        "Built an LLM-assisted natural-language POI search (embeddings + PGroonga)",
+        "Stack: MapLibre GL, Planetiler, OSM + GSI data, PostGIS (routing), Swift/iOS, Azure"
       ],
       "isResumeWorthy": true,
       "doodleType": "coding"
     },
     {
       "id": "exp-3",
-      "date": "2022",
+      "date": "Mar 2022 – Nov 2023",
+      "location": "Kobe",
       "professionalTitle": "Software Engineer",
-      "company": "Human Resocia [Contract: Kawasaki Heavy Industries]",
-      "diaryNarrative": "Day 1: Broke production. Day 2: Fixed it. Day 3–365: Pretended Day 1 never happened.",
+      "company": "Human Resocia (dispatch: Kawasaki Heavy Industries)",
+      "diaryNarrative": "Spent two years turning buildings into browsable maps for a heavy-industry giant — and moonlighting as the English↔Japanese interpreter whenever the overseas partners showed up. Shipped across 15+ sites and learned that \"indoor GPS\" is a small lie we all agree to tell.",
       "resumeBulletPoints": [
-        "Built and maintained multiple internal and customer-facing location-based web applications across frontend, backend, and data layers",
-        "Implemented mapping features including POI search, wayfinding, and user location storage for GPS and indoor positioning using a proprietary SDK",
-        "Developed analytics dashboards visualizing real-time and historical user movement data for monitoring, analysis, and planning",
-        "Contributed to nationwide population coverage visualization tools to assess service reach and inform rollout planning",
-        "Built supporting tools including client-facing SDK integrations, BLE beacon configuration interfaces, and indoor positioning prototypes using Wi-Fi and Raspberry Pi",
-        "Migrated systems from script-heavy monoliths to state-managed React frontends and Azure Functions-based microservice backends"
+        "Built a browser-based indoor mapping platform for a major heavy-industry client (Kawasaki Heavy Industries, via dispatch)",
+        "Delivered indoor↔outdoor routing, a map SDK shipped via CDN/NPM, a geofencing system, BLE-beacon configuration tooling, and customer/employee analytics dashboards deployed across 15+ client sites",
+        "Served as the English↔Japanese bridge in foreign-partner technical meetings",
+        "Stack: React/Next.js, Node.js, Rust (WASM), MSSQL, Cosmos DB, Azure DevOps"
       ],
       "isResumeWorthy": true,
-      "doodleType": "newbie"
+      "doodleType": "coding"
     },
     {
       "id": "exp-4",
-      "date": "2019",
-      "professionalTitle": "Project Intern",
-      "company": "Scorpio Group",
-      "diaryNarrative": "On day one as an intern, they gave me real data to work with. I spent 40% of the time building dashboards and 60% perfecting my \"focused face\" whenever the boss walked by.",
+      "date": "Mar 2019 – May 2019",
+      "location": "Mumbai",
+      "professionalTitle": "Software Engineering Intern",
+      "company": "Scorpio Marine Management (India)",
+      "diaryNarrative": "On day one as an intern, they handed me real vessel data. I spent 40% of the time building dashboards and 60% perfecting my \"deeply focused\" face whenever the boss walked by. The failure-prediction model I trained is somehow still running in production in 2026.",
       "resumeBulletPoints": [
-        "Built an interactive incident analysis dashboard for maritime operations, visualizing vessel-level safety incidents, mechanical failures, and mitigation actions",
-        "Performed exploratory data analysis using Python (pandas, matplotlib) to identify failure patterns from historical incident and maintenance datasets",
-        "Designed a data ingestion pipeline and implemented an early predictive model for mechanical part failures, translating operational data into actionable insights",
-        "Developed a React-based frontend with coordinated interactive charts supporting time-range filtering and cross-chart highlighting"
+        "Built a d3.js analytics dashboard that replaced a manual Excel reporting workflow, and a part-failure prediction model (~70% accuracy) adopted for pre-emptive vessel checks — still in production in 2026"
       ],
       "isResumeWorthy": true,
       "doodleType": "newbie"
@@ -213,5 +203,71 @@
     "email": "architpai.dev@gmail.com",
     "github": "https://github.com/architpai",
     "linkedin": "https://linkedin.com/in/paiarchit"
+  },
+  "resumeEn": {
+    "headline": "Software Engineer — Geospatial Platforms & Applied AI",
+    "location": "Osaka, Japan",
+    "portfolio": "",
+    "subline": "Bilingual English / Japanese · Japan work-authorized (Engineer/Specialist in Humanities/International Services)",
+    "summary": "Systems engineer who takes products from 0→1 across geospatial platforms, logistics, and applied AI. I dive into unfamiliar domains, find the real engineering problem, and ship — from a 220M-feature map-tile serving architecture to production LLM and computer-vision systems. Currently the first engineering hire at a geospatial startup in Osaka; previously a founding member of an in-house location platform at SoftBank.",
+    "skillGroups": [
+      {
+        "label": "Geospatial / GIS",
+        "items": "MapLibre GL, vector tiles, Planetiler, PostGIS (routing), OSM, GSI (国土地理院) data, indoor/outdoor wayfinding"
+      },
+      {
+        "label": "Applied AI / ML",
+        "items": "LLM integration, RAG, embeddings, local model fine-tuning (Qwen), computer vision (SAM, DINO), STT/TTS"
+      },
+      {
+        "label": "Languages",
+        "items": "TypeScript / JavaScript, Python, Rust, Go, Swift"
+      },
+      {
+        "label": "Backend & Data",
+        "items": "Node.js, PostgreSQL / PostGIS, Redis, MSSQL, Cosmos DB"
+      },
+      {
+        "label": "Frontend",
+        "items": "React, Next.js, React Three Fiber"
+      },
+      {
+        "label": "Cloud & DevOps",
+        "items": "Azure, Azure DevOps CI/CD, GitHub Actions"
+      }
+    ],
+    "education": [
+      {
+        "degree": "B.Tech, Computer Engineering",
+        "school": "SVKM's NMIMS, Mukesh Patel School of Technology Management & Engineering (MPSTME), Mumbai",
+        "period": "2016 – 2020"
+      }
+    ],
+    "languages": [
+      {
+        "name": "English",
+        "level": "Fluent (native-level, English-medium education)"
+      },
+      {
+        "name": "Japanese",
+        "level": "Business level — JLPT N3; ~4.5 yrs fully-Japanese work environment; N2 planned Dec 2026"
+      },
+      {
+        "name": "Hindi",
+        "level": "Fluent"
+      }
+    ],
+    "certifications": [
+      {
+        "date": "Dec 2021",
+        "name": "JLPT N4"
+      },
+      {
+        "date": "Dec 2022",
+        "name": "JLPT N3"
+      }
+    ],
+    "certificationsNote": "JLPT N2 planned Dec 2026",
+    "workAuthorization": "Engineer/Specialist in Humanities/International Services visa (Japan) · renewal Apr 2027"
   }
 }

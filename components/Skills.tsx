@@ -272,19 +272,6 @@ export default function Skills() {
                       transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3, delay: index * 0.05 }}
                     >
                       <span className="font-sans text-sm">{skill.name}</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-24 h-2 rounded-full overflow-hidden bg-gray-200">
-                          <motion.div
-                            className="h-full rounded-full"
-                            style={{ backgroundColor: '#2D2D2D' }}
-                            initial={shouldReduceMotion ? false : { width: 0 }}
-                            whileInView={{ width: `${skill.level}%` }}
-                            viewport={{ once: true }}
-                            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8, delay: index * 0.1, ease: "easeOut" }}
-                          />
-                        </div>
-                        <span className="text-xs text-gray-500 font-sans w-8">{skill.level}%</span>
-                      </div>
                     </motion.div>
                   ))}
                 </div>

@@ -1,8 +1,8 @@
 {
   "personal": {
     "name": "アーチット・パイ",
-    "title": "フルスタックエンジニア | 地図・バックエンド・クラウド",
-    "tagline": "実験を重ねながら、スケーラブルなシステムを着実に構築",
+    "title": "ソフトウェアエンジニア — 地図・位置情報／応用AI",
+    "tagline": "地図・物流・AIを0→1で立ち上げる",
     "hobbies": [
       {
         "id": "gym",
@@ -12,18 +12,11 @@
         "icon": "💪"
       },
       {
-        "id": "llm",
-        "title": "ローカルLLM実験",
-        "narrative": "ローカルでLLMを動かしながら、ファインチューニングやRAGパイプライン、自作の「Claude風」コーディングアシスタントを試行中。M4がそろそろ反乱を企てている気がする。",
-        "details": "スタック：Ollama + llama.cpp（M4 Pro）。自分のコードベース上でRAGパイプラインを構築。地理空間Q&Aで7Bモデルをファインチューニング。推論速度40トークン/秒。",
-        "icon": "🤖"
-      },
-      {
-        "id": "agents",
-        "title": "自律エージェント実験",
-        "narrative": "OpenClaw、ZeroClaw、Hermes Agentsのような完全自律エージェントに夢中。特定の目標に特化したシンプル版を自作中。次の目標：世界征服。（冗談です…たぶん。）",
-        "details": "ツール使用とメモリを備えたタスク特化型エージェントを構築中。マルチエージェントオーケストレーションにHermes Agentsを活用。現在のプロジェクト：デプロイを監視し、よくある障害を自動修復するエージェント。Claudeを頭脳として使用。",
-        "icon": "🦞"
+        "id": "mythology",
+        "title": "神話学・民間伝承",
+        "narrative": "ギリシャ、ヒンドゥー、北欧——手に入る限りの古い物語を読み漁っている。結局どの文明も、同じ叙事詩を別々のハードウェアで走らせていただけらしい。",
+        "details": "いまは比較神話学にどっぷり。洪水神話、トリックスターの神々、そして一度も出会っていない文化に同じ元型が繰り返し現れること。要するに『意味』の分散システムだと思っている。",
+        "icon": "🐍"
       }
     ],
     "currentSetup": "MacBook Pro M4 Pro"
@@ -31,27 +24,26 @@
   "experiences": [
     {
       "id": "exp-1",
-      "date": "2025年",
-      "professionalTitle": "Developer-2",
-      "company": "ステルススタートアップ",
-      "diaryNarrative": "ついに昇進した。母さんが大喜びで親戚全員に電話しまくった。本当に全員。一週間、電話が鳴り止まなかった。でも、それだけの価値はあった。",
+      "date": "2024年12月〜現在",
+      "location": "大阪",
+      "professionalTitle": "1人目のエンジニア",
+      "company": "地図・位置情報系スタートアップ（社名非公開）",
+      "diaryNarrative": "ソフトバンクの事業部門が閉じて、あるステルス地図スタートアップに「1人目のエンジニアになってほしい」と誘われた。空っぽのリポジトリと「プラットフォームを全部作れ」というミッションにYESと言った。2.2億件の地図フィーチャを積み上げた今も、空リポジトリにはYESと言い続けている。",
       "resumeBulletPoints": [
-        "初期エンジニアとして入社し、コアとなる地理空間プロダクトスタックを初期実装から本番運用まで構築・スケール。マップレンダリング、ルーティング、分析、測位、データパイプラインを横断的に開発",
-        "高密度地理空間データに対応するハイブリッドマップタイル配信システムを設計・運用。リアルタイム更新、DB負荷、インフラコストの最適なバランスを実現",
-        "静的→動的→ハイブリッドのタイル生成方式を段階的に実装。各方式をベンチマークで検証し、長期的なスケーラビリティ課題を回避するためキャッシュ多層構成へ方針転換",
-        "コールドストレージとRedisホットキャッシュ間でのトリガーベースのタイル再生成・キャッシュ無効化を設計。低ズーム再生成の連鎖を防ぎつつ、準リアルタイム更新を実現",
-        "数百万フィーチャーを含む低ズーム時のパフォーマンスボトルネックを、カテゴリ対応のズーム可視性制御とローカリティベースの無効化戦略で解消",
-        "タイルパイプラインの技術リードとして、設計規約の策定、PRレビュー、ミッドレベルエンジニア2名のメンタリングを担当"
+        "1人目のエンジニアとしてエンジニア3名をリードし、プラットフォームのアーキテクチャ・CI/CD・コードレビューを統括",
+        "主力の地図タイル配信基盤を設計・実装。DB更新時の先行再生成とキャッシュ・オン・サーブによるハイブリッド方式で、静的タイル並みのコストで即時更新を実現。2.2億件超（建物フレーム7,000万、屋内サイト8,000超、屋外POI1.5億超）を配信し、最悪ケースのタイル生成を1分超→約50msに短縮、20万ユーザー規模の負荷試験をクリア",
+        "清掃会社向け廃棄物収集ロジスティクスプラットフォームをエンドツーエンドで設計・リード（ルート計画・収集地点管理・車両スケジューリング・iPadドライバーアプリ・リアルタイムGPS追跡・自作LiveKit通話サーバー・分析ダッシュボード）。清掃会社3社で24時間365日本番稼働",
+        "応用AIプロダクトを自発的に試作・製品化：北海道の大型商業施設向け音声LLMコンシェルジュ（STT/TTS＋GPT-4o、3ヶ月で約1.2万件の対話ログ）、自然言語GIS探索＋社内サポートエージェント（ローカルでファインチューニングしたQwen-3.5-27B＋RAG）、SAM＋DINOによる画像認識在庫管理（作業者1名で従来5〜7名分）"
       ],
       "techStack": {
         "os": [
-          "macOS",
           "Linux"
         ],
         "languages": [
           "TypeScript",
+          "Node.js",
           "Python",
-          "Go"
+          "SQL"
         ],
         "databases": [
           "PostgreSQL (PostGIS)",
@@ -62,12 +54,17 @@
         ],
         "frameworks": [
           "Next.js",
-          "Express"
+          "React"
         ],
         "tools": [
-          "Docker",
-          "MapLibre",
-          "Vector Tiles (MVT)"
+          "Planetiler",
+          "PostGIS (ST_AsMVT)",
+          "MapLibre GL",
+          "LiveKit",
+          "GPT-4o",
+          "Qwen-3.5-27B",
+          "SAM",
+          "DINO"
         ]
       },
       "isResumeWorthy": true,
@@ -75,42 +72,41 @@
     },
     {
       "id": "exp-2",
-      "date": "2024年",
-      "professionalTitle": "Developer-1",
-      "company": "ソフトバンク",
-      "diaryNarrative": "PostGISの魔力に取り憑かれた。深夜にポリゴンの穴が変な場所に空く理由をひたすらデバッグ。ジオメトリに心を折られたあと、ようやく乗りこなせるようになった。",
+      "date": "2024年1月〜11月",
+      "location": "東京",
+      "professionalTitle": "Software Development Engineer（SDE-2）",
+      "company": "ソフトバンク株式会社",
+      "diaryNarrative": "PostGISの魔力（と魔性）に取り憑かれた。深夜、ポリゴンの穴が変な場所に空く理由をひたすらデバッグ。立ち上げメンバーはたった4人、それで日本全国のベースマップを作った。ジオメトリに心を折られたあと、ようやく乗りこなせるようになった。",
       "resumeBulletPoints": [
-        "新設の地理空間プラットフォームチームの創設メンバーとして、初期PoCから企業クライアント向け本番デプロイまでシステムを構築",
-        "PostgreSQL/PostGIS、ベクタータイル、OSMデータを活用したコアGISインフラを設計・実装。空間データモデリング・クエリの実践経験を深める",
-        "POI検索、屋内ナビゲーション、位置データ管理を提供するエンドツーエンドのWebマッピングアプリケーションを構築",
-        "チーム拡大に伴い、担当領域をバックエンド・インフラへ拡張。API設計、DB設計、Azureデプロイに貢献しつつ、フロントエンドのコードレビューも担当",
-        "大手自動車メーカー向けPOCとして、本番相当のタイムライン・制約下で屋内ジオフェンシングシステムの主要機能を開発"
+        "社内屋内外位置情報プラットフォームの立ち上げメンバー（4名中1名）として、ベースマップ・屋内レンダリング・POI・ルート案内までのフルスタックを0→1で構築",
+        "最初の4ヶ月は唯一のハンズオンエンジニアとしてPoC・デモを開発し統括本部の予算を獲得。チーム拡大（4→11名）後もWeb・バックエンド・iOSを横断する最大の個人コントリビューターとして開発",
+        "日本全国のベースマップと屋内施設約100拠点を提供。プラットフォームは有償契約7社を獲得",
+        "LLMを活用した自然言語POI検索（Embeddings＋PGroonga）を実装",
+        "技術スタック：MapLibre GL、Planetiler、OSM＋国土地理院データ、PostGIS（ルーティング）、Swift/iOS、Azure"
       ],
       "techStack": {
         "os": [
-          "macOS",
-          "Linux"
+          "Linux",
+          "macOS"
         ],
         "languages": [
           "TypeScript",
-          "Python"
+          "Swift"
         ],
         "databases": [
-          "PostgreSQL (PostGIS)",
-          "Redis"
+          "PostgreSQL (PostGIS)"
         ],
         "cloud": [
           "Azure"
         ],
         "frameworks": [
-          "React",
-          "Node.js",
-          "Express"
+          "MapLibre GL",
+          "Planetiler"
         ],
         "tools": [
-          "Docker",
-          "MapLibre",
-          "OSM"
+          "OSM",
+          "国土地理院データ",
+          "PGroonga"
         ]
       },
       "isResumeWorthy": true,
@@ -118,59 +114,59 @@
     },
     {
       "id": "exp-3",
-      "date": "2022年",
-      "professionalTitle": "ソフトウェアエンジニア",
-      "company": "ヒューマンリソシア [契約先：川崎重工業]",
-      "diaryNarrative": "1日目：本番を壊した。2日目：直した。3日目〜365日目：1日目のことは記憶から消した。",
+      "date": "2022年3月〜2023年11月",
+      "location": "神戸",
+      "professionalTitle": "Software Engineer（派遣）",
+      "company": "ヒューマンリソシア株式会社（派遣先：川崎重工業株式会社）",
+      "diaryNarrative": "2年間、大手重工業クライアントのために建物を「ブラウザで歩ける地図」に変え続けた。ついでに海外パートナーが来るたびに英日通訳も担当。15拠点以上に展開して学んだのは、「屋内GPS」はみんなで信じるふりをする小さな嘘だということ。",
       "resumeBulletPoints": [
-        "社内・顧客向けの位置情報Webアプリケーションを複数構築・保守。フロントエンド、バックエンド、データ層を横断的に担当",
-        "独自SDKを使用し、POI検索、経路案内、GPS・屋内測位向けユーザー位置保存などのマッピング機能を実装",
-        "リアルタイム・履歴ユーザー移動データを可視化する分析ダッシュボードを開発。モニタリング・分析・計画立案を支援",
-        "全国規模の人口カバレッジ可視化ツールに貢献し、サービス到達範囲の評価・展開計画の策定を支援",
-        "クライアント向けSDK統合、BLEビーコン設定UI、Wi-Fi・Raspberry Piを用いた屋内測位プロトタイプなどの周辺ツールを構築",
-        "スクリプト・モノリシック構成から、状態管理付きReactフロントエンド＋Azure Functionsベースのマイクロサービスバックエンドへ移行を実施"
+        "大手重工業クライアント向けにブラウザベースの屋内地図プラットフォームを構築",
+        "屋内外ルート探索、CDN・NPMで配布する地図SDK、ジオフェンスシステム、BLEビーコン設定ツール、顧客・従業員向け分析ダッシュボードを15拠点以上に展開",
+        "社内外の会議で海外パートナーとの英日通訳・橋渡しを担当",
+        "技術スタック：React/Next.js、Node.js、Rust（WASM）、MSSQL、Cosmos DB、Azure DevOps"
       ],
       "techStack": {
         "os": [
+          "macOS",
           "Windows",
           "Linux"
         ],
         "languages": [
           "TypeScript",
           "JavaScript",
-          "Python"
+          "Rust (WASM)",
+          "Node.js"
         ],
         "databases": [
-          "PostgreSQL",
-          "Azure SQL"
+          "MSSQL",
+          "Cosmos DB"
         ],
         "cloud": [
           "Azure"
         ],
         "frameworks": [
           "React",
-          "Azure Functions"
+          "Next.js"
         ],
         "tools": [
-          "Git",
-          "Raspberry Pi",
-          "BLE Beacons"
+          "Azure DevOps",
+          "BLE Beacons",
+          "Webpack／esbuild"
         ]
       },
       "isResumeWorthy": true,
-      "doodleType": "newbie"
+      "doodleType": "coding"
     },
     {
       "id": "exp-4",
-      "date": "2019年",
-      "professionalTitle": "プロジェクトインターン",
-      "company": "Scorpio Group",
-      "diaryNarrative": "インターン初日から、いきなり本番データを渡された。時間の40%はダッシュボード構築、残り60%は上司が通るたびに「真剣に仕事してます」顔を作る練習に費やした。",
+      "date": "2019年3月〜5月",
+      "location": "ムンバイ",
+      "professionalTitle": "ソフトウェアエンジニアリング・インターン",
+      "company": "Scorpio Marine Management (India) Pvt. Ltd.",
+      "diaryNarrative": "インターン初日、いきなり本物の船舶データを渡された。時間の40%はダッシュボード構築、残り60%は上司が通るたびに「超集中してます」顔を作る練習。そのとき訓練した故障予測モデルは、なぜか2026年の今も本番で動いている。",
       "resumeBulletPoints": [
-        "海事オペレーション向けのインタラクティブなインシデント分析ダッシュボードを構築。船舶別の安全インシデント、機械故障、対策措置を可視化",
-        "Python（pandas、matplotlib）を用いた探索的データ分析を実施し、過去のインシデント・メンテナンスデータから故障パターンを特定",
-        "データ取り込みパイプラインを設計し、機械部品故障の初期予測モデルを実装。運用データを実用的なインサイトへ変換",
-        "時間範囲フィルタリング・チャート間連動ハイライトに対応した、Reactベースのインタラクティブダッシュボードを開発"
+        "Excelでの手作業レポートを置き換えるd3.js分析ダッシュボードを構築し、部品故障予測モデル（精度約70%）を開発。予防的な船舶点検に採用され、2026年現在も本番稼働中",
+        "全18ページの英語開発報告書を作成。5名チームでPython／R／JavaScriptを使用"
       ],
       "techStack": {
         "os": [
@@ -178,20 +174,17 @@
         ],
         "languages": [
           "Python",
+          "R",
           "JavaScript"
         ],
         "databases": [
-          "CSV",
-          "Excel"
+          "SQLite"
         ],
         "frameworks": [
-          "React",
-          "pandas",
-          "matplotlib"
+          "d3.js"
         ],
         "tools": [
-          "Git",
-          "Jupyter"
+          "Git"
         ]
       },
       "isResumeWorthy": true,
@@ -316,5 +309,608 @@
     "email": "architpai.dev@gmail.com",
     "github": "https://github.com/architpai",
     "linkedin": "https://linkedin.com/in/paiarchit"
+  },
+  "resumeEn": {
+    "headline": "ソフトウェアエンジニア — 地図・位置情報／応用AI",
+    "location": "日本・大阪",
+    "portfolio": "",
+    "subline": "日英バイリンガル · 就労資格あり（技術・人文知識・国際業務）",
+    "summary": "地図・位置情報（GIS）分野を軸に、フロントエンドからバックエンド、インフラ、AIまでを一気通貫で担い、プロダクトを0→1で立ち上げてきたエンジニアです。現在は地図・位置情報系スタートアップの1人目のエンジニアとして、2.2億件超の地理データを扱うタイル配信基盤の設計や、LLM・コンピュータビジョンを用いた実プロダクト開発をリードしています。前職のソフトバンク株式会社では社内位置情報プラットフォームの立ち上げメンバー（4名）として0→1の構築に参画しました。",
+    "skillGroups": [
+      {
+        "label": "地図・GIS",
+        "items": "MapLibre GL、ベクトルタイル、Planetiler、PostGIS（ルーティング）、OSM、国土地理院データ、屋内外ルート探索"
+      },
+      {
+        "label": "応用AI・ML",
+        "items": "LLM連携、RAG、Embeddings、ローカルファインチューニング（Qwen）、コンピュータビジョン（SAM・DINO）、STT/TTS"
+      },
+      {
+        "label": "プログラミング言語",
+        "items": "TypeScript／JavaScript、Python、Rust、Go、Swift"
+      },
+      {
+        "label": "バックエンド・データ",
+        "items": "Node.js、PostgreSQL／PostGIS、Redis、MSSQL、Cosmos DB"
+      },
+      {
+        "label": "フロントエンド",
+        "items": "React、Next.js、React Three Fiber"
+      },
+      {
+        "label": "クラウド・DevOps",
+        "items": "Azure、Azure DevOps CI/CD、GitHub Actions"
+      }
+    ],
+    "education": [
+      {
+        "degree": "工学士（コンピュータ工学）",
+        "school": "SVKM's NMIMS Mukesh Patel School of Technology Management & Engineering (MPSTME)、ムンバイ",
+        "period": "2016 – 2020"
+      }
+    ],
+    "languages": [
+      {
+        "name": "英語",
+        "level": "ネイティブレベル（英語による教育課程）"
+      },
+      {
+        "name": "日本語",
+        "level": "ビジネスレベル — 日本語能力試験N3・完全日本語環境での実務約4.5年・N2は2026年12月に受験予定"
+      },
+      {
+        "name": "ヒンディー語",
+        "level": "流暢"
+      }
+    ],
+    "certifications": [
+      {
+        "date": "2021年12月",
+        "name": "日本語能力試験 N4"
+      },
+      {
+        "date": "2022年12月",
+        "name": "日本語能力試験 N3"
+      }
+    ],
+    "certificationsNote": "日本語能力試験N2は2026年12月に受験予定",
+    "workAuthorization": "在留資格：技術・人文知識・国際業務（2027年4月まで有効・更新予定）"
+  },
+  "shokumu": {
+    "docDate": "2026年7月11日現在",
+    "name": "パイアーチットナレシュ（PAI ARCHIT NARESH）",
+    "summary": "地図・位置情報（GIS）分野を軸に、フロントエンドからバックエンド、インフラ、AIまでを一気通貫で担い、プロダクトを0→1で立ち上げてきたエンジニアです。現在は地図・位置情報系スタートアップの1人目のエンジニアとして、2.2億件超の地理データを扱うタイル配信基盤の設計や、LLM・コンピュータビジョンを用いた実プロダクト開発をリードしています。前職のソフトバンク株式会社では社内位置情報プラットフォームの立ち上げメンバー（4名）として0→1の構築に参画し、川崎重工業（派遣）では屋内地図プラットフォームの開発に従事しました。未知のドメインに深く入り込み、本質的な技術課題を見極めて形にすることを強みとしています。",
+    "strengths": [
+      "地図・位置情報プラットフォームの設計・開発（MapLibre GL、ベクトルタイル、Planetiler、PostGISルーティング、屋内外ルート探索）",
+      "大規模地理データ（2.2億フィーチャ超）を扱うタイル配信アーキテクチャの設計・性能最適化",
+      "LLM／RAG／コンピュータビジョンを活用した実プロダクト開発（音声コンシェルジュ、自然言語GIS検索、画像認識）",
+      "少人数チームのリード（エンジニア3名）、アーキテクチャ設計・CI/CD・コードレビューの整備",
+      "ネイティブレベルの英語とビジネスレベルの日本語による英日ブリッジ",
+      "屋内位置情報業界の業界知識"
+    ],
+    "companyHistory": [
+      {
+        "period": "2019年3月〜2019年5月",
+        "company": "Scorpio Marine Management (India) Pvt. Ltd.【インターンシップ】"
+      },
+      {
+        "period": "2022年3月〜2023年11月",
+        "company": "ヒューマンリソシア株式会社（派遣先：川崎重工業株式会社）"
+      },
+      {
+        "period": "2024年1月〜2024年11月",
+        "company": "ソフトバンク株式会社"
+      },
+      {
+        "period": "2024年12月〜現在",
+        "company": "地図・位置情報系スタートアップ（社名非公開）"
+      }
+    ],
+    "employers": [
+      {
+        "period": "2024年12月〜現在",
+        "name": "地図・位置情報系スタートアップ（社名非公開）",
+        "meta": [
+          "事業内容：屋内外の高精度ベースマップ・屋内データタイル・ルート案内の開発（位置情報インテリジェンス）",
+          "※資本金・売上高等は非公開",
+          "役職：1人目のエンジニア／エンジニア3名をリード"
+        ],
+        "projects": [
+          {
+            "name": "地図タイル配信基盤の設計・開発（主力プロジェクト）",
+            "overview": "約100〜300の屋内サイトを対象に、GeoJSON＋bbox取得方式（低速・高コスト）から、静的タイル→動的タイル（PostGIS＋ST_AsMVT）→ハイブリッド方式へと段階的に刷新。DB更新時の先行再生成とキャッシュ・オン・サーブにより、静的タイル並みのコストで即時更新を実現した。",
+            "responsibilities": [
+              "アーキテクチャ設計・技術選定",
+              "タイルパイプライン実装（Planetiler／PostGIS／ST_AsMVT）",
+              "キャッシュ戦略設計（Redis、トリガーベースの無効化・先行再生成）",
+              "性能最適化（最悪ケースのタイル生成 1分超 → 約50ms）"
+            ],
+            "achievements": "2.2億フィーチャ超（建物フレーム7,000万、屋内サイト8,000超、屋外POI1.5億超）を配信。20万ユーザー規模の負荷試験をクリア。",
+            "languages": "TypeScript／Node.js／SQL",
+            "db": "PostgreSQL／PostGIS、Redis",
+            "os": "Linux"
+          },
+          {
+            "name": "廃棄物収集ロジスティクスプラットフォーム",
+            "overview": "清掃会社向けに、収集ルート計画・収集地点管理・車両スケジューリング・iPadドライバーアプリ・リアルタイムGPS追跡・分析ダッシュボードを統合したプラットフォーム。",
+            "responsibilities": [
+              "システム全体の設計・開発リード（エンジニア3名＋自身）",
+              "LiveKitを用いた通話サーバーの自作",
+              "ドライバー向けiPadアプリ、GPS追跡、ルート最適化の実装"
+            ],
+            "achievements": "清掃会社3社で本番稼働（24時間365日運用、1シフト10台×2シフト）。",
+            "languages": "TypeScript／Node.js",
+            "db": "PostgreSQL／PostGIS",
+            "os": "Linux",
+            "scale": "4名"
+          },
+          {
+            "name": "応用AIプロトタイプ群（自発的なPoC→プロダクト化）",
+            "overview": "自らの発案で複数のAIシステムを単独で試作し、顧客検証を経てプロダクト化。",
+            "overviewBullets": [
+              "音声AIコンシェルジュ（北海道の大型商業施設向け）：STT/TTS＋GPT-4oによる意図抽出・キーワード拡張＋あいまい検索。3ヶ月で約1.2万件の対話ログ。（PoC継続中）",
+              "自然言語GIS探索・社内サポートエージェント：ローカルでファインチューニングしたQwen-3.5-27B＋社内ドキュメントのRAG＋本番データの夜間同期。非技術スタッフの問い合わせ一次対応も担う。（単独開発・運用）",
+              "画像認識による在庫管理パイプライン：SAM＋DINOで建材（パイプ・スタンド等）を自動計数・分類。作業者1名で従来5〜7名分の計数を実現（Human-in-the-loop）。（本番プロジェクト化）"
+            ],
+            "responsibilities": [
+              "要件定義・設計・実装（単独プロトタイピング）"
+            ],
+            "languages": "Python／TypeScript",
+            "tech": "GPT-4o、Qwen-3.5-27B（ローカル・ファインチューニング）、RAG、SAM、DINO、Azure Speech"
+          }
+        ]
+      },
+      {
+        "period": "2024年1月〜2024年11月",
+        "name": "ソフトバンク株式会社",
+        "meta": [
+          "事業内容：移動通信サービスの提供、携帯端末の販売、固定通信サービスの提供、インターネット接続サービスの提供",
+          "資本金：244,355百万円（2026年3月31日現在）売上高：7,038,680百万円（2026年3月期・連結）従業員数：19,150人（単体）／58,432人（連結）（2026年3月31日現在）　設立：1986年12月9日",
+          "所属：法人統括 デジタルエンジニアリング本部 技術企画統括部 ロケーションビジネス推進室",
+          "役職：Software Development Engineer（SDE-2）／立ち上げメンバー（4名）　雇用形態：正社員"
+        ],
+        "projects": [
+          {
+            "name": "社内位置情報プラットフォームの立ち上げ（0→1）",
+            "overview": "ベースマップ・屋内レンダリング・POI・ルート案内までを内製で保有する屋内外位置情報プラットフォームを0→1で構築。",
+            "responsibilities": [
+              "立ち上げメンバー4名の1人として技術面（地図基盤）を担当",
+              "最初の4ヶ月は唯一のハンズオンエンジニアとしてPoC・デモを開発し、統括本部の予算獲得に貢献",
+              "チーム拡大（4→11名）後もWeb・バックエンド・iOSを横断する最大の個人コントリビューターとして開発",
+              "LLMを活用した自然言語POI検索（Embeddings＋PGroonga）を実装"
+            ],
+            "achievements": "日本全国のベースマップ＋屋内施設約100拠点を提供。7社の有償契約を獲得。",
+            "languages": "TypeScript／Swift",
+            "tech": "MapLibre GL、Planetiler、OSM＋国土地理院データ、PostGIS（ルーティング）",
+            "cloud": "Azure"
+          }
+        ]
+      },
+      {
+        "period": "2022年3月〜2023年11月",
+        "name": "ヒューマンリソシア株式会社（派遣先：川崎重工業株式会社）",
+        "meta": [
+          "雇用形態：派遣社員（ヒューマンリソシア株式会社）　役職：Software Engineer",
+          "派遣先事業内容：屋内位置情報サービス・地図関連WEBアプリ開発",
+          "（派遣先）資本金：104,484百万円（2023年3月31日現在）売上高：1,725,609百万円（2023年3月期）従業員数：38,254人（2023年3月31日現在）"
+        ],
+        "projects": [
+          {
+            "name": "ジオフェンスシステム（2023年2月〜）",
+            "scale": "7名",
+            "overview": "仮想境界で囲んだエリアへの入退場を判定し、プッシュ通知・クーポン送信・自動勤怠管理などに利用するシステム。",
+            "responsibilities": [
+              "モバイル・IoTチームへの要件収集",
+              "実現可能性調査・報告書作成",
+              "DB設計",
+              "クラウド構築",
+              "REST API開発"
+            ],
+            "languages": "JavaScript／Node.js／React／Python",
+            "os": "macOS",
+            "db": "Cosmos DB"
+          },
+          {
+            "name": "WEB SDK 開発（2022年11月〜）",
+            "scale": "3名",
+            "overview": "ブラウザベースで少ない労力で地図アプリを開発できるよう、プログラム・API・サンプルコードをパッケージ化したSDK。",
+            "responsibilities": [
+              "SDK開発",
+              "ビルド環境構築（Azure DevOps CI/CD）",
+              "ドキュメントサイト構築",
+              "サンプルコード・説明書作成（日英）",
+              "CDN・NPM出荷",
+              "単体テスト（Jest）"
+            ],
+            "languages": "TypeScript",
+            "os": "macOS",
+            "bundler": "Webpack／esbuild"
+          },
+          {
+            "name": "地図アプリ開発（2022年8月〜）",
+            "scale": "2名",
+            "overview": "屋内地図をブラウザ表示し、建物検索・屋内外ルート探索・イベント/店舗検索を行うアプリ。",
+            "responsibilities": [
+              "フロントエンド開発",
+              "バックエンド開発（3割）",
+              "CI/CDパイプライン構築"
+            ],
+            "languages": "JavaScript／Node.js／React（Next.js）／Rust",
+            "os": "macOS",
+            "db": "MSSQL／Cosmos DB"
+          },
+          {
+            "name": "屋内案内システム（2022年4月〜2022年9月）",
+            "scale": "5名",
+            "overview": "商業施設・病院・駅などの屋内に設置し、各店舗・オフィスのPOI詳細と最新情報を表示するサイネージ。",
+            "responsibilities": [
+              "アプリ開発"
+            ],
+            "languages": "HTML/CSS／JavaScript／Node.js",
+            "os": "Windows",
+            "db": "SQL"
+          }
+        ],
+        "footnotes": [
+          "※2023年9月以降は後任への引き継ぎ（ナレッジトランスファー）を担当し、2023年11月に派遣契約終了。",
+          "※社内外の会議では英日通訳として海外パートナーとの橋渡しを担当。"
+        ]
+      },
+      {
+        "period": "2019年3月〜2019年5月末",
+        "name": "Scorpio Marine Management (India) Pvt. Ltd.【インターンシップ】",
+        "meta": [
+          "事業内容：インシデントデータ分析ダッシュボードの開発"
+        ],
+        "projects": [
+          {
+            "name": "インシデントデータ分析ダッシュボードの開発",
+            "scale": "5名",
+            "overview": "Excelで実施していたデータ可視化業務をシステム化したダッシュボードを開発し、その後インシデント予測機能を開発。",
+            "responsibilities": [
+              "可視化担当者への要件ヒアリング",
+              "データ可視化画面開発（d3.js）",
+              "DBからのデータ抽出",
+              "機械学習モデル開発（精度70%）",
+              "英語ドキュメント作成（全18ページの開発報告書）"
+            ],
+            "languages": "Python／R／JavaScript",
+            "os": "Windows",
+            "db": "SQLite"
+          }
+        ],
+        "footnotes": [
+          "※本ダッシュボードは品質保証・インシデント対応チームに採用され、2026年現在も稼働中。"
+        ]
+      }
+    ],
+    "technicalSkills": [
+      {
+        "type": "OS",
+        "rows": [
+          {
+            "tech": "Linux (Ubuntu)",
+            "duration": "3年半",
+            "level": "環境設計・構築が可能"
+          },
+          {
+            "tech": "macOS",
+            "duration": "4年",
+            "level": "環境設計・構築が可能"
+          },
+          {
+            "tech": "Windows",
+            "duration": "4年",
+            "level": "環境設計・構築が可能"
+          }
+        ]
+      },
+      {
+        "type": "言語",
+        "rows": [
+          {
+            "tech": "TypeScript / JavaScript",
+            "duration": "6年",
+            "level": "最適なコード記述・指示・改修が可能"
+          },
+          {
+            "tech": "Python",
+            "duration": "5年",
+            "level": "最適なコード記述・改修が可能"
+          },
+          {
+            "tech": "Rust (WASM)",
+            "duration": "3年半",
+            "level": "基本的なプログラミングが可能"
+          },
+          {
+            "tech": "Go",
+            "duration": "1年",
+            "level": "基本的なプログラミングが可能"
+          },
+          {
+            "tech": "Swift",
+            "duration": "1年半",
+            "level": "基本的なプログラミングが可能"
+          }
+        ]
+      },
+      {
+        "type": "地図・GIS",
+        "rows": [
+          {
+            "tech": "MapLibre GL / ベクトルタイル / Planetiler",
+            "duration": "3年",
+            "level": "設計・実装・最適化が可能"
+          },
+          {
+            "tech": "PostGIS（ルーティング含む）",
+            "duration": "3年",
+            "level": "設計・実装・最適化が可能"
+          }
+        ]
+      },
+      {
+        "type": "AI / ML",
+        "rows": [
+          {
+            "tech": "LLM連携・RAG・Embeddings",
+            "duration": "2年",
+            "level": "設計・実装が可能"
+          },
+          {
+            "tech": "ファインチューニング（Qwen等） / コンピュータビジョン（SAM・DINO）",
+            "duration": "1年",
+            "level": "実装が可能"
+          }
+        ]
+      },
+      {
+        "type": "DB",
+        "rows": [
+          {
+            "tech": "PostgreSQL / PostGIS",
+            "duration": "3年",
+            "level": "環境構築・最適化が可能"
+          },
+          {
+            "tech": "Redis",
+            "duration": "2年",
+            "level": "環境構築が可能"
+          },
+          {
+            "tech": "MySQL / Cosmos DB / MSSQL",
+            "duration": "2〜3年",
+            "level": "環境構築が可能"
+          }
+        ]
+      },
+      {
+        "type": "クラウド",
+        "rows": [
+          {
+            "tech": "Azure",
+            "duration": "3年",
+            "level": "最適なコード記述・改修が可能"
+          }
+        ]
+      },
+      {
+        "type": "CI/CD",
+        "rows": [
+          {
+            "tech": "Azure DevOps / GitHub Actions",
+            "duration": "3年",
+            "level": "最適化・運用が可能"
+          }
+        ]
+      }
+    ],
+    "certifications": [
+      {
+        "date": "2021年12月",
+        "name": "日本語能力試験 N4 合格"
+      },
+      {
+        "date": "2022年12月",
+        "name": "日本語能力試験 N3 合格"
+      }
+    ],
+    "certificationsNote": "（2026年12月にN2受験予定）",
+    "selfPR": [
+      "未知のドメインに深く入り込み、本質的な技術課題を見極めて形にすることを最大の強みとしています。地図・物流・AIといった異なる領域で、いずれも「まず自分で最初の動くものを作り、その後チームを通じて広げていく」という進め方で0→1のシステムを立ち上げてきました。具体的には、2.2億フィーチャ超を扱うタイル配信基盤の再設計、清掃会社向け物流プラットフォームの本番運用、そして自発的に試作した複数のAIプロダクト（音声コンシェルジュ・自然言語GIS検索・画像認識在庫管理）が挙げられます。",
+      "また、ネイティブレベルの英語とビジネスレベルの日本語を活かし、完全日本語環境での約4.5年の実務経験に加え、海外パートナーとの会議では英日通訳として橋渡しを担ってきました。特定の技術スタックや領域に固執せず、その時々の課題に対して最適な技術を選び、深く掘り下げて価値を生み出すことにやりがいを感じています。"
+    ]
+  },
+  "rirekisho": {
+    "docDate": "2026年　7月　12日　現在",
+    "furigana": "パイ　アーチット　ナレシュ",
+    "name": "PAI ARCHIT NARESH",
+    "gender": "男",
+    "personal": {
+      "photo": "/rirekisho_photo.jpeg",
+      "dob": "1999-01-14",
+      "dobText": "1999年1月14日生",
+      "ageText": "満27才",
+      "addressFurigana": "おおさかふおおさかしきたくてんま",
+      "postalCode": "530-0043",
+      "address": "大阪府大阪市北区天満2丁目9-3　403号室",
+      "nearestStation": "南森町駅",
+      "tel": "―",
+      "mobile": "080-1475-9374",
+      "fax": "―",
+      "email": "architpai.dev@gmail.com",
+      "homeCountryContact": "E/5 Union House, 2nd Cross L.J road, Mahim, Mumbai-400016（インド）"
+    },
+    "historyRows": [
+      {
+        "kind": "section",
+        "label": "学歴"
+      },
+      {
+        "kind": "entry",
+        "year": "2016",
+        "month": "3",
+        "text": "R.D. & S.H. National College and S.W.A. Science College 卒業（インド・ムンバイ）"
+      },
+      {
+        "kind": "entry",
+        "year": "2016",
+        "month": "5",
+        "text": "SVKM's NMIMS Mukesh Patel School of Technology Management & Engineering 入学"
+      },
+      {
+        "kind": "entry",
+        "year": "2020",
+        "month": "6",
+        "text": "SVKM's NMIMS Mukesh Patel School of Technology Management & Engineering 卒業（コンピュータ工学専攻・工学士 B.Tech）"
+      },
+      {
+        "kind": "note",
+        "text": "※卒業後、来日準備のため日本語を学習（コロナ禍）"
+      },
+      {
+        "kind": "section",
+        "label": "職歴"
+      },
+      {
+        "kind": "entry",
+        "year": "2019",
+        "month": "3",
+        "text": "Scorpio Marine Management (India) Pvt. Ltd.【インターンシップ】開始"
+      },
+      {
+        "kind": "note",
+        "text": "データ分析ダッシュボード開発・機械学習モデル開発"
+      },
+      {
+        "kind": "entry",
+        "year": "2019",
+        "month": "5",
+        "text": "Scorpio Marine Management (India) Pvt. Ltd.【インターンシップ】終了"
+      },
+      {
+        "kind": "entry",
+        "year": "2022",
+        "month": "3",
+        "text": "ヒューマンリソシア株式会社　入社"
+      },
+      {
+        "kind": "note",
+        "text": "川崎重工業株式会社【派遣】Software Engineer"
+      },
+      {
+        "kind": "note",
+        "text": "屋内地図プラットフォーム開発（Web SDK・地図アプリ・ジオフェンス・サイネージ）"
+      },
+      {
+        "kind": "entry",
+        "year": "2023",
+        "month": "11",
+        "text": "ヒューマンリソシア株式会社　退社（一身上の都合により退職）"
+      },
+      {
+        "kind": "entry",
+        "year": "2024",
+        "month": "1",
+        "text": "ソフトバンク株式会社　入社"
+      },
+      {
+        "kind": "note",
+        "text": "法人統括 デジタルエンジニアリング本部 技術企画統括部 ロケーションビジネス推進室"
+      },
+      {
+        "kind": "note",
+        "text": "位置情報プラットフォームの立ち上げ（0→1）・Software Development Engineer"
+      },
+      {
+        "kind": "entry",
+        "year": "2024",
+        "month": "11",
+        "text": "ソフトバンク株式会社　退社（事業部門の閉鎖に伴い退職）"
+      },
+      {
+        "kind": "entry",
+        "year": "2024",
+        "month": "12",
+        "text": "地図・位置情報系スタートアップ（社名非公開）　入社"
+      },
+      {
+        "kind": "note",
+        "text": "1人目のエンジニアとして地図タイル配信基盤・物流プラットフォーム・AIプロダクトの開発をリード"
+      },
+      {
+        "kind": "end",
+        "text": "現在に至る"
+      }
+    ],
+    "certifications": [
+      {
+        "year": "2021",
+        "month": "12",
+        "text": "日本語能力試験 N4 合格"
+      },
+      {
+        "year": "2022",
+        "month": "12",
+        "text": "日本語能力試験 N3 合格"
+      }
+    ],
+    "certificationsNote": "（2026年12月 日本語能力試験 N2 受験予定）",
+    "skills": [
+      {
+        "label": "プログラミング言語",
+        "value": "TypeScript、JavaScript、Python、Swift、Rust"
+      },
+      {
+        "label": "フレームワーク・ライブラリ",
+        "value": "React、Next.js、Node.js、MapLibre GL、D3.js"
+      },
+      {
+        "label": "地図・GIS",
+        "value": "ベクトルタイル（Planetiler）、PostGIS（ルーティング含む）、屋内外ルート探索"
+      },
+      {
+        "label": "AI／ML",
+        "value": "LLM連携・RAG・Embeddings、ファインチューニング（Qwen）、コンピュータビジョン（SAM・DINO）"
+      },
+      {
+        "label": "データベース",
+        "value": "PostgreSQL／PostGIS、Redis、MySQL、Cosmos DB"
+      },
+      {
+        "label": "バージョン管理システム",
+        "value": "Git"
+      },
+      {
+        "label": "クラウド",
+        "value": "Azure　CI/CD：Azure DevOps、GitHub Actions"
+      }
+    ],
+    "motivation": "未知のドメインに深く入り込み、まず自分の手で最初の動くものを作り、その後チームを通じて広げていく——この進め方で地図・物流・AIの各領域において0→1のシステムを立ち上げてきました。現職では1人目のエンジニアとして2.2億件超の地理データを扱うタイル配信基盤を設計し、20万ユーザー規模の負荷試験をクリアしています。ソフトバンク株式会社では位置情報プラットフォームの立ち上げメンバー4名の1人として、最初の4ヶ月を唯一のハンズオンエンジニアとして予算獲得に貢献しました。",
+    "languages": [
+      {
+        "name": "日本語",
+        "level": "ビジネスレベル（日本語能力試験N3合格・完全日本語環境での実務約4.5年）"
+      },
+      {
+        "name": "英語",
+        "level": "ネイティブレベル"
+      },
+      {
+        "name": "ヒンディー語",
+        "level": "流暢"
+      }
+    ],
+    "hobbies": [
+      "フィットネス",
+      "神話学"
+    ],
+    "spouse": "無",
+    "spouseSupport": "無",
+    "requests": [
+      "貴社の規定に従います。",
+      "在留資格：技術・人文知識・国際業務（2027年4月まで有効・更新予定）"
+    ]
   }
 }
