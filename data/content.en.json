@@ -12,11 +12,18 @@
         "icon": "💪"
       },
       {
-        "id": "mythology",
-        "title": "Mythology & Folklore",
-        "narrative": "Endlessly reading the old stories — Greek, Hindu, Norse, whatever I can get my hands on. Turns out every civilization was just running the same epic on different hardware.",
-        "details": "Currently deep in comparative mythology: flood myths, trickster gods, and the way the same archetypes reappear across cultures that never met. It's basically distributed systems, but for meaning.",
-        "icon": "🐍"
+        "id": "llm",
+        "title": "Local LLM Experiments",
+        "narrative": "Running LLMs locally and experimenting with fine-tuning, RAG pipelines, and my own \"Claude-like\" coding assistant. Pretty sure my M4 is plotting revenge at this point.",
+        "details": "Stack: Ollama + llama.cpp on M4 Pro. Built a RAG pipeline over my own codebase. Fine-tuned a 7B model on geospatial Q&A. Inference at 40 tok/s.",
+        "icon": "🤖"
+      },
+      {
+        "id": "agents",
+        "title": "Autonomous Agent Tinkering",
+        "narrative": "Obsessed with fully autonomous agents like OpenClaw and Hermes. Mine handle the boring parts of being alive — if I catch myself doing something twice, an agent inherits the job. Next on the list: world domination. (Just kidding... unless?)",
+        "details": "Daily drivers: OpenClaw plus a Hermes-based agent that automates recurring life admin end to end. Building task-specific agents with tool use and memory. Claude as the brain, obviously.",
+        "icon": "🦞"
       }
     ],
     "currentSetup": "MacBook Pro M4 Pro"
