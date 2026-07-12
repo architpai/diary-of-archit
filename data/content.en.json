@@ -14,15 +14,15 @@
       {
         "id": "llm",
         "title": "Local LLM Experiments",
-        "narrative": "Running LLMs locally and experimenting with fine-tuning, RAG pipelines, and my own \"Claude-like\" coding assistant. Pretty sure my M4 is plotting revenge at this point.",
-        "details": "Stack: Ollama + llama.cpp on M4 Pro. Built a RAG pipeline over my own codebase. Fine-tuned a 7B model on geospatial Q&A. Inference at 40 tok/s.",
+        "narrative": "Running LLMs locally with llama.cpp and vLLM, and fine-tuning models at home. Peak inference speed so far: a mighty 7 tokens per second. I don't read the output — I savor it.",
+        "details": "Fine-tuned Qwen 3.5-27B and CPM 1B locally. Serving via llama.cpp and vLLM. Best throughput ~7 tok/s: slow enough to make coffee mid-sentence, honest enough to admit it.",
         "icon": "🤖"
       },
       {
         "id": "agents",
         "title": "Autonomous Agent Tinkering",
-        "narrative": "Obsessed with fully autonomous agents like OpenClaw and Hermes. Mine handle the boring parts of being alive — if I catch myself doing something twice, an agent inherits the job. Next on the list: world domination. (Just kidding... unless?)",
-        "details": "Daily drivers: OpenClaw plus a Hermes-based agent that automates recurring life admin end to end. Building task-specific agents with tool use and memory. Claude as the brain, obviously.",
+        "narrative": "Obsessed with fully autonomous agents. Started with OpenClaw, defected to Hermes, then came crawling back — by forking OpenClaw into my own custom claw. Next on the list: world domination. (Just kidding... unless?)",
+        "details": "My custom claw fork automates recurring life admin end to end — if I catch myself doing something twice, the agent inherits the job. It also controls my home lights, so if they flicker, I know my agent is angry.",
         "icon": "🦞"
       }
     ],
