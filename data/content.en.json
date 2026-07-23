@@ -35,12 +35,12 @@
       "location": "Osaka",
       "professionalTitle": "First Engineering Hire",
       "company": "Stealth Geospatial Startup",
-      "diaryNarrative": "SoftBank shut the division down, and a stealth map startup asked me to be their first engineer. So I said yes to a blank repo and a mandate: build the whole platform. 220 million map features later, I'm still saying yes to blank repos.",
+      "diaryNarrative": "As my Tokyo chapter was closing, a stealth map startup asked me to be their first engineer. So I said yes to a blank repo and a mandate: build the whole platform. 220 million map features later, I'm still saying yes to blank repos.",
       "resumeBulletPoints": [
         "First engineering hire; lead 3 engineers and own the platform architecture, CI/CD, and code review",
         "Designed and shipped the flagship map-tile serving architecture — a hybrid pipeline (pre-emptive regeneration on data change + cache-on-serve) that delivers live-updating tiles at static-tile cost. Serves 220M+ features (70M building frames, 8K+ indoor sites, 150M+ outdoor POIs); cut worst-case tile latency from >1 min to ~50 ms; load-tested to 200K users",
-        "Own and lead, end-to-end, a waste-collection logistics platform: route planning, collection-point management, truck scheduling, an iPad driver app, real-time GPS tracking, a self-built LiveKit calling server, and an analytics dashboard — in production with 3 commercial sanitation operators, 24/7",
-        "Self-initiated and shipped applied-AI systems: a voice LLM concierge for a large Hokkaido commercial complex (STT/TTS + GPT-4o; ~12K logged interactions in 3 months), a natural-language GIS exploration + internal-support agent (locally fine-tuned Qwen-3.5-27B + RAG over internal docs), and a computer-vision inventory pipeline (SAM + DINO) that lets one operator do the counting work of five"
+        "Lead, end-to-end, a waste-collection logistics platform: route planning, collection-point management, truck scheduling, an iPad driver app, real-time GPS tracking, a self-built LiveKit calling server, and an analytics dashboard — in production with 3 commercial sanitation operators, 24/7",
+        "Shipped applied-AI systems: a voice LLM concierge for a large Hokkaido commercial complex (STT/TTS + GPT-4o; ~12K logged interactions in 3 months), a natural-language GIS exploration + internal-support agent (locally fine-tuned Qwen-3.5-27B + RAG over internal docs), and a computer-vision inventory pipeline (SAM + DINO) that lets one operator do the counting work of five"
       ],
       "isResumeWorthy": true,
       "doodleType": "celebration"
@@ -53,7 +53,7 @@
       "company": "SoftBank Corp.",
       "diaryNarrative": "Discovered the magic — and the menace — of PostGIS. Spent too many late nights debugging polygons with holes in all the wrong places. Just four of us at the start, building one basemap for all of Japan. Geometry broke me before I learned to tame it.",
       "resumeBulletPoints": [
-        "Founding member (1 of 4) of an in-house indoor/outdoor location platform owning the full mapping stack — basemap, indoor rendering, POI, and wayfinding — built 0→1",
+        "First engineering hire on an in-house indoor/outdoor location platform (team of 4); owned the full mapping stack — basemap, indoor rendering, POI, and wayfinding — built 0→1",
         "Sole hands-on engineer for the first 4 months; built the PoCs and demos that won division funding, then became the largest individual contributor across web, backend, and iOS as the team grew 4→11",
         "Delivered a Japan-wide basemap and ~100 indoor venues; the platform secured 7 paying company contracts",
         "Built an LLM-assisted natural-language POI search (embeddings + PGroonga)",
@@ -68,7 +68,7 @@
       "location": "Kobe",
       "professionalTitle": "Software Engineer",
       "company": "Human Resocia (dispatch: Kawasaki Heavy Industries)",
-      "diaryNarrative": "Spent two years turning buildings into browsable maps for a heavy-industry giant — and moonlighting as the English↔Japanese interpreter whenever the overseas partners showed up. Shipped across 15+ sites and learned that \"indoor GPS\" is a small lie we all agree to tell.",
+      "diaryNarrative": "Spent two years turning buildings into browsable maps for a heavy-industry giant — and doubling as the English↔Japanese interpreter whenever the overseas partners showed up. Shipped across 15+ sites and learned that \"indoor GPS\" is a small lie we all agree to tell.",
       "resumeBulletPoints": [
         "Built a browser-based indoor mapping platform for a major heavy-industry client (Kawasaki Heavy Industries, via dispatch)",
         "Delivered indoor↔outdoor routing, a map SDK shipped via CDN/NPM, a geofencing system, BLE-beacon configuration tooling, and customer/employee analytics dashboards deployed across 15+ client sites",
@@ -216,7 +216,7 @@
     "location": "Osaka, Japan",
     "portfolio": "",
     "subline": "Bilingual English / Japanese · Japan work-authorized (Engineer/Specialist in Humanities/International Services)",
-    "summary": "Systems engineer who takes products from 0→1 across geospatial platforms, logistics, and applied AI. I dive into unfamiliar domains, find the real engineering problem, and ship — from a 220M-feature map-tile serving architecture to production LLM and computer-vision systems. Currently the first engineering hire at a geospatial startup in Osaka; previously a founding member of an in-house location platform at SoftBank.",
+    "summary": "Systems engineer who takes products from 0→1 across geospatial platforms, logistics, and applied AI. I dive into unfamiliar domains, find the real engineering problem, and ship — from a 220M-feature map-tile serving architecture to production LLM and computer-vision systems. Currently the first engineering hire at a geospatial startup in Osaka; previously an early engineer on an in-house location platform at SoftBank.",
     "skillGroups": [
       {
         "label": "Geospatial / GIS",
