@@ -151,7 +151,7 @@
     },
     {
       "id": "redux",
-      "name": "State Management (Redux)",
+      "name": "Next.js",
       "level": 88,
       "category": "frontend",
       "tier": "shipped"
@@ -193,7 +193,7 @@
     },
     {
       "id": "threejs",
-      "name": "Three.js (3D Visualization)",
+      "name": "React Three Fiber",
       "level": 82,
       "category": "graphics",
       "tier": "weekly"

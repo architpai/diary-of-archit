@@ -58,6 +58,14 @@ interface SkillGroup {
   frontier?: boolean;
 }
 
+/**
+ * What each kit is EVIDENCE of. "Open a marker" used to promise discovery and
+ * return four résumé keywords, which made the map a decorative skills list. The
+ * card now carries one system, one figure and one line of context per kit, read
+ * from `skills.kit_<group id>_{system,figure,figure_note,note}` in data/ui/*.json.
+ * Every figure is one the résumé already claims, so the two modes agree.
+ */
+
 // Six kits laid out as regions on the map — the diary's real skill
 // categories grouped, coloured by CATEGORY_COLORS so they match the rest of
 // the map's legend. The frontier kit is the uncharted AI edge.
@@ -84,7 +92,7 @@ const SKILL_GROUPS: SkillGroup[] = [
     labelKey: 'skills.group_frontend',
     color: CATEGORY_COLORS.frontend,
     Icon: InkBrackets,
-    skillIds: ['react', 'ts', 'redux', 'threejs'],
+    skillIds: ['react', 'ts', 'redux', 'threejs'],  // redux slot now carries Next.js
   },
   {
     id: 'backend',
@@ -148,6 +156,20 @@ export default function Skills() {
       `.skills-basecamp-pin-${activeGroup.className}`
     );
     const wrap = el.parentElement;
+
+    // Narrow screens: the card does not float over the map at all. Anchored to a
+    // pin it had to be clamped back into the viewport, which landed it on top of
+    // the section heading and most of the map it was describing. Below the map
+    // there is already empty page, so it goes there.
+    if (wrap && window.innerWidth < 768) {
+      el.style.left = '0px';
+      el.style.right = 'auto';
+      el.style.top = `${wrap.getBoundingClientRect().height + 14}px`;
+      el.style.setProperty('--pop-dx', '0px');
+      el.style.setProperty('--pop-dy', '0px');
+      return;
+    }
+
     if (pin && wrap) {
       const pr = pin.getBoundingClientRect();
       const wr = wrap.getBoundingClientRect();
@@ -159,12 +181,22 @@ export default function Skills() {
     el.style.setProperty('--pop-dy', '0px');
     const r = el.getBoundingClientRect();
     const m = 8; // keep this much clear of every edge
+    // The card opens above its pin, and a taller card on a low pin used to push
+    // up over the section headline. Treat the headline's underside as the ceiling
+    // so the card is pushed down onto the map instead of over the title.
+    const heading = document.querySelector<HTMLElement>('.skills-basecamp-heading');
+    const headingBottom = heading?.getBoundingClientRect().bottom ?? 0;
+    const ceiling = Math.max(m, headingBottom + 10);
     let dx = 0;
     let dy = 0;
-    if (r.top < m) dy = m - r.top;
+    if (r.top < ceiling) dy = ceiling - r.top;
     else if (r.bottom > window.innerHeight - m) dy = window.innerHeight - m - r.bottom;
+    // Leave the bookmark rail its lane on desktop; the card was landing on top
+    // of whichever tab was currently extended.
+    const railWidth = window.innerWidth >= 768 ? 96 : m;
     if (r.left < m) dx = m - r.left;
-    else if (r.right > window.innerWidth - m) dx = window.innerWidth - m - r.right;
+    else if (r.right > window.innerWidth - railWidth)
+      dx = window.innerWidth - railWidth - r.right;
     el.style.setProperty('--pop-dx', `${dx}px`);
     el.style.setProperty('--pop-dy', `${dy}px`);
   }, [activeGroup]);
@@ -298,6 +330,14 @@ export default function Skills() {
                     onClick={() => setActiveGroupId(group.id)}
                   >
                     <Icon className="skills-basecamp-pin-glyph" color={PIN_GLYPH_INK} />
+                    {/* The markers used to be six anonymous coloured circles: the
+                        names existed only as aria-labels, so a screen reader knew
+                        more about this map than a sighted reader did. Shown from
+                        768px up, where the folded map has room for them; narrow
+                        screens get the name in the card instead. */}
+                    <span className="skills-basecamp-pin-name" aria-hidden="true">
+                      {t(group.labelKey)}
+                    </span>
                   </button>
                 );
               })}
@@ -317,6 +357,29 @@ export default function Skills() {
                       color={activeGroup.color}
                     />
                     {t(activeGroup.labelKey)}
+                  </span>
+
+                  {/* One system, one number, one line of context: the evidence
+                      the marker was promising. */}
+                  <p className="kit-system handwritten">
+                    {t(`skills.kit_${activeGroup.id}_system`)}
+                  </p>
+
+                  <p className="kit-figure">
+                    <span className="kit-figure-value">
+                      {t(`skills.kit_${activeGroup.id}_figure`)}
+                    </span>
+                    <span className="kit-figure-note handwritten">
+                      {t(`skills.kit_${activeGroup.id}_figure_note`)}
+                    </span>
+                  </p>
+
+                  <p className="kit-note handwritten">
+                    {t(`skills.kit_${activeGroup.id}_note`)}
+                  </p>
+
+                  <span className="kit-toolkit-label handwritten">
+                    {t('skills.kit_toolkit')}
                   </span>
                   <ul className="skills-basecamp-popup-list">
                     {groupSkillNames(activeGroup).map((name) => (
