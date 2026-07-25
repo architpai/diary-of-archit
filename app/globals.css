@@ -746,42 +746,6 @@ body {
 /* ============================================
    SERIOUS MODE STYLES
    ============================================ */
-body.serious-mode {
-  background-color: #fff;
-  color: #000;
-  font-family: var(--font-clean);
-}
-
-body.serious-mode .notebook-paper::before,
-body.serious-mode .notebook-paper::after {
-  display: none;
-}
-
-body.serious-mode .notebook-paper {
-  background-image: none;
-  background-color: #fff;
-}
-
-body.serious-mode .handwritten {
-  font-family: var(--font-clean);
-}
-
-body.serious-mode .doodle-animate,
-body.serious-mode .floating-doodle,
-body.serious-mode .post-it {
-  display: none !important;
-}
-
-body.serious-mode .wobbly-border {
-  border-radius: 4px;
-  animation: none;
-}
-
-body.serious-mode .diary-title {
-  font-family: var(--font-clean);
-  font-weight: 700;
-}
-
 /* ============================================
    PRINT STYLES (ATS-Friendly Resume)
    ============================================ */
@@ -805,8 +769,6 @@ body.serious-mode .diary-title {
   .floating-doodle,
   .post-it,
   .doodle-animate,
-  .serious-mode-toggle,
-  .post-it-nav,
   .diary-narrative,
   .hobby-section,
   .wobbly-border {
@@ -916,10 +878,6 @@ body.serious-mode .diary-title {
 }
 
 [lang="ja"] .clean-font,
-[lang="ja"] body.serious-mode {
-  font-family: var(--font-jp-clean);
-}
-
 /* Japanese text utilities */
 .jp-handwritten {
   font-family: var(--font-jp-handwritten);

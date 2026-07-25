@@ -3,31 +3,29 @@
 import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import HeroAvatarTransition from "./HeroAvatarTransition";
-import { useSeriousMode } from "@/contexts/SeriousModeContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import { InkCompassRose, InkScaleBar, InkWind } from "./icons/InkIcons";
 
-function HeroTitle({ compact }: { compact?: boolean }) {
-  const { isSerious } = useSeriousMode();
+function HeroTitle() {
   const { t, isJapanese } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
 
   return (
     <h1
-      className={`diary-title text-ink ${!isSerious && compact ? "!text-5xl md:!text-7xl drop-shadow-lg" : ""}`}
+      className="diary-title text-ink !text-5xl md:!text-7xl drop-shadow-lg"
       style={isJapanese ? { fontFamily: "var(--font-jp-handwritten)" } : {}}
     >
       <span className={`block${shouldReduceMotion ? "" : " handwrite-reveal"}`}>
         {t("hero.diary")}
       </span>
       <span
-        className={`block ${!isSerious ? "text-ink/70 italic" : "text-margin-blue"}${shouldReduceMotion ? "" : " handwrite-reveal-delay-1"}`}
-        style={!isSerious ? { fontSize: "0.5em" } : {}}
+        className={`block text-ink/70 italic${shouldReduceMotion ? "" : " handwrite-reveal-delay-1"}`}
+        style={{ fontSize: "0.5em" }}
       >
         {t("hero.of")}
       </span>
       <span
-        className={`block ${!isSerious ? "" : "underline-sketch"}${shouldReduceMotion ? "" : " handwrite-reveal-delay-2"}`}
+        className={`block${shouldReduceMotion ? "" : " handwrite-reveal-delay-2"}`}
       >
         {t("hero.name")}
       </span>
@@ -113,7 +111,7 @@ function FieldNotebookHero() {
           animate={{ opacity: 1, y: 0 }}
           transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8 }}
         >
-          <HeroTitle compact />
+          <HeroTitle />
 
           {/* What he does sits directly under the title — the substance read
               first, ahead of the surveyor's credit (now in the chart margin). */}
@@ -199,62 +197,6 @@ function FieldNotebookHero() {
   );
 }
 
-/** Serious mode keeps the clean, centered layout. */
-function SeriousHero() {
-  const { t, isJapanese } = useTranslation();
-  const shouldReduceMotion = useReducedMotion();
-  const jpFont = isJapanese ? { fontFamily: "var(--font-jp-handwritten)" } : {};
-
-  return (
-    <section className="min-h-[70vh] md:min-h-screen flex flex-col items-center justify-center px-4 py-12 md:py-20 relative overflow-hidden">
-      <motion.div
-        className="text-center z-10 relative"
-        initial={shouldReduceMotion ? false : { opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8 }}
-      >
-        <div className="mb-8">
-          <HeroTitle />
-        </div>
-
-        <motion.div
-          className="my-4 md:my-6 flex justify-center relative"
-          initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 0.5 }}
-        >
-          <HeroAvatarTransition
-            width={800}
-            height={1080}
-            className="w-[180px] sm:w-[220px] md:w-[300px] lg:w-[360px]"
-          />
-        </motion.div>
-
-        <motion.div
-          initial={shouldReduceMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: 0.8 }}
-        >
-          <p className="diary-subtitle max-w-md mx-auto handwritten" style={jpFont}>
-            {t("hero.subtitle")}
-          </p>
-        </motion.div>
-
-        <motion.div
-          className="mt-8 md:mt-12"
-          animate={shouldReduceMotion ? undefined : { y: [0, 10, 0] }}
-          transition={shouldReduceMotion ? undefined : { duration: 1.5, repeat: Infinity }}
-        >
-          <div className="handwritten text-ink/60" style={jpFont}>
-            {t("hero.scroll")}
-          </div>
-        </motion.div>
-      </motion.div>
-    </section>
-  );
-}
-
 export default function Hero() {
-  const { isSerious } = useSeriousMode();
-  return isSerious ? <SeriousHero /> : <FieldNotebookHero />;
+  return <FieldNotebookHero />;
 }

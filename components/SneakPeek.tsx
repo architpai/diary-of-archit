@@ -13,7 +13,6 @@ import {
 } from 'framer-motion';
 import Image from 'next/image';
 import { avatarBox } from './avatarDimensions';
-import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsTouchDevice } from '@/hooks/useIsTouchDevice';
 import {
@@ -309,7 +308,6 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese, scrollVelocit
 }
 
 export default function SneakPeek() {
-  const { isSerious } = useSeriousMode();
   const { t, content, isJapanese } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const hobbies = content.personal.hobbies as Hobby[];
@@ -328,9 +326,6 @@ export default function SneakPeek() {
   const jpFont = isJapanese
     ? ({ fontFamily: 'var(--font-jp-handwritten)' } as React.CSSProperties)
     : ({} as React.CSSProperties);
-
-  // Hide this section in serious mode
-  if (isSerious) return null;
 
   return (
     <section className="py-20 relative">

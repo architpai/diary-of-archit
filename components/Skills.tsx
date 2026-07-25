@@ -12,7 +12,6 @@ import {
 } from 'react';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
-import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { CATEGORY_COLORS } from '@/components/hero3d/mapData';
 import {
@@ -116,19 +115,10 @@ const SKILL_GROUPS: SkillGroup[] = [
 ];
 
 export default function Skills() {
-  const { isSerious } = useSeriousMode();
   const { content, t } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const [activeGroupId, setActiveGroupId] = useState<string | null>(null);
   const skills = content.skills as Skill[];
-
-  // Serious-mode groups by the raw category id; localize it, falling back to
-  // the id itself if a future category has no `skills.cat_*` key yet.
-  const catLabel = (category: string) => {
-    const key = `skills.cat_${category}`;
-    const label = t(key);
-    return label === key ? category : label;
-  };
 
   // id → localized skill name, so a group's pins can list their tools.
   const skillNameById = useMemo(() => {
@@ -222,64 +212,12 @@ export default function Skills() {
 
   return (
     <section
-      className={isSerious ? 'py-20 relative' : 'skills-basecamp-section relative'}
+      className="skills-basecamp-section relative"
       // While this section is centred, the persistent terrain backdrop dims its
       // pin labels + markers (CameraRig reads this) so they don't bleed through
-      // the basecamp illustration. Inert in serious mode (no 3D backdrop).
-      data-map-waypoint={isSerious ? undefined : 'view-network'}
+      // the basecamp illustration.
+      data-map-waypoint="view-network"
     >
-      {isSerious && (
-        <motion.h2
-          className="text-3xl md:text-4xl text-center mb-16 pt-16 font-sans font-bold text-ink"
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          {t('skills.title_serious')}
-        </motion.h2>
-      )}
-
-      {isSerious ? (
-        // Organized skills by category for serious mode
-        <div className="max-w-5xl mx-auto px-4 relative z-20">
-          <div className="max-w-4xl mx-auto">
-            {Object.entries(
-              skills.reduce((acc, skill) => {
-                if (!acc[skill.category]) acc[skill.category] = [];
-                acc[skill.category].push(skill);
-                return acc;
-              }, {} as Record<string, typeof skills>)
-            ).map(([category, categorySkills], categoryIndex) => (
-              <motion.div
-                key={category}
-                className="mb-8"
-                initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={shouldReduceMotion ? { duration: 0 } : { delay: categoryIndex * 0.1 }}
-              >
-                <h3 className="font-sans text-lg font-bold capitalize mb-4 text-gray-700 border-b border-gray-300 pb-2">
-                  {catLabel(category)}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {categorySkills.map((skill, index) => (
-                    <motion.div
-                      key={skill.name}
-                      className="flex items-center justify-between"
-                      initial={shouldReduceMotion ? false : { opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3, delay: index * 0.05 }}
-                    >
-                      <span className="font-sans text-sm">{skill.name}</span>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      ) : (
         <div className="skills-basecamp-inner">
           <motion.div
             className="skills-basecamp-heading"
@@ -393,7 +331,6 @@ export default function Skills() {
             </div>
           </div>
         </div>
-      )}
     </section>
   );
 }

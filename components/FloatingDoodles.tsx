@@ -1,7 +1,6 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useState, useEffect } from 'react';
 import type { ComponentType, SVGProps } from 'react';
 import { allTechStickers } from './icons/TechStickers';
@@ -42,7 +41,6 @@ export default function FloatingDoodles({
   density = 'normal',
   className = '',
 }: FloatingDoodlesProps) {
-  const { isSerious } = useSeriousMode();
   const shouldReduceMotion = useReducedMotion();
   const [doodles, setDoodles] = useState<Doodle[]>([]);
 
@@ -50,8 +48,7 @@ export default function FloatingDoodles({
     setDoodles(generateDoodles(density));
   }, [density]);
 
-  // Hide in serious mode and reduced motion
-  if (isSerious || shouldReduceMotion) return null;
+  if (shouldReduceMotion) return null;
 
   return (
     <div className={`absolute inset-0 overflow-hidden pointer-events-none z-0 ${className}`}>

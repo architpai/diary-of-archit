@@ -2,7 +2,6 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface Section {
@@ -28,7 +27,6 @@ const TAB_COLORS = [
 ];
 
 export default function MapScrollNav() {
-  const { isSerious } = useSeriousMode();
   const { t } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const [activeSection, setActiveSection] = useState(0);
@@ -58,20 +56,6 @@ export default function MapScrollNav() {
     const el = document.getElementById(sections[i].id);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
-
-  if (isSerious) {
-    return (
-      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 hidden md:block">
-        <div className="flex flex-col gap-3">
-          {sections.map((s, i) => (
-            <button key={s.id} onClick={() => scrollToSection(i)}
-              className={`h-3 rounded-full transition-[width,background-color] duration-300 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ink ${activeSection === i ? 'bg-gray-800 w-10' : 'bg-gray-300 hover:bg-gray-500 w-3'}`}
-              title={s.label} aria-label={s.label} />
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>

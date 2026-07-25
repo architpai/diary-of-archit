@@ -11,7 +11,6 @@ import {
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
-import { SeriousModeProvider } from "@/contexts/SeriousModeContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import LanguageHtmlWrapper from "@/components/LanguageHtmlWrapper";
 
@@ -78,11 +77,9 @@ export default function RootLayout({
       <body className={`${inter.variable} ${caveatBrush.variable} ${patrickHand.variable} ${zenKurenaido.variable} ${notoSansJP.variable} ${basecampDisplay.variable} ${basecampBody.variable} antialiased`}>
         <LanguageProvider>
           <LanguageHtmlWrapper />
-          <SeriousModeProvider>
-            {children}
-            <Analytics />
-            <SpeedInsights />
-          </SeriousModeProvider>
+          {children}
+          <Analytics />
+          <SpeedInsights />
         </LanguageProvider>
       </body>
     </html>

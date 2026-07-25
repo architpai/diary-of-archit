@@ -3,27 +3,17 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
 import { avatarBox } from './avatarDimensions';
-import { useSeriousMode } from '@/contexts/SeriousModeContext';
 
 // Mirrored cartographer waving off the page edge.
 const FOOTER_AVATAR = avatarBox('/avatar/waving_pose.webp', 72);
 import { useTranslation } from '@/hooks/useTranslation';
 
 export default function DiaryFooter() {
-  const { isSerious } = useSeriousMode();
   const { t, isJapanese } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const jpFont = isJapanese
     ? ({ fontFamily: 'var(--font-jp-handwritten)' } as React.CSSProperties)
     : ({} as React.CSSProperties);
-
-  if (isSerious) {
-    return (
-      <footer className="py-8 text-center font-sans text-sm text-gray-500">
-        <p>{t('footer.copyright')}</p>
-      </footer>
-    );
-  }
 
   return (
     <footer className="relative pt-4 pb-14 overflow-hidden">

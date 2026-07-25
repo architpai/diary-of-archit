@@ -2,12 +2,10 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
-import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import Avatar from './Avatar';
 import WindEffect from './WindEffect';
 import { DiaryMailIcon, DiaryGitHubIcon, DiaryLinkedInIcon } from './icons/ContactIcons';
-import { GitHubIcon, LinkedInIcon, MailIcon } from './icons/SocialIcons';
 import { InkEnvelope } from './icons/InkIcons';
 
 /** Tiny drawn postage stamp: Mt. Fuji under a sun, perforated edges. */
@@ -123,7 +121,6 @@ function ContactChip({
 }
 
 export default function Contact() {
-  const { isSerious } = useSeriousMode();
   const { t, content, isJapanese } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const jpFont = isJapanese
@@ -136,9 +133,8 @@ export default function Contact() {
   return (
     <section id="contact" className="py-20 relative">
       {/* Wind Effect */}
-      {!isSerious && <WindEffect />}
+      <WindEffect />
 
-      {!isSerious ? (
         <motion.div
           className="text-center mb-12 px-4"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
@@ -155,58 +151,8 @@ export default function Contact() {
             </h2>
           </div>
         </motion.div>
-      ) : (
-        <motion.h2
-          className="text-3xl md:text-4xl text-center mb-12 pt-16 font-sans font-bold text-ink"
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          {t('contact.title_serious')}
-        </motion.h2>
-      )}
 
-      {isSerious ? (
-        /* ── Serious mode: clean minimal layout (unchanged) ── */
-        <div className="max-w-2xl mx-auto px-4 relative z-10">
-          <div className="space-y-4 text-left">
-            <a
-              href={`mailto:${content.contact.email}`}
-              className="block font-sans text-blue-600 hover:underline"
-            >
-              <span className="inline-flex items-center gap-2">
-                <MailIcon className="h-5 w-5 shrink-0" />
-                {content.contact.email}
-              </span>
-            </a>
-
-            <a
-              href={content.contact.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block font-sans text-blue-600 hover:underline"
-            >
-              <span className="inline-flex items-center gap-2">
-                <GitHubIcon className="h-5 w-5 shrink-0" />
-                {content.contact.github}
-              </span>
-            </a>
-
-            <a
-              href={content.contact.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block font-sans text-blue-600 hover:underline"
-            >
-              <span className="inline-flex items-center gap-2">
-                <LinkedInIcon className="h-5 w-5 shrink-0" />
-                {content.contact.linkedin}
-              </span>
-            </a>
-          </div>
-        </div>
-      ) : (
-        /* ── Diary mode: a postcard mailed from the edge of the map ── */
+      {/* A postcard mailed from the edge of the map */}
         <div className="max-w-4xl mx-auto px-4 relative z-10 pointer-events-auto">
           {/* Contact channels up front — the actual actions surface
               immediately, before the warm-but-slower postcard below. */}
@@ -373,7 +319,6 @@ export default function Contact() {
             </p>
           </motion.div>
         </div>
-      )}
     </section>
   );
 }
