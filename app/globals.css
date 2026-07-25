@@ -890,10 +890,63 @@ body {
   line-height: 1.8;
 }
 
-/* Japanese punctuation and spacing */
+/* Japanese line breaking.
+   `word-break: break-word` let the browser break absolutely anywhere, which is
+   why katakana loanwords split down the middle (ソフト / ウェア) and single
+   characters were orphaned onto their own last line (…を築 / く。).
+   - line-break: strict keeps small kana, long marks and closing punctuation off
+     the start of a line, which is the actual Japanese typesetting rule.
+   - word-break: normal restores kinsoku behaviour instead of anywhere-breaking.
+   - overflow-wrap: anywhere is kept ONLY as the escape hatch for an unbreakable
+     run (a URL, a long latin product name) so nothing can overflow its column. */
 [lang="ja"] {
-  word-break: break-word;
-  overflow-wrap: break-word;
+  word-break: normal;
+  line-break: strict;
+  overflow-wrap: anywhere;
+}
+
+/* CJK type scale. A kanji glyph fills its em box where a latin lowercase fills
+   roughly half of it, so Japanese set at the same declared size carries visibly
+   more mass: 探索の余地はまだまだある was overflowing the space
+   "there's always more to explore" sits in comfortably. Display type is stepped
+   down; body text is left alone, where the extra weight helps legibility. */
+[lang="ja"] .diary-title {
+  font-size: clamp(1.75rem, 6.9vw, 4.3rem);
+}
+
+[lang="ja"] .skills-basecamp-heading {
+  font-size: clamp(2.35rem, 5.4vw, 4.9rem);
+}
+
+[lang="ja"] .hero-cta-label {
+  font-size: 0.94rem;
+}
+
+[lang="ja"] .kit-figure-value {
+  font-size: 1.6rem;
+}
+
+/* Short display strings get `keep-all`, which forbids breaks inside a run of
+   kana or kanji: without it ソフトウェア and エンジニア were splitting across
+   lines, and 気分次第 was breaking after 気. `overflow-wrap: anywhere` stays as
+   the last resort so a run that genuinely cannot fit still wraps rather than
+   overflowing its column. Body copy keeps ordinary kinsoku breaking, which is
+   correct for long Japanese prose. */
+[lang="ja"] .diary-title,
+[lang="ja"] .hero-lede,
+[lang="ja"] .hero-cta-label,
+[lang="ja"] .hero-cta-sub,
+[lang="ja"] .skills-basecamp-heading,
+[lang="ja"] .skills-basecamp-hint,
+[lang="ja"] .skills-basecamp-pin-name,
+[lang="ja"] .kit-system,
+[lang="ja"] .kit-figure-value,
+[lang="ja"] .kit-figure-note,
+[lang="ja"] .kit-toolkit-label,
+[lang="ja"] .terrain-pin,
+[lang="ja"] .hero-margin-note {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 /* Adjust line height for Japanese text readability */
@@ -1225,6 +1278,31 @@ body {
   .mapnav-dot-hit {
     width: 23px;
   }
+}
+
+/* Language toggle: the ACTIVE option is circled in pencil, the way you would
+   mark a choice in a notebook. Neither option is ever struck out. */
+.lang-option {
+  position: relative;
+  display: inline-block;
+  padding: 0 0.15rem;
+}
+
+.lang-option-active {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.lang-option-active::after {
+  content: '';
+  position: absolute;
+  inset: -0.24em -0.42em -0.3em -0.42em;
+  border: 2px solid var(--margin-red);
+  /* a hand-drawn ellipse: uneven radii, slightly off-axis */
+  border-radius: 62% 38% 55% 45% / 48% 58% 42% 52%;
+  transform: rotate(-2.5deg);
+  opacity: 0.75;
+  pointer-events: none;
 }
 
 /* Keyboard escape hatch past the fixed chrome. Torn-paper tab, not a blue bar. */

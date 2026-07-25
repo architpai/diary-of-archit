@@ -18,19 +18,29 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [targetLanguage, setTargetLanguage] = useState<Language>('en');
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Load from localStorage on mount
+  // Resolve the language on mount: an explicit stored choice always wins, and
+  // failing that, fall back to what the browser asks for. A portfolio aimed at
+  // employers in Osaka used to open in English for a Japanese visitor no matter
+  // what their browser said, and only ever offered the switch as a control they
+  // had to notice.
   useEffect(() => {
     queueMicrotask(() => {
       const stored = localStorage.getItem('diary-language');
-      if (stored === 'jp') {
-        setLanguageState('ja');
-        setTargetLanguage('ja');
-        localStorage.setItem('diary-language', 'ja');
+      // 'jp' is a legacy value from an earlier build; normalise it.
+      const explicit = stored === 'jp' ? 'ja' : stored;
+      if (explicit === 'ja' || explicit === 'en') {
+        if (stored !== explicit) localStorage.setItem('diary-language', explicit);
+        setLanguageState(explicit);
+        setTargetLanguage(explicit);
         return;
       }
-      if (stored === 'ja' || stored === 'en') {
-        setLanguageState(stored);
-        setTargetLanguage(stored);
+
+      const prefersJapanese = (navigator.languages ?? [navigator.language]).some(
+        (tag) => typeof tag === 'string' && tag.toLowerCase().startsWith('ja'),
+      );
+      if (prefersJapanese) {
+        setLanguageState('ja');
+        setTargetLanguage('ja');
       }
     });
   }, []);

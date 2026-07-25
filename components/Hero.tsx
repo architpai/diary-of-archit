@@ -114,7 +114,7 @@ function FieldNotebookHero() {
 
         {/* Field-notes annotation — tucked just above the map's top edge */}
         <motion.p
-          className="hidden md:block absolute top-[32%] left-8 max-w-[230px] handwritten text-sepia text-sm leading-snug -rotate-2 z-20"
+          className="hero-margin-note hidden md:block absolute top-[32%] left-8 max-w-[230px] handwritten text-sepia text-sm leading-snug -rotate-2 z-20"
           style={jpFont}
           {...ink(0.8)}
         >
@@ -198,7 +198,7 @@ function FieldNotebookHero() {
           {/* One margin line, not three: the scale joke and the surveyor's
               credit used to stack into their own little paragraph. */}
           <p
-            className="handwritten text-sepia text-[0.7rem] uppercase tracking-[0.14em] mt-3 max-w-[15rem] text-center leading-relaxed"
+            className="hero-margin-note handwritten text-sepia text-[0.7rem] uppercase tracking-[0.14em] mt-3 max-w-[15rem] text-center leading-relaxed"
             style={jpFont}
           >
             {t("hero.margin_credit")}
