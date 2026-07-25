@@ -46,17 +46,43 @@ export default function MapScrollNav() {
     { id: 'contact', label: t('nav.contact') },
   ], [t]);
 
+  // Which section owns the middle of the viewport. This used to run an
+  // offsetTop read for every section on every scroll event, over a canvas that
+  // is already repainting continuously; an observer does the same job off the
+  // scroll path.
   useEffect(() => {
-    const handleScroll = () => {
-      const mid = window.scrollY + window.innerHeight / 2;
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const el = document.getElementById(sections[i].id);
-        if (el && el.offsetTop <= mid) { setActiveSection(i); break; }
-      }
-    };
-    handleScroll();
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const elements = sections
+      .map((s, i) => ({ el: document.getElementById(s.id), i }))
+      .filter((e): e is { el: HTMLElement; i: number } => e.el !== null);
+    if (!elements.length) return;
+
+    const visible = new Map<number, number>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const match = elements.find((e) => e.el === entry.target);
+          if (!match) continue;
+          if (entry.isIntersecting) visible.set(match.i, entry.intersectionRatio);
+          else visible.delete(match.i);
+        }
+        if (!visible.size) return;
+        // Ties go to the later section, matching the old "last one whose top has
+        // passed the middle" behaviour when two sections straddle the viewport.
+        let best = -1;
+        let bestRatio = -1;
+        for (const [i, ratio] of visible) {
+          if (ratio > bestRatio || (ratio === bestRatio && i > best)) {
+            best = i;
+            bestRatio = ratio;
+          }
+        }
+        if (best >= 0) setActiveSection(best);
+      },
+      { threshold: [0, 0.15, 0.35, 0.6, 0.9] },
+    );
+
+    for (const { el } of elements) observer.observe(el);
+    return () => observer.disconnect();
   }, [sections]);
 
   useEffect(() => {

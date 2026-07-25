@@ -1304,10 +1304,18 @@ body {
   font-weight: 700;
 }
 
+@media (min-width: 400px) {
+  .lang-option-active::after {
+    inset: -0.24em -0.42em -0.3em -0.42em;
+  }
+}
+
 .lang-option-active::after {
   content: '';
   position: absolute;
-  inset: -0.24em -0.42em -0.3em -0.42em;
+  /* Tighter on the narrowest phones, where the drawn ring was reaching across
+     to the section-dots pill. */
+  inset: -0.2em -0.26em -0.26em -0.26em;
   border: 2px solid var(--margin-red);
   /* a hand-drawn ellipse: uneven radii, slightly off-axis */
   border-radius: 62% 38% 55% 45% / 48% 58% 42% 52%;
@@ -2160,12 +2168,15 @@ a:focus-visible .wax-seal {
     transform: translateX(-50%);
     white-space: nowrap;
     font-family: var(--font-handwritten), 'Patrick Hand', cursive;
-    font-size: 0.78rem;
+    font-size: 0.82rem;
     line-height: 1;
     color: var(--sepia);
+    /* The name sits on the drawn map, not flat paper, so it carries its own
+       halo of page cream to keep clear of the contour work underneath. */
     text-shadow:
-      0 1px 3px rgba(255, 249, 229, 0.95),
-      0 0 6px rgba(255, 249, 229, 0.9);
+      0 1px 2px rgba(255, 249, 229, 1),
+      0 0 5px rgba(255, 249, 229, 0.98),
+      0 0 9px rgba(255, 249, 229, 0.85);
     pointer-events: none;
   }
 }
