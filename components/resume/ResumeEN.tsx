@@ -21,7 +21,7 @@ export default function ResumeEN() {
   const resume = content.resumeEn;
 
   return (
-    <main className="max-w-[8.5in] mx-auto p-4 md:p-8 bg-white text-black font-sans print:p-0">
+    <main className="resume-sheet max-w-[8.5in] mx-auto p-4 md:p-8 bg-white text-black font-sans print:p-0">
       {/* Header */}
       <header className="border-b-2 border-black pb-4 mb-6">
         <h1 className="text-3xl font-bold">{content.personal.name}</h1>
@@ -148,7 +148,7 @@ export default function ResumeEN() {
         >
           {t('resume.print_button')}
         </button>
-        <p className="mt-4 text-sm text-gray-500">
+        <p className="mt-4 text-sm text-gray-600">
           {t('resume.print_hint')}
         </p>
       </div>

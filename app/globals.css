@@ -1199,6 +1199,20 @@ body {
 
 /* Hero subtitle reads as an annotation inked onto the chart — a soft paper
    breath that melts into the map, not a pasted-on bordered card. */
+/* The résumé sheet. The fixed mode switch sits bottom-right at every scroll
+   position, so the document has to end above it: at 390px it was parked on top
+   of the last visible experience bullet, and the résumé is the surface that
+   most needs to be boringly robust. */
+.resume-sheet {
+  padding-bottom: 6rem;
+}
+
+@media print {
+  .resume-sheet {
+    padding-bottom: 0;
+  }
+}
+
 /* Mobile section dots. The tap target stays 40px tall everywhere; only the
    horizontal pitch tightens on the narrowest phones, so the pill plus the
    active section name still clears the language toggle at 320px. */

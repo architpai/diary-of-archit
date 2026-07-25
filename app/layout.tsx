@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import {
-  Barlow_Condensed,
   Caveat_Brush,
   Inter,
   Noto_Sans_JP,
   Patrick_Hand,
-  Plus_Jakarta_Sans,
   Zen_Kurenaido,
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
@@ -42,19 +40,6 @@ const notoSansJP = Noto_Sans_JP({
   subsets: ["latin"],
 });
 
-const basecampDisplay = Barlow_Condensed({
-  variable: "--font-basecamp-display",
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
-  style: ["normal", "italic"],
-});
-
-const basecampBody = Plus_Jakarta_Sans({
-  variable: "--font-basecamp-body",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-});
-
 export const metadata: Metadata = {
   title: "Diary of Archit | Portfolio",
   description: "A creative portfolio in the style of a Wimpy Kid diary. Developer, builder, and perpetual learner.",
@@ -74,7 +59,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${caveatBrush.variable} ${patrickHand.variable} ${zenKurenaido.variable} ${notoSansJP.variable} ${basecampDisplay.variable} ${basecampBody.variable} antialiased`}>
+      <body className={`${inter.variable} ${caveatBrush.variable} ${patrickHand.variable} ${zenKurenaido.variable} ${notoSansJP.variable} antialiased`}>
         <LanguageProvider>
           <LanguageHtmlWrapper />
           {children}

@@ -22,7 +22,7 @@ export default function ResumeJP() {
 
   return (
     <main
-      className="max-w-[8.5in] mx-auto p-4 md:p-8 bg-white text-black print:p-0"
+      className="resume-sheet max-w-[8.5in] mx-auto p-4 md:p-8 bg-white text-black print:p-0"
       style={JP_FONT}
     >
       {/* Header */}
@@ -201,7 +201,7 @@ export default function ResumeJP() {
         >
           {t('resume.download_button')}
         </button>
-        <p className="mt-4 text-sm text-gray-500">
+        <p className="mt-4 text-sm text-gray-600">
           {t('resume.print_hint')}
         </p>
       </div>

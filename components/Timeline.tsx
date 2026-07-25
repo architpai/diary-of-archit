@@ -276,6 +276,11 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
             type="button"
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
+            aria-label={
+              expanded
+                ? t('timeline.notes_less')
+                : `${t('timeline.notes_more')} (${bullets.length})`
+            }
             className={`mt-4 handwritten text-sm text-ink/60 hover:text-ink transition-colors cursor-pointer ${
               hiddenCount > 0 ? '' : 'md:hidden'
             }`}
@@ -287,7 +292,7 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
             }}
           >
             {expanded ? (
-              `${t('timeline.notes_less')} ↑`
+              <>{t('timeline.notes_less')} <span aria-hidden="true">↑</span></>
             ) : (
               <>
                 {t('timeline.notes_more')}{' '}
@@ -295,7 +300,7 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
                 {hiddenCount > 0 && (
                   <span className="hidden md:inline">(+{hiddenCount})</span>
                 )}{' '}
-                ↓
+                <span aria-hidden="true">↓</span>
               </>
             )}
           </button>
@@ -314,7 +319,7 @@ function BoardingStub({ leg }: { leg: number }) {
 
   return (
     <div className="route-leg py-8 md:py-28" style={jpFont}>
-      <p className="text-sm md:text-base text-ink/50 mb-3">
+      <p className="text-sm md:text-base text-sepia mb-3">
         {t(`timeline.leg_${leg}_rewind`)}
       </p>
       <div
@@ -326,7 +331,7 @@ function BoardingStub({ leg }: { leg: number }) {
             <InkPlane className="w-5 h-5 shrink-0" color="#64513B" />
             <span className="boarding-route">{t(`timeline.leg_${leg}_route`)}</span>
           </div>
-          <p className="text-sm opacity-80 mt-0.5">{t(`timeline.leg_${leg}_note`)}</p>
+          <p className="text-sm mt-0.5">{t(`timeline.leg_${leg}_note`)}</p>
         </div>
         <div className="boarding-stub-tear">
           <span className="text-[10px] uppercase tracking-[0.2em] opacity-70">

@@ -134,6 +134,6 @@
     "doc_shokumu": "職務経歴書",
     "download_button": "🖨️ ダウンロード / PDF印刷",
     "print_button": "🖨️ 印刷 / PDFで保存",
-    "print_hint": "最適な結果を得るにはブラウザの印刷機能（Cmd/Ctrl + P）をご利用ください"
+    "print_hint": "1ページに収まります。印刷ダイアログからPDFとして保存できます。"
   }
 }

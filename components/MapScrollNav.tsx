@@ -18,11 +18,14 @@ interface Section {
    ═══════════════════════════════════════════════════════════════ */
 
 // Desaturated vintage-map pigments — the tabs are paper artifacts too.
+// Oxide and violet are printed a shade deeper here than their palette tokens:
+// at the token values, cream lettering on them measured 3.2:1 and 4.4:1, under
+// the 4.5:1 these 14px labels need. Same hues, enough ink in them to read.
 const TAB_COLORS = [
   { bg: '#B9A37E', text: '#2D2D2D' },  // Home — aged tan
   { bg: '#3B5F8A', text: '#FFF9E5' },  // Journey — prussian blue
-  { bg: '#B05F66', text: '#FFF9E5' },  // Skills — oxide red
-  { bg: '#7D6B8D', text: '#FFF9E5' },  // Peek — faded violet
+  { bg: '#9A4F56', text: '#FFF9E5' },  // Skills — oxide red, deepened
+  { bg: '#6B5A7B', text: '#FFF9E5' },  // Peek — faded violet, deepened
   { bg: '#82A775', text: '#2D2D2D' },  // Contact — sage
 ];
 
@@ -104,7 +107,10 @@ export default function MapScrollNav() {
                 style={{
                   backgroundColor: color.bg,
                   color: color.text,
-                  opacity: isActive ? 1 : 0.78,
+                  // No opacity dimming for the inactive state: fading the whole
+                  // tab faded its label too, pushing the text under AA. Position
+                  // (tucked 55px off the edge) and shadow already carry the
+                  // active/inactive distinction.
                   border: '2px solid #2D2D2D',
                   borderRadius: '13px 5px 9px 7px',
                   boxShadow: isActive

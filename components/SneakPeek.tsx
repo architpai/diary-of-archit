@@ -7,6 +7,7 @@ import {
   useScroll,
   useVelocity,
   useSpring,
+  useAnimationFrame,
   useTransform,
   useMotionValue,
   type MotionValue,
@@ -111,13 +112,21 @@ const SWING_SPRINGS = [
   { stiffness: 62, damping: 10, mass: 0.92 },
 ];
 const SWAY_MAX = 10; // degrees of swing at full scroll velocity
+// Scroll speed beyond which the tags stop caring. A wheel flick tops out around
+// 4000 px/s; browser scroll restoration on reload reports a spike in the
+// hundreds of thousands, and useSpring inherits its SOURCE's velocity, which
+// `clamp` on the transform does not bound. That impulse used to ring the cards
+// to 70-90 degrees, so a refresh below the fold looked like a broken page.
+// Limiting the rate of change of the target caps the inherited velocity too.
+const SWAY_VELOCITY_LIMIT = 4000;
+const SWAY_SLEW_PER_SECOND = SWAY_MAX * 6; // degrees the target may move per second
 
-function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese, scrollVelocity }: {
+function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese, swaySignal }: {
   hobby: Hobby;
   index: number;
   shouldReduceMotion: boolean | null;
   isJapanese: boolean;
-  scrollVelocity: MotionValue<number>;
+  swaySignal: MotionValue<number>;
 }) {
   const { t } = useTranslation();
   const [isFlipped, setIsFlipped] = useState(false);
@@ -129,8 +138,7 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese, scrollVelocit
   // Dangling pendulum: scroll velocity pushes the tag sideways; an underdamped
   // spring lets it swing past and settle. Faster scroll → bigger swing.
   const spring = SWING_SPRINGS[index % SWING_SPRINGS.length];
-  const swayTarget = useTransform(scrollVelocity, [-4000, 0, 4000], [SWAY_MAX, 0, -SWAY_MAX], { clamp: true });
-  const swaySpring = useSpring(swayTarget, spring);
+  const swaySpring = useSpring(swaySignal, spring);
   const sway = useTransform(swaySpring, (s) => restTilt + s);
 
   const jpFont = isJapanese
@@ -320,8 +328,26 @@ export default function SneakPeek() {
   const { scrollY } = useScroll();
   const rawVelocity = useVelocity(scrollY);
   const liveVelocity = useSpring(rawVelocity, { damping: 50, stiffness: 350, mass: 0.6 });
-  const zeroVelocity = useMotionValue(0);
-  const scrollVelocity = isTouch ? zeroVelocity : liveVelocity;
+
+  // One slew-limited sway signal in degrees, shared by every tag, so there is a
+  // single frame loop rather than one per card. Limiting how fast the TARGET may
+  // move is what protects the per-card springs: they inherit their source's
+  // velocity, and an instant scroll (reload restoration, hash jump) reports a
+  // spike large enough to ring an underdamped pendulum right out of the layout.
+  const swaySignal = useMotionValue(0);
+  useAnimationFrame((_, delta) => {
+    if (isTouch) return;
+    const v = Math.max(
+      -SWAY_VELOCITY_LIMIT,
+      Math.min(SWAY_VELOCITY_LIMIT, liveVelocity.get()),
+    );
+    const desired = (-v / SWAY_VELOCITY_LIMIT) * SWAY_MAX;
+    const current = swaySignal.get();
+    const maxStep = SWAY_SLEW_PER_SECOND * (Math.min(delta, 100) / 1000);
+    swaySignal.set(
+      current + Math.max(-maxStep, Math.min(maxStep, desired - current)),
+    );
+  });
 
   const jpFont = isJapanese
     ? ({ fontFamily: 'var(--font-jp-handwritten)' } as React.CSSProperties)
@@ -372,7 +398,7 @@ export default function SneakPeek() {
           waters (sea serpent, compass rose, here-be-dragons caption) */}
       <div
         data-map-waypoint="view-uncharted"
-        className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10 pointer-events-auto"
+        className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-11 lg:gap-14 relative z-10 pointer-events-auto"
       >
         {hobbies.map((hobby, index) => (
           <HobbyCard
@@ -381,7 +407,7 @@ export default function SneakPeek() {
             index={index}
             shouldReduceMotion={shouldReduceMotion}
             isJapanese={isJapanese}
-            scrollVelocity={scrollVelocity}
+            swaySignal={swaySignal}
           />
         ))}
       </div>

@@ -134,6 +134,6 @@
     "doc_shokumu": "職務経歴書 (Shokumu Keirekisho)",
     "download_button": "🖨️ Download / Print PDF",
     "print_button": "🖨️ Print / Save as PDF",
-    "print_hint": "Use your browser’s print function (Cmd/Ctrl + P) for best results"
+    "print_hint": "Prints to one page. Save as PDF from the print dialog."
   }
 }
