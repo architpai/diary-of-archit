@@ -15,8 +15,11 @@
     "pin_fuji": "富士山 — 標高3,776mのドヤ顔",
     "pin_mumbai": "Scorpio Marine ’19",
     "mumbai_inset": "ムンバイ — ページの西へ6,700km（縮尺は気にしない）",
-    "map_note": "東海道 — 本物の標高データから測量。地図づくりが本業です。",
-    "cartographer": "図1 — 地図職人（私）"
+    "map_note": "東海道 — 本物の標高データから測量",
+    "cartographer": "図1 — 地図職人（私）",
+    "margin_credit": "測量・作図 アーチット・パイ · 2026 · 精度は気分次第",
+    "cta_resume": "正式な測量記録",
+    "cta_resume_sub": "履歴書・活字版"
   },
   "timeline": {
     "title_diary": "これまでの道のり...",

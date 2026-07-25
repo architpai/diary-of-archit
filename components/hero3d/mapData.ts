@@ -22,6 +22,11 @@ export interface TerrainMap {
   id: "tokaido" | "mumbai";
   bounds: HeightmapBounds;
   texture: string;
+  /**
+   * Low-resolution sibling (scripts/make-terrain-lod.mjs) rendered on first
+   * paint so the map is present immediately; `texture` swaps in behind it.
+   */
+  textureLod: string;
   /** World-space plane size */
   width: number;
   depth: number;
@@ -54,6 +59,7 @@ export const TERRAIN_MAPS: Record<TerrainMap["id"], TerrainMap> = {
     id: "tokaido",
     bounds: tokaidoBounds,
     texture: "/terrain/tokaido-heightmap.png",
+    textureLod: "/terrain/tokaido-heightmap-lod.png",
     width: WORLD_WIDTH,
     depth: WORLD_DEPTH,
     heightScale: HEIGHT_SCALE,
@@ -64,6 +70,7 @@ export const TERRAIN_MAPS: Record<TerrainMap["id"], TerrainMap> = {
     id: "mumbai",
     bounds: mumbaiBounds,
     texture: "/terrain/mumbai-heightmap.png",
+    textureLod: "/terrain/mumbai-heightmap-lod.png",
     width: MUMBAI_WIDTH,
     depth: MUMBAI_WIDTH * (mumbaiBounds.height / mumbaiBounds.width),
     // Slightly stronger exaggeration: the Sanjay Gandhi hills are gentle and

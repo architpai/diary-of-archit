@@ -30,6 +30,10 @@ export default function MapScrollNav() {
   const { t } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const [activeSection, setActiveSection] = useState(0);
+  // The tabs normally sit 55px off the right edge, showing only a coloured
+  // sliver, which asks the reader to memorise a palette they were never taught.
+  // So they arrive fully out, name showing, then file themselves away.
+  const [introducing, setIntroducing] = useState(true);
 
   const sections: Section[] = useMemo(() => [
     { id: 'hero', label: t('nav.home') },
@@ -52,6 +56,12 @@ export default function MapScrollNav() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [sections]);
 
+  useEffect(() => {
+    // Long enough to read five short words, short enough not to be furniture.
+    const timer = window.setTimeout(() => setIntroducing(false), 2600);
+    return () => window.clearTimeout(timer);
+  }, []);
+
   const scrollToSection = (i: number) => {
     const el = document.getElementById(sections[i].id);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -73,8 +83,8 @@ export default function MapScrollNav() {
               className="relative cursor-pointer block text-right rounded-l-lg focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ink"
               style={{ transformOrigin: 'right center' }}
               animate={{
-                x: isActive ? 0 : 55,
-                rotate: isActive ? 0 : tilt,
+                x: isActive || introducing ? 0 : 55,
+                rotate: isActive || introducing ? 0 : tilt,
               }}
               whileHover={{ x: 0, rotate: 0 }}
               whileFocus={{ x: 0, rotate: 0 }}
@@ -115,7 +125,10 @@ export default function MapScrollNav() {
           target (the serious-mode toggle now lives bottom-right, so the top-
           right is free of collisions). */}
       <div className="fixed top-3 left-16 z-50 flex md:hidden items-center gap-0.5 pl-2 pr-3 py-1 rounded-full"
-        style={{ backgroundColor: 'rgba(255,249,229,0.9)', boxShadow: '0 2px 10px rgba(0,0,0,0.15)' }}
+        // Opaque, not 0.9 alpha. Floating over the relief map and live body copy,
+        // a translucent pill let card text and pin labels show through it, which
+        // read as a rendering fault rather than as a control.
+        style={{ backgroundColor: 'var(--paper)', boxShadow: '0 2px 10px rgba(45,45,45,0.22)' }}
       >
         {sections.map((s, i) => {
           const isActive = activeSection === i;
@@ -124,8 +137,7 @@ export default function MapScrollNav() {
             <button
               key={s.id}
               onClick={() => scrollToSection(i)}
-              className="flex items-center justify-center rounded-full focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ink"
-              style={{ width: '28px', height: '40px' }}
+              className="mapnav-dot-hit flex items-center justify-center rounded-full focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ink"
               aria-label={s.label}
               aria-current={isActive ? 'true' : undefined}
             >

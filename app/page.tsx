@@ -14,14 +14,15 @@ import MapBackdrop from "@/components/hero3d/MapBackdrop";
 export default function Home() {
   return (
     <main className="notebook-paper min-h-screen">
-      {/* The persistent hand-drawn map the whole diary is drawn on */}
-      <MapBackdrop />
-
-      {/* Map Scroll Navigation */}
-      <MapScrollNav />
+      <a href="#hero" className="skip-link">
+        Skip to content
+      </a>
 
       {/* Language Toggle */}
       <LanguageToggle />
+
+      {/* Map Scroll Navigation */}
+      <MapScrollNav />
 
       {/* Serious Mode Toggle */}
       <SeriousModeToggle />
@@ -51,6 +52,12 @@ export default function Home() {
         {/* Footer */}
         <DiaryFooter />
       </div>
+
+      {/* The persistent hand-drawn map the whole diary is drawn on. It is
+          `fixed inset-0 z-0`, so its DOM position is purely a tab-order
+          decision: rendered first, its clickable pin labels became the first
+          four stops on the page, ahead of the navigation and the hero. */}
+      <MapBackdrop />
     </main>
   );
 }

@@ -1162,6 +1162,12 @@ body {
     gap: 7px;
     padding: 3px 10px;
     border-radius: 15px 19px 13px 21px / 19px 13px 21px 15px;
+    /* Long company names on a 390px column used to run off the right edge and
+       get clipped mid-word ("…Startu"). Let the tag wrap instead: a two-line
+       hand-drawn label still reads as a label, a truncated one reads as a bug. */
+    white-space: normal;
+    max-width: 54vw;
+    text-align: left;
   }
 
   .terrain-pin-dot {
@@ -1193,19 +1199,138 @@ body {
 
 /* Hero subtitle reads as an annotation inked onto the chart — a soft paper
    breath that melts into the map, not a pasted-on bordered card. */
-.hero-map-annotation {
+/* Mobile section dots. The tap target stays 40px tall everywhere; only the
+   horizontal pitch tightens on the narrowest phones, so the pill plus the
+   active section name still clears the language toggle at 320px. */
+.mapnav-dot-hit {
+  width: 28px;
+  height: 40px;
+}
+
+@media (max-width: 359px) {
+  .mapnav-dot-hit {
+    width: 23px;
+  }
+}
+
+/* Keyboard escape hatch past the fixed chrome. Torn-paper tab, not a blue bar. */
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  left: 50%;
+  z-index: 100;
+  transform: translate(-50%, -160%);
+  padding: 0.5rem 1.1rem;
+  font-family: var(--font-handwritten);
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 2px solid var(--ink);
+  border-radius: 10px 5px 9px 6px / 6px 10px 5px 11px;
+  box-shadow: -2px 3px 0 rgba(45, 45, 45, 0.24);
+  text-decoration: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skip-link:focus-visible {
+  transform: translate(-50%, 0);
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* The hero's one sentence. It sits over the terrain, where contour hatching
+   used to eat it, so it carries its own patch of paper: a soft wash that fades
+   out rather than a card, so it still reads as ink on the chart. */
+.hero-lede {
   display: inline-block;
-  padding: 0.4rem 2.25rem 0.7rem;
+  margin: 0.6rem auto 0;
+  max-width: 34rem;
+  /* Generous padding so the wash reaches zero INSIDE the box: a gradient that
+     is still tinted at the edge reads as a rectangle sitting on the map. */
+  padding: 0.7rem 3.25rem 0.85rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  text-shadow: 0 1px 7px rgba(255, 249, 229, 0.95);
   background: radial-gradient(
-    ellipse 115% 130% at 50% 45%,
-    rgba(255, 249, 229, 0.9) 0%,
-    rgba(255, 249, 229, 0.62) 48%,
-    rgba(255, 249, 229, 0) 100%
+    ellipse 92% 115% at 50% 50%,
+    rgba(255, 249, 229, 0.95) 0%,
+    rgba(255, 249, 229, 0.9) 34%,
+    rgba(255, 249, 229, 0.52) 62%,
+    rgba(255, 249, 229, 0) 86%
   );
 }
 
-.hero-map-annotation p {
-  text-shadow: 0 1px 6px rgba(255, 249, 229, 0.92);
+@media (min-width: 768px) {
+  .hero-lede {
+    font-size: 1.05rem;
+  }
+}
+
+/* The one thing to click above the fold, drawn as an index tab taped to the
+   chart rather than a button. */
+.hero-cta {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+  padding: 0.55rem 1.4rem 0.5rem;
+  background: var(--parchment);
+  border: 2px solid var(--ink);
+  border-radius: 12px 5px 10px 6px / 6px 11px 5px 12px;
+  box-shadow: -3px 3px 0 rgba(45, 45, 45, 0.22);
+  transform: rotate(-1.2deg);
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-cta:hover,
+.hero-cta:focus-visible {
+  transform: rotate(0deg) translateY(-2px);
+  box-shadow: -4px 5px 0 rgba(45, 45, 45, 0.26);
+}
+
+.hero-cta:active {
+  transform: rotate(0deg) translateY(0);
+  box-shadow: -2px 2px 0 rgba(45, 45, 45, 0.26);
+}
+
+/* the strip of masking tape holding the tab to the page */
+.hero-cta-tape {
+  position: absolute;
+  top: -0.6rem;
+  left: 50%;
+  width: 3.1rem;
+  height: 1.05rem;
+  background: rgba(245, 233, 184, 0.85);
+  box-shadow: 0 1px 3px rgba(45, 45, 45, 0.16);
+  transform: translateX(-50%) rotate(-3.5deg);
+}
+
+.hero-cta-label {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.25;
+}
+
+.hero-cta-sub {
+  font-size: 0.74rem;
+  color: var(--sepia);
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-cta,
+  .hero-cta:hover,
+  .hero-cta:focus-visible {
+    transition: none;
+    transform: rotate(-1.2deg);
+  }
 }
 
 /* Handwritten coordinates stamp on journey cards */
@@ -1486,13 +1611,6 @@ a:focus-visible .wax-seal {
 }
 
 /* — Scale bar (hero ornament) — */
-.scale-bar-caption {
-  font-family: var(--font-handwritten);
-  font-size: 0.75rem;
-  color: rgba(45, 45, 45, 0.55);
-  letter-spacing: 0.04em;
-}
-
 /* One shared caption convention for the line under each section headline. */
 .section-subhint {
   color: var(--sepia);

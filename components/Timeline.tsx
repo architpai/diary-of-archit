@@ -362,8 +362,17 @@ export default function Timeline() {
               <InkRoute className="w-9 h-9 shrink-0 text-ink/80" />
               {t('timeline.title_diary')}
             </h2>
+            {/* The positioning line, moved down out of the hero: it was competing
+                with the role sentence up there, and it reads better as the thing
+                that opens the story than as a second headline. */}
             <p
-              className="handwritten text-ink/50 text-sm mt-1"
+              className="handwritten text-ink text-base md:text-lg mt-2 max-w-[26rem] mx-auto leading-snug"
+              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            >
+              {t('hero.subtitle')}
+            </p>
+            <p
+              className="handwritten text-sepia text-sm mt-2"
               style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
             >
               {t('timeline.map_hint')}

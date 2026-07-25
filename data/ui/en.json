@@ -15,8 +15,11 @@
     "pin_fuji": "Mt. Fuji — 3,776m of showing off",
     "pin_mumbai": "Scorpio Marine ’19",
     "mumbai_inset": "Mumbai — 6,700 km west of the page (not to scale)",
-    "map_note": "Tōkaidō corridor — surveyed from real elevation data. I make maps for a living.",
-    "cartographer": "fig. 1 — the cartographer"
+    "map_note": "Tōkaidō corridor — surveyed from real elevation data",
+    "cartographer": "fig. 1 — the cartographer",
+    "margin_credit": "surveyed & drawn by Archit Pai · 2026 · not even slightly accurate",
+    "cta_resume": "the formal survey",
+    "cta_resume_sub": "résumé, in plain type"
   },
   "timeline": {
     "title_diary": "The Journey So Far...",

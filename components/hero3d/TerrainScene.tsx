@@ -15,6 +15,7 @@ import {
   type TerrainMap,
 } from "./mapData";
 import { sceneState } from "./sceneState";
+import { markMapReady } from "./mapReady";
 import UnchartedWaters from "./UnchartedWaters";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -30,6 +31,24 @@ const HERO_TUNE: Record<string, number> =
         {}) as Record<string, number>)
     : {};
 
+/** Height data, not colour: no sRGB decode, no wrapping, no mipmaps. */
+function configureHeightmap(tex: THREE.Texture) {
+  tex.colorSpace = THREE.NoColorSpace;
+  tex.minFilter = THREE.LinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  tex.generateMipmaps = false;
+  tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+}
+
+/** The fragment shader samples neighbours for slope, so the texel step has to
+ *  match the texture actually bound, not the full-resolution bounds. */
+function texelSize(tex: THREE.Texture, map: TerrainMap) {
+  const image = tex.image as { width?: number; height?: number } | undefined;
+  const w = image?.width ?? map.bounds.width;
+  const h = image?.height ?? map.bounds.height;
+  return new THREE.Vector2(1 / w, 1 / h);
+}
+
 function Terrain({
   map,
   reduceMotion,
@@ -37,21 +56,20 @@ function Terrain({
   map: TerrainMap;
   reduceMotion: boolean;
 }) {
-  const heightmap = useTexture(map.texture);
+  // First paint renders the small LOD heightmap so the chart is on the page
+  // immediately; the full-resolution field swaps in underneath when it lands.
+  const heightmap = useTexture(map.textureLod);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
   const uniforms = useMemo(() => {
-    heightmap.colorSpace = THREE.NoColorSpace;
-    heightmap.minFilter = THREE.LinearFilter;
-    heightmap.magFilter = THREE.LinearFilter;
-    heightmap.wrapS = heightmap.wrapT = THREE.ClampToEdgeWrapping;
+    configureHeightmap(heightmap);
     return {
       uHeightmap: { value: heightmap },
       uHeightScale: { value: map.heightScale },
       uReveal: { value: reduceMotion ? 1 : 0 },
       uTime: { value: 0 },
       uTexel: {
-        value: new THREE.Vector2(1 / map.bounds.width, 1 / map.bounds.height),
+        value: texelSize(heightmap, map),
       },
       // Keep grain/ruled-line/stroke frequencies constant in world units so
       // inset maps read as part of the same drawing.
@@ -67,9 +85,36 @@ function Terrain({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [heightmap]);
 
+  // Swap the full-resolution field in once it has downloaded. The LOD is already
+  // on screen by then, so this reads as the drawing sharpening rather than as
+  // content arriving.
+  useEffect(() => {
+    let cancelled = false;
+    const loader = new THREE.TextureLoader();
+    let loaded: THREE.Texture | null = null;
+    loader.load(map.texture, (tex) => {
+      if (cancelled) {
+        tex.dispose();
+        return;
+      }
+      loaded = tex;
+      configureHeightmap(tex);
+      const mat = materialRef.current;
+      if (!mat) return;
+      mat.uniforms.uHeightmap.value = tex;
+      mat.uniforms.uTexel.value.copy(texelSize(tex, map));
+    });
+    return () => {
+      cancelled = true;
+      loaded?.dispose();
+    };
+  }, [map]);
+
   useFrame((state) => {
     const mat = materialRef.current;
     if (!mat) return;
+    // The chart is on the page: the hero's ink annotations may now appear.
+    markMapReady();
     mat.uniforms.uTime.value = state.clock.elapsedTime;
     if (!reduceMotion && mat.uniforms.uReveal.value < 1) {
       const t = Math.min(state.clock.elapsedTime / INTRO_SECONDS, 1);
@@ -330,6 +375,12 @@ function CameraRig({ reduceMotion }: { reduceMotion: boolean }) {
     sceneState.tail =
       lastWaypointCenter.current > 0
         ? THREE.MathUtils.clamp(past / (tvh * 0.4), 0, 1)
+        : 0;
+
+    // Hero quiet zone on phone widths (see sceneState.heroQuiet).
+    sceneState.heroQuiet =
+      window.innerWidth < 640
+        ? THREE.MathUtils.clamp(1 - window.scrollY / (tvh * 0.5), 0, 1)
         : 0;
 
     const ow = 1 - sum;
@@ -646,7 +697,8 @@ function PinMarker({
         sceneState.closeup,
         sceneState.network,
         sceneState.uncharted,
-        sceneState.tail
+        sceneState.tail,
+        sceneState.heroQuiet
       );
       // Non-focused labels clear out fast once the camera commits to any place,
       // so the focused pin's pill never competes with stray captions drifting
