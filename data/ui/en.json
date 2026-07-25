@@ -99,7 +99,8 @@
     "kit_frontier_figure_note": "logged interactions in 3 months",
     "kit_frontier_note": "Plus a locally fine-tuned Qwen-3.5-27B with RAG over internal docs, and a SAM + DINO vision pipeline that lets one operator do the counting work of five.",
     "kit_evidence": "field evidence",
-    "kit_toolkit": "in the kit"
+    "kit_toolkit": "in the kit",
+    "map_hint_touch": "tap a kit — each holds one piece of evidence"
   },
   "sneakpeek": {
     "title": "Off the Chart",

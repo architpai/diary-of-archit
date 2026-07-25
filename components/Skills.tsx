@@ -28,6 +28,26 @@ import BasecampLottie from './BasecampLottie';
 // but fall back to useEffect on the server so SSR doesn't warn.
 const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
+/**
+ * Below this width the folded map stops being an interaction surface. Its six
+ * markers measure 23px there, which is half a comfortable tap target, and they
+ * carry no visible label, so the section becomes a row of labelled chips with
+ * the map kept as illustration.
+ */
+const NARROW_QUERY = '(max-width: 767px)';
+
+function useIsNarrow() {
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(NARROW_QUERY);
+    const sync = () => setNarrow(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+  return narrow;
+}
+
 interface Skill {
   id?: string;
   name: string;
@@ -126,6 +146,7 @@ export default function Skills() {
   const { content, t } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const [activeGroupId, setActiveGroupId] = useState<string | null>(null);
+  const isNarrow = useIsNarrow();
   const skills = content.skills as Skill[];
 
   // id → localized skill name, so a group's pins can list their tools.
@@ -156,20 +177,6 @@ export default function Skills() {
       `.skills-basecamp-pin-${activeGroup.className}`
     );
     const wrap = el.parentElement;
-
-    // Narrow screens: the card does not float over the map at all. Anchored to a
-    // pin it had to be clamped back into the viewport, which landed it on top of
-    // the section heading and most of the map it was describing. Below the map
-    // there is already empty page, so it goes there.
-    if (wrap && window.innerWidth < 768) {
-      el.style.left = '0px';
-      el.style.right = 'auto';
-      el.style.top = `${wrap.getBoundingClientRect().height + 14}px`;
-      el.style.setProperty('--pop-dx', '0px');
-      el.style.setProperty('--pop-dy', '0px');
-      return;
-    }
-
     if (pin && wrap) {
       const pr = pin.getBoundingClientRect();
       const wr = wrap.getBoundingClientRect();
@@ -293,7 +300,7 @@ export default function Skills() {
             style={{ opacity: activeGroup ? 0 : 1 }}
             aria-hidden={activeGroup ? true : undefined}
           >
-            {t('skills.map_hint')}
+            {t(isNarrow ? 'skills.map_hint_touch' : 'skills.map_hint')}
           </p>
 
           <div className="skills-basecamp-map-stage">
@@ -320,6 +327,11 @@ export default function Skills() {
                     title={t(group.labelKey)}
                     aria-expanded={group.id === activeGroupId}
                     aria-controls={group.id === activeGroupId ? popupId : undefined}
+                    // Narrow screens drive this from the chip row below, so the
+                    // 23px markers stop being duplicate (and barely tappable)
+                    // stops in the tab order.
+                    tabIndex={isNarrow ? -1 : 0}
+                    aria-hidden={isNarrow || undefined}
                     // One model: hover, focus, or tap all OPEN this group; the
                     // wrap's onMouseLeave + onBlur close it. (A toggle on click
                     // would cancel the open that mouseenter/focus just set,
@@ -342,7 +354,7 @@ export default function Skills() {
                 );
               })}
 
-              {activeGroup && (
+              {activeGroup && !isNarrow && (
                 <div
                   ref={popupRef}
                   id={popupId}
@@ -393,6 +405,85 @@ export default function Skills() {
               )}
             </div>
           </div>
+
+          {/* Narrow screens: a labelled, thumb-sized control instead of six
+              unlabelled 23px circles, and the card below it in normal flow
+              rather than floating over the map it describes. */}
+          {isNarrow && (
+            <div className="kit-chips" role="group" aria-label={t('skills.map_hint_touch')}>
+              {SKILL_GROUPS.map((group) => {
+                const Icon = group.Icon;
+                const isOpen = group.id === activeGroupId;
+                return (
+                  <button
+                    key={group.id}
+                    type="button"
+                    className={`kit-chip${isOpen ? ' kit-chip-open' : ''}`}
+                    style={{ '--chip-color': group.color } as CSSProperties}
+                    aria-expanded={isOpen}
+                    aria-controls={isOpen ? popupId : undefined}
+                    onClick={() =>
+                      setActiveGroupId((cur) => (cur === group.id ? null : group.id))
+                    }
+                  >
+                    <span className="kit-chip-glyph" aria-hidden="true">
+                      <Icon color={PIN_GLYPH_INK} />
+                    </span>
+                    <span className="kit-chip-label handwritten">{t(group.labelKey)}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {isNarrow && activeGroup && (
+            <div
+              id={popupId}
+              className="skills-basecamp-popup kit-card-flow"
+              style={{ '--pin-color': activeGroup.color } as CSSProperties}
+              role="group"
+              aria-label={t(activeGroup.labelKey)}
+            >
+                  <span className="skills-basecamp-popup-head">
+                    <activeGroup.Icon
+                      className="skills-basecamp-popup-glyph"
+                      color={activeGroup.color}
+                    />
+                    {t(activeGroup.labelKey)}
+                  </span>
+
+                  {/* One system, one number, one line of context: the evidence
+                      the marker was promising. */}
+                  <p className="kit-system handwritten">
+                    {t(`skills.kit_${activeGroup.id}_system`)}
+                  </p>
+
+                  <p className="kit-figure">
+                    <span className="kit-figure-value">
+                      {t(`skills.kit_${activeGroup.id}_figure`)}
+                    </span>
+                    <span className="kit-figure-note handwritten">
+                      {t(`skills.kit_${activeGroup.id}_figure_note`)}
+                    </span>
+                  </p>
+
+                  <p className="kit-note handwritten">
+                    {t(`skills.kit_${activeGroup.id}_note`)}
+                  </p>
+
+                  <span className="kit-toolkit-label handwritten">
+                    {t('skills.kit_toolkit')}
+                  </span>
+                  <ul className="skills-basecamp-popup-list">
+                    {groupSkillNames(activeGroup).map((name) => (
+                      <li key={name}>{name}</li>
+                    ))}
+                  </ul>
+                  {activeGroup.frontier && (
+                    <span className="skills-basecamp-popup-note">{t('skills.tier_charting')}</span>
+                  )}
+            </div>
+          )}
         </div>
     </section>
   );

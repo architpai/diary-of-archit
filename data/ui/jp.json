@@ -99,7 +99,8 @@
     "kit_frontier_figure_note": "件の対話ログ／3か月",
     "kit_frontier_note": "社内文書にRAGを張ったQwen-3.5-27Bのローカル微調整、SAM＋DINOの在庫カウント（5人分を1人で）も。",
     "kit_evidence": "現地の記録",
-    "kit_toolkit": "道具箱の中身"
+    "kit_toolkit": "道具箱の中身",
+    "map_hint_touch": "道具箱をタップ — それぞれに記録がひとつ"
   },
   "sneakpeek": {
     "title": "地図の外",

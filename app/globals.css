@@ -1266,6 +1266,17 @@ body {
   }
 }
 
+/* A rubber stamp is one impression, not a paragraph. "TOKYO · ENTRY JAN 2024 -
+   NOV 2024" wrapped to two lines at 390px and three at 320px, which broke the
+   illusion, so the impression shrinks on narrow columns instead. */
+@media (max-width: 420px) {
+  .passport-stamp {
+    font-size: 0.92em;
+    letter-spacing: 0.07em;
+    padding: 3px 9px 4px;
+  }
+}
+
 /* Mobile section dots. The tap target stays 40px tall everywhere; only the
    horizontal pitch tightens on the narrowest phones, so the pill plus the
    active section name still clears the language toggle at 320px. */
@@ -2047,6 +2058,94 @@ a:focus-visible .wax-seal {
   margin-top: 0.35rem;
 }
 
+/* ---- Narrow-screen kit control --------------------------------------------
+   A scroll-snapped row of labelled chips. Replaces tapping 23px unlabelled
+   circles on the folded map, which is neither a legible nor a hittable target
+   at phone widths. */
+.kit-chips {
+  display: flex;
+  gap: 0.55rem;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding: 0.25rem 1rem 0.6rem;
+  margin-top: 0.9rem;
+  /* the row is a scroller, not a scrollbar */
+  scrollbar-width: none;
+}
+
+.kit-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.kit-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex: 0 0 auto;
+  scroll-snap-align: center;
+  min-height: 44px; /* comfortable thumb target */
+  padding: 0.4rem 0.85rem 0.4rem 0.4rem;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 14px 6px 12px 7px / 7px 13px 6px 14px;
+  box-shadow: -2px 2px 0 rgba(45, 45, 45, 0.18);
+  color: var(--ink);
+  transition:
+    transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kit-chip-open {
+  background: var(--parchment);
+  box-shadow: -3px 3px 0 rgba(45, 45, 45, 0.26);
+  transform: translateY(-1px);
+}
+
+.kit-chip:active {
+  transform: translateY(0);
+  box-shadow: -1px 1px 0 rgba(45, 45, 45, 0.26);
+}
+
+.kit-chip-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--chip-color, var(--ink));
+  flex: 0 0 auto;
+}
+
+.kit-chip-glyph svg {
+  width: 18px;
+  height: 18px;
+}
+
+.kit-chip-label {
+  font-size: 0.9rem;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+/* The card in normal flow under the chips: no float, no clamping, no transform. */
+.kit-card-flow {
+  position: static;
+  transform: rotate(-0.6deg);
+  width: auto;
+  max-width: none;
+  margin: 0.3rem 1rem 0;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kit-chip,
+  .kit-chip-open {
+    transition: none;
+    transform: none;
+  }
+}
+
 /* Marker names on the folded map, so the six kits are not anonymous circles. */
 .skills-basecamp-pin-name {
   display: none;
@@ -2150,7 +2249,7 @@ a:focus-visible .wax-seal {
   /* Pin size and pin positions are fully fluid now (cqw + %), and the lottie
      lift is cqw — so the old phone-specific pin re-layout and margin overrides
      are gone; the desktop coordinates scale down correctly on their own. */
-  /* The card sits BELOW the folded map on phones (Skills.tsx anchors it there),
+  /* The card sits BELOW the map on phones, in normal flow under the chip row,
      so it no longer needs the float-above-the-pin transform, and it can use the
      full column width instead of being squeezed to 78vw. */
   .skills-basecamp-popup {
@@ -2158,6 +2257,12 @@ a:focus-visible .wax-seal {
     transform: rotate(-0.8deg);
     width: 100%;
     max-width: none;
+  }
+
+  /* The hint sat right on the folded map's top edge and the cloud doodle. */
+  .skills-basecamp-hint {
+    font-size: 1rem;
+    margin-bottom: 0.9rem;
   }
 
   .kit-figure-value {
