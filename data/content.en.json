@@ -33,14 +33,14 @@
       "id": "exp-1",
       "date": "Dec 2024 – Present",
       "location": "Osaka",
-      "professionalTitle": "First Engineering Hire",
+      "professionalTitle": "Team Lead",
       "company": "Stealth Geospatial Startup",
       "diaryNarrative": "As my Tokyo chapter was closing, a stealth map startup asked me to be their first engineer. So I said yes to a blank repo and a mandate: build the whole platform. 220 million map features later, I'm still saying yes to blank repos.",
       "resumeBulletPoints": [
-        "First engineering hire; lead 3 engineers and own the platform architecture, CI/CD, and code review",
+        "Joined as the first engineering hire; now lead 3 engineers and own the platform architecture, data-ingestion and CI/CD pipelines, and code review",
         "Designed and shipped the flagship map-tile serving architecture — a hybrid pipeline (pre-emptive regeneration on data change + cache-on-serve) that delivers live-updating tiles at static-tile cost. Serves 220M+ features (70M building frames, 8K+ indoor sites, 150M+ outdoor POIs); cut worst-case tile latency from >1 min to ~50 ms; load-tested to 200K users",
-        "Lead, end-to-end, a waste-collection logistics platform: route planning, collection-point management, truck scheduling, an iPad driver app, real-time GPS tracking, a self-built LiveKit calling server, and an analytics dashboard — in production with 3 commercial sanitation operators, 24/7",
-        "Shipped applied-AI systems: a voice LLM concierge for a large Hokkaido commercial complex (STT/TTS + GPT-4o; ~12K logged interactions in 3 months), a natural-language GIS exploration + internal-support agent (locally fine-tuned Qwen-3.5-27B + RAG over internal docs), and a computer-vision inventory pipeline (SAM + DINO) that lets one operator do the counting work of five"
+        "Lead development of a waste-collection logistics platform: route planning, collection-point management, truck scheduling, an iPad driver app, real-time GPS tracking, a self-hosted LiveKit calling server, and an analytics dashboard — in production with 3 commercial sanitation operators, 24/7",
+        "Shipped applied-AI systems: a voice LLM concierge for a large Hokkaido commercial complex (STT/TTS + GPT-4o; ~150 interactions/day), a natural-language GIS exploration + internal-support agent (locally fine-tuned Qwen-3.5-27B; Unlimited-OCR + vector search over internal docs), and a computer-vision inventory pipeline (SAM + DINO) that lets one operator do the counting work of five"
       ],
       "isResumeWorthy": true,
       "doodleType": "celebration"
@@ -216,7 +216,7 @@
     "location": "Osaka, Japan",
     "portfolio": "",
     "subline": "Bilingual English / Japanese · Japan work-authorized (Engineer/Specialist in Humanities/International Services)",
-    "summary": "Systems engineer who takes products from 0→1 across geospatial platforms, logistics, and applied AI. I dive into unfamiliar domains, find the real engineering problem, and ship — from a 220M-feature map-tile serving architecture to production LLM and computer-vision systems. Currently the first engineering hire at a geospatial startup in Osaka; previously an early engineer on an in-house location platform at SoftBank.",
+    "summary": "Systems engineer who takes products from 0→1 across geospatial platforms, logistics, and applied AI. I dive into unfamiliar domains, find the real engineering problem, and ship — from a 220M-feature map-tile serving architecture to production LLM and computer-vision systems. Currently team lead at a geospatial startup in Osaka, where I joined as the first engineering hire; previously an early engineer on an in-house location platform at SoftBank.",
     "skillGroups": [
       {
         "label": "Geospatial / GIS",
