@@ -330,7 +330,7 @@
       },
       {
         "label": "応用AI・ML",
-        "items": "LLM連携、RAG、Embeddings、ローカルファインチューニング（Qwen）、コンピュータビジョン（SAM・DINO）、STT/TTS"
+        "items": "LLM連携、RAG、Embeddings、ベクトル検索、OCR文書取り込み、ローカルファインチューニング（Qwen）、コンピュータビジョン（SAM・DINO）、STT/TTS"
       },
       {
         "label": "プログラミング言語",
