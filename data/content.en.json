@@ -224,7 +224,7 @@
       },
       {
         "label": "Applied AI / ML",
-        "items": "LLM integration, RAG, embeddings, local model fine-tuning (Qwen), computer vision (SAM, DINO), STT/TTS"
+        "items": "LLM integration, RAG, embeddings, vector search, OCR document ingestion, local model fine-tuning (Qwen), computer vision (SAM, DINO), STT/TTS"
       },
       {
         "label": "Languages",
