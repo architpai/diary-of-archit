@@ -116,7 +116,7 @@ export default function ResumeEN() {
         ))}
       </section>
 
-      {/* Languages & Certifications */}
+      {/* Languages */}
       <section className="mb-6 break-inside-avoid">
         <h2 className="text-lg font-bold border-b border-black mb-3">{t('resume.languages_title')}</h2>
         <div className="grid grid-cols-1 gap-y-1 text-sm">
@@ -126,13 +126,6 @@ export default function ResumeEN() {
               <span className="text-gray-700 min-w-0 break-words">{lang.level}</span>
             </div>
           ))}
-          <div className="flex gap-2">
-            <span className="font-semibold min-w-[110px] shrink-0">{t('resume.certifications_title')}:</span>
-            <span className="text-gray-700 min-w-0 break-words">
-              {resume.certifications.map((c) => `${c.name} (${c.date})`).join(' · ')}
-              {resume.certificationsNote ? ` · ${resume.certificationsNote}` : ''}
-            </span>
-          </div>
           <div className="flex gap-2">
             <span className="font-semibold min-w-[110px] shrink-0">{t('resume.work_auth_title')}:</span>
             <span className="text-gray-700 min-w-0 break-words">{resume.workAuthorization}</span>

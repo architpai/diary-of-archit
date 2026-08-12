@@ -164,33 +164,6 @@ export default function Rirekisho() {
         </tbody>
       </table>
 
-      {/* 免許・資格 */}
-      <table className="w-full border-collapse mt-4 border-2 border-black text-sm">
-        <thead>
-          <tr className="bg-gray-50">
-            <th className="border border-black px-2 py-1 w-14 text-center">年</th>
-            <th className="border border-black px-2 py-1 w-14 text-center">月</th>
-            <th className="border border-black px-2 py-1 text-center">免許・資格</th>
-          </tr>
-        </thead>
-        <tbody>
-          {r.certifications.map((c, i) => (
-            <tr key={i}>
-              <td className="border border-black px-2 py-1 text-center">{c.year}</td>
-              <td className="border border-black px-2 py-1 text-center">{c.month}</td>
-              <td className="border border-black px-2 py-1">{c.text}</td>
-            </tr>
-          ))}
-          {r.certificationsNote && (
-            <tr>
-              <td className="border border-black" />
-              <td className="border border-black" />
-              <td className="border border-black px-2 py-1 text-xs text-gray-700">{r.certificationsNote}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-
       {/* 特筆すべきスキル */}
       <div className="border-2 border-black mt-4">
         <div className="bg-gray-50 border-b border-black px-2 py-1 text-sm font-bold">特筆すべきスキル</div>
@@ -205,7 +178,7 @@ export default function Rirekisho() {
       </div>
 
       {/* 志望動機・自己PR */}
-      <div className="border-2 border-black border-t-0 mt-4">
+      <div className="border-2 border-black mt-4">
         <div className="bg-gray-50 border-b border-black px-2 py-1 text-sm font-bold">
           志望動機、自己PRなど
         </div>
@@ -213,7 +186,7 @@ export default function Rirekisho() {
       </div>
 
       {/* 言語能力 / 趣味 */}
-      <div className="border-2 border-black border-t-0 mt-4">
+      <div className="border-2 border-black mt-4">
         <div className="flex border-b border-black">
           <div className={`${labelCell} ${labelW} shrink-0 flex items-center`}>言語能力</div>
           <div className="flex-1 px-3 py-2 text-sm space-y-0.5">
@@ -240,7 +213,7 @@ export default function Rirekisho() {
       </div>
 
       {/* 本人希望記入欄 */}
-      <div className="border-2 border-black border-t-0 mt-4 mb-4">
+      <div className="border-2 border-black mt-4 mb-4">
         <div className="bg-gray-50 border-b border-black px-2 py-1 text-xs font-bold">
           本人希望記入欄（特に給料、職種、勤務時間、勤務地、その他についての希望などがあれば記入）
         </div>

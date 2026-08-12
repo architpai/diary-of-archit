@@ -38,7 +38,7 @@
       "diaryNarrative": "As my Tokyo chapter was closing, a stealth map startup asked me to be their first engineer. So I said yes to a blank repo and a mandate: build the whole platform. 220 million map features later, I'm still saying yes to blank repos.",
       "resumeBulletPoints": [
         "Joined as the first engineering hire; now lead 3 engineers and own the platform architecture, data-ingestion and CI/CD pipelines, and code review",
-        "Designed and shipped the flagship map-tile serving architecture — a hybrid pipeline (pre-emptive regeneration on data change + cache-on-serve) that delivers live-updating tiles at static-tile cost. Serves 220M+ features (70M building frames, 8K+ indoor sites, 150M+ outdoor POIs); cut worst-case tile latency from >1 min to ~50 ms; load-tested to 200K users",
+        "Designed and shipped the flagship map-tile serving architecture — a hybrid pipeline (pre-emptive regeneration on data change + cache-on-serve) that delivers live-updating tiles at static-tile cost, with the whole stack containerized and run on Docker Compose. Serves 220M+ features (70M building frames, 8K+ indoor sites, 150M+ outdoor POIs); cut worst-case tile latency from >1 min to ~50 ms; load-tested to 200K users",
         "Lead development of a waste-collection logistics platform: route planning, collection-point management, truck scheduling, an iPad driver app, real-time GPS tracking, a self-hosted LiveKit calling server, and an analytics dashboard — in production with 3 commercial sanitation operators, 24/7",
         "Shipped applied-AI systems: a voice LLM concierge for a large Hokkaido commercial complex (STT/TTS + GPT-4o; ~150 interactions/day), a natural-language GIS exploration + internal-support agent (locally fine-tuned Qwen-3.5-27B; Unlimited-OCR + vector search over internal docs), and a computer-vision inventory pipeline (SAM + DINO) that lets one operator do the counting work of five"
       ],
@@ -56,6 +56,7 @@
         "First engineering hire on an in-house indoor/outdoor location platform (team of 4); owned the full mapping stack — basemap, indoor rendering, POI, and wayfinding — built 0→1",
         "Sole hands-on engineer for the first 4 months; built the PoCs and demos that won division funding, then became the largest individual contributor across web, backend, and iOS as the team grew 4→11",
         "Delivered a Japan-wide basemap and ~100 indoor venues; the platform secured 7 paying company contracts",
+        "Shipped the platform's first commercial product — employee-location and vehicle build-progress tracking for a major automotive manufacturer (BLE positioning; RFID + QR scanning station-to-station)",
         "Built an LLM-assisted natural-language POI search (embeddings + PGroonga)",
         "Stack: MapLibre GL, Planetiler, OSM + GSI data, PostGIS (routing), Swift/iOS, Azure"
       ],
@@ -228,7 +229,7 @@
       },
       {
         "label": "Languages",
-        "items": "TypeScript / JavaScript, Python, Rust, Go, Swift"
+        "items": "TypeScript / JavaScript, Python, Rust, Go, Swift, Lua"
       },
       {
         "label": "Backend & Data",
@@ -240,7 +241,7 @@
       },
       {
         "label": "Cloud & DevOps",
-        "items": "Azure, Azure DevOps CI/CD, GitHub Actions"
+        "items": "Azure, Docker / Docker Compose, Azure DevOps CI/CD, GitHub Actions"
       }
     ],
     "education": [
@@ -257,24 +258,13 @@
       },
       {
         "name": "Japanese",
-        "level": "Business level — JLPT N3; ~4.5 yrs fully-Japanese work environment; N2 planned Dec 2026"
+        "level": "Business level · ~4.5 years in a fully-Japanese work environment"
       },
       {
         "name": "Hindi",
         "level": "Fluent"
       }
     ],
-    "certifications": [
-      {
-        "date": "Dec 2021",
-        "name": "JLPT N4"
-      },
-      {
-        "date": "Dec 2022",
-        "name": "JLPT N3"
-      }
-    ],
-    "certificationsNote": "JLPT N2 planned Dec 2026",
     "workAuthorization": "Engineer/Specialist in Humanities/International Services visa (Japan) · renewal Apr 2027"
   }
 }

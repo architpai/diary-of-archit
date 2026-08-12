@@ -68,9 +68,10 @@ export default function ResumeJP() {
         <div className="font-bold text-base border-b border-black mb-3">■職務経歴</div>
 
         {shokumu.employers.map((emp, ei) => (
-          <div key={ei} className="mb-6 break-inside-avoid">
-            {/* Employer header */}
-            <div className="bg-gray-50 border border-gray-300 px-3 py-2 mb-3">
+          <div key={ei} className="mb-6">
+            {/* Employer header. Stays whole and drags its first project with it,
+                so a new company never opens with a half-cut banner at a page foot. */}
+            <div className="bg-gray-50 border border-gray-300 px-3 py-2 mb-3 break-inside-avoid break-after-avoid">
               <p className="font-bold text-sm">▼{emp.period}　{emp.name}</p>
               {emp.meta.map((m, mi) => (
                 <p key={mi} className="text-xs text-gray-700 mt-0.5">{m}</p>
@@ -79,13 +80,16 @@ export default function ResumeJP() {
 
             {/* Projects */}
             {emp.projects.map((proj, pi) => (
-              <div key={pi} className="mb-4 border border-gray-300 p-3 break-inside-avoid">
-                <p className="font-semibold text-sm mb-2">
+              // Boxes run 250-440px against a ~980px printable page, so forcing
+              // one to stay whole stranded up to 40% of a page. They split now;
+              // the title is only kept with the body that follows it.
+              <div key={pi} className="mb-4 print:mb-2 border border-gray-300 p-3 print:p-2">
+                <p className="font-semibold text-sm mb-2 print:mb-1 break-after-avoid">
                   {emp.projects.length > 1 ? `【プロジェクト${pi + 1}】` : '【プロジェクト】'}{proj.name}
                 </p>
 
-                <div className="mb-2">
-                  <p className="text-xs font-semibold">【プロジェクト概要】</p>
+                <div className="mb-2 print:mb-1">
+                  <p className="text-xs font-semibold break-after-avoid">【プロジェクト概要】</p>
                   <p className="text-xs text-gray-700">{proj.overview}</p>
                   {'overviewBullets' in proj && proj.overviewBullets && (
                     <ul className="list-none text-xs text-gray-700 mt-1 ml-1 space-y-0.5">
@@ -96,8 +100,8 @@ export default function ResumeJP() {
                   )}
                 </div>
 
-                <div className="mb-2">
-                  <p className="text-xs font-semibold">【担当業務】</p>
+                <div className="mb-2 print:mb-1">
+                  <p className="text-xs font-semibold break-after-avoid">【担当業務】</p>
                   <ul className="list-none text-xs text-gray-700 ml-1 space-y-0.5">
                     {proj.responsibilities.map((r, ri) => (
                       <li key={ri} className="before:content-['・'] before:mr-1">{r}</li>
@@ -106,13 +110,13 @@ export default function ResumeJP() {
                 </div>
 
                 {'achievements' in proj && proj.achievements && (
-                  <div className="mb-2">
-                    <p className="text-xs font-semibold">【実績】</p>
+                  <div className="mb-2 print:mb-1">
+                    <p className="text-xs font-semibold break-after-avoid">【実績】</p>
                     <p className="text-xs text-gray-700">{proj.achievements}</p>
                   </div>
                 )}
 
-                <div className="bg-gray-50 border border-gray-200 rounded p-2 grid grid-cols-1 gap-0.5">
+                <div className="bg-gray-50 border border-gray-200 rounded p-2 print:p-1.5 grid grid-cols-1 print:grid-cols-2 gap-0.5 print:gap-x-3">
                   <SpecRow label="言語" value={'languages' in proj ? proj.languages : undefined} />
                   <SpecRow label="技術" value={'tech' in proj ? proj.tech : undefined} />
                   <SpecRow label="DB" value={'db' in proj ? proj.db : undefined} />
@@ -137,11 +141,13 @@ export default function ResumeJP() {
       </section>
 
       {/* ■テクニカルスキル */}
-      <section className="mb-6 break-inside-avoid">
+      <section className="mb-6">
         <div className="font-bold text-base border-b border-black mb-2">■テクニカルスキル</div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs border-collapse">
-            <thead>
+            {/* Header repeats on every printed page the table spans. Chrome's
+                default thead behaviour here is version-dependent, so say it. */}
+            <thead className="print:table-header-group">
               <tr className="bg-gray-50">
                 <th className="border border-gray-300 px-2 py-1 text-left w-[110px]">種類</th>
                 <th className="border border-gray-300 px-2 py-1 text-left">技術</th>
@@ -149,9 +155,11 @@ export default function ResumeJP() {
                 <th className="border border-gray-300 px-2 py-1 text-left">レベル</th>
               </tr>
             </thead>
-            <tbody>
-              {shokumu.technicalSkills.map((group) =>
-                group.rows.map((row, ri) => (
+            {/* One tbody per 種類 group so the table can break between groups
+                without a rowSpan'd label straddling the page edge. */}
+            {shokumu.technicalSkills.map((group) => (
+              <tbody key={group.type} className="break-inside-avoid">
+                {group.rows.map((row, ri) => (
                   <tr key={`${group.type}-${ri}`}>
                     {ri === 0 && (
                       <td
@@ -165,22 +173,11 @@ export default function ResumeJP() {
                     <td className="border border-gray-300 px-2 py-1 whitespace-nowrap">{row.duration}</td>
                     <td className="border border-gray-300 px-2 py-1">{row.level}</td>
                   </tr>
-                ))
-              )}
-            </tbody>
+                ))}
+              </tbody>
+            ))}
           </table>
         </div>
-      </section>
-
-      {/* ■資格 */}
-      <section className="mb-6 break-inside-avoid">
-        <div className="font-bold text-base border-b border-black mb-2">■資格</div>
-        <ul className="text-sm space-y-0.5">
-          {shokumu.certifications.map((c, i) => (
-            <li key={i}>{c.date}　{c.name}</li>
-          ))}
-          {shokumu.certificationsNote && <li>{shokumu.certificationsNote}</li>}
-        </ul>
       </section>
 
       {/* ■自己PR */}
