@@ -2,12 +2,10 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
-import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import Avatar from './Avatar';
 import WindEffect from './WindEffect';
 import { DiaryMailIcon, DiaryGitHubIcon, DiaryLinkedInIcon } from './icons/ContactIcons';
-import { GitHubIcon, LinkedInIcon, MailIcon } from './icons/SocialIcons';
 import { InkEnvelope } from './icons/InkIcons';
 
 /** Tiny drawn postage stamp: Mt. Fuji under a sun, perforated edges. */
@@ -75,6 +73,7 @@ function ContactChip({
   rotation,
   delay,
   shouldReduceMotion,
+  primary,
 }: {
   href: string;
   isExternal?: boolean;
@@ -83,13 +82,18 @@ function ContactChip({
   rotation: number;
   delay: number;
   shouldReduceMotion: boolean | null;
+  primary?: boolean;
 }) {
   return (
     <motion.a
       href={href}
       target={isExternal ? '_blank' : undefined}
       rel={isExternal ? 'noopener noreferrer' : undefined}
-      className="inline-flex items-center gap-2.5 px-4 py-2 wobbly-border-light bg-parchment/95 text-ink shadow-[2px_3px_0_rgba(45,45,45,0.12)]"
+      className={`inline-flex items-center justify-center gap-2.5 w-full max-w-[300px] sm:w-auto sm:max-w-none px-4 wobbly-border-light bg-parchment/95 text-ink ${
+        primary
+          ? 'py-2.5 shadow-[3px_4px_0_rgba(45,45,45,0.22)]'
+          : 'py-2 shadow-[2px_3px_0_rgba(45,45,45,0.12)]'
+      }`}
       style={{ rotate: `${rotation}deg`, textDecoration: 'none' }}
       initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -103,7 +107,7 @@ function ContactChip({
     >
       <span className="shrink-0 text-sepia">{icon}</span>
       <span
-        className="font-mono text-[0.8rem] font-semibold tracking-tight"
+        className={`font-mono tracking-tight ${primary ? 'text-[0.85rem] font-bold' : 'text-[0.8rem] font-semibold'}`}
         style={{
           textDecoration: 'underline wavy',
           textDecorationColor: 'rgba(100,81,59,0.45)',
@@ -117,7 +121,6 @@ function ContactChip({
 }
 
 export default function Contact() {
-  const { isSerious } = useSeriousMode();
   const { t, content, isJapanese } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const jpFont = isJapanese
@@ -130,9 +133,8 @@ export default function Contact() {
   return (
     <section id="contact" className="py-20 relative">
       {/* Wind Effect */}
-      {!isSerious && <WindEffect />}
+      <WindEffect />
 
-      {!isSerious ? (
         <motion.div
           className="text-center mb-12 px-4"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
@@ -149,69 +151,20 @@ export default function Contact() {
             </h2>
           </div>
         </motion.div>
-      ) : (
-        <motion.h2
-          className="text-3xl md:text-4xl text-center mb-12 pt-16 font-sans font-bold text-ink"
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          {t('contact.title_serious')}
-        </motion.h2>
-      )}
 
-      {isSerious ? (
-        /* ── Serious mode: clean minimal layout (unchanged) ── */
-        <div className="max-w-2xl mx-auto px-4 relative z-10">
-          <div className="space-y-4 text-left">
-            <a
-              href={`mailto:${content.contact.email}`}
-              className="block font-sans text-blue-600 hover:underline"
-            >
-              <span className="inline-flex items-center gap-2">
-                <MailIcon className="h-5 w-5 shrink-0" />
-                {content.contact.email}
-              </span>
-            </a>
-
-            <a
-              href={content.contact.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block font-sans text-blue-600 hover:underline"
-            >
-              <span className="inline-flex items-center gap-2">
-                <GitHubIcon className="h-5 w-5 shrink-0" />
-                {content.contact.github}
-              </span>
-            </a>
-
-            <a
-              href={content.contact.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block font-sans text-blue-600 hover:underline"
-            >
-              <span className="inline-flex items-center gap-2">
-                <LinkedInIcon className="h-5 w-5 shrink-0" />
-                {content.contact.linkedin}
-              </span>
-            </a>
-          </div>
-        </div>
-      ) : (
-        /* ── Diary mode: a postcard mailed from the edge of the map ── */
+      {/* A postcard mailed from the edge of the map */}
         <div className="max-w-4xl mx-auto px-4 relative z-10 pointer-events-auto">
           {/* Contact channels up front — the actual actions surface
               immediately, before the warm-but-slower postcard below. */}
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-4">
             <ContactChip
               href={`mailto:${content.contact.email}`}
               icon={<DiaryMailIcon className="h-6 w-6" />}
               label={content.contact.email}
               rotation={-1.5}
-              delay={0.15}
+              delay={0.1}
               shouldReduceMotion={shouldReduceMotion}
+              primary
             />
             <ContactChip
               href={content.contact.github}
@@ -219,7 +172,7 @@ export default function Contact() {
               icon={<DiaryGitHubIcon className="h-6 w-6" />}
               label={githubHandle}
               rotation={1}
-              delay={0.3}
+              delay={0.2}
               shouldReduceMotion={shouldReduceMotion}
             />
             <ContactChip
@@ -228,7 +181,7 @@ export default function Contact() {
               icon={<DiaryLinkedInIcon className="h-6 w-6" />}
               label={linkedinHandle}
               rotation={-0.5}
-              delay={0.45}
+              delay={0.3}
               shouldReduceMotion={shouldReduceMotion}
             />
           </div>
@@ -366,7 +319,6 @@ export default function Contact() {
             </p>
           </motion.div>
         </div>
-      )}
     </section>
   );
 }

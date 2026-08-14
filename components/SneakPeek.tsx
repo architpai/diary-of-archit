@@ -1,19 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   motion,
   useReducedMotion,
   useScroll,
   useVelocity,
   useSpring,
+  useAnimationFrame,
   useTransform,
-  useMotionValue,
-  type MotionValue,
+  MotionValue,
 } from 'framer-motion';
 import Image from 'next/image';
 import { avatarBox } from './avatarDimensions';
-import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useIsTouchDevice } from '@/hooks/useIsTouchDevice';
 import {
@@ -105,20 +104,32 @@ function WindingTwine({ wound, color }: { wound: boolean; color: string }) {
   );
 }
 
-// Per-card pendulum springs — slightly different so the tags desync naturally.
+// Per-card pendulum constants — slightly different so the tags desync naturally.
+// Damping sits near 0.75 of critical for each, so a tag overshoots visibly and
+// then comes to rest inside about a second.
 const SWING_SPRINGS = [
-  { stiffness: 55, damping: 9, mass: 1.0 },
-  { stiffness: 48, damping: 8, mass: 1.15 },
-  { stiffness: 62, damping: 10, mass: 0.92 },
+  { stiffness: 55, damping: 11, mass: 1.0 },
+  { stiffness: 48, damping: 11, mass: 1.15 },
+  { stiffness: 62, damping: 12, mass: 0.92 },
 ];
 const SWAY_MAX = 10; // degrees of swing at full scroll velocity
+// Scroll speed beyond which the tags stop caring. A wheel flick tops out around
+// 4000 px/s; browser scroll restoration on reload reports a spike in the
+// hundreds of thousands.
+const SWAY_VELOCITY_LIMIT = 4000;
+// Hard ceiling on the angle. Belt and braces: whatever the integrator does, a
+// tag is never allowed to leave the composition and land on its neighbours.
+const SWAY_CEILING = SWAY_MAX * 1.6;
+// Longest frame the integrator will accept. A backgrounded tab returns with a
+// multi-second delta; feeding that to the physics would launch the tags.
+const MAX_FRAME_SECONDS = 1 / 30;
 
-function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese, scrollVelocity }: {
+function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese, swaySignal }: {
   hobby: Hobby;
   index: number;
   shouldReduceMotion: boolean | null;
   isJapanese: boolean;
-  scrollVelocity: MotionValue<number>;
+  swaySignal: MotionValue<number>;
 }) {
   const { t } = useTranslation();
   const [isFlipped, setIsFlipped] = useState(false);
@@ -127,12 +138,9 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese, scrollVelocit
   const coord = SPECIMEN_COORDS[hobby.id];
   const restTilt = (index - 1) * 1.2; // tags hang at slightly different rest angles
 
-  // Dangling pendulum: scroll velocity pushes the tag sideways; an underdamped
-  // spring lets it swing past and settle. Faster scroll → bigger swing.
-  const spring = SWING_SPRINGS[index % SWING_SPRINGS.length];
-  const swayTarget = useTransform(scrollVelocity, [-4000, 0, 4000], [SWAY_MAX, 0, -SWAY_MAX], { clamp: true });
-  const swaySpring = useSpring(swayTarget, spring);
-  const sway = useTransform(swaySpring, (s) => restTilt + s);
+  // The angle is integrated once, in the parent (see SneakPeek); this just adds
+  // the tag's own resting tilt on top.
+  const sway = useTransform(swaySignal, (s) => restTilt + s);
 
   const jpFont = isJapanese
     ? ({ fontFamily: 'var(--font-jp-handwritten)' } as React.CSSProperties)
@@ -309,28 +317,64 @@ function HobbyCard({ hobby, index, shouldReduceMotion, isJapanese, scrollVelocit
 }
 
 export default function SneakPeek() {
-  const { isSerious } = useSeriousMode();
   const { t, content, isJapanese } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const hobbies = content.personal.hobbies as Hobby[];
 
-  // Shared scroll velocity → each specimen tag swings from its twine. On touch
-  // devices feed the cards a constant 0 instead: the per-card springs then sit
-  // idle (no rAF, no transform writes on every scroll frame) so they can't add
-  // to scroll-jank. The desktop swing the user tuned is untouched.
+  // Each specimen tag swings from its twine as you scroll. On touch devices the
+  // angle is pinned to rest instead: no rAF, no transform writes on every scroll
+  // frame, so the tags cannot add to scroll-jank.
   const isTouch = useIsTouchDevice();
   const { scrollY } = useScroll();
   const rawVelocity = useVelocity(scrollY);
   const liveVelocity = useSpring(rawVelocity, { damping: 50, stiffness: 350, mass: 0.6 });
-  const zeroVelocity = useMotionValue(0);
-  const scrollVelocity = isTouch ? zeroVelocity : liveVelocity;
+
+  // The pendulum is integrated here rather than handed to useSpring.
+  //
+  // useSpring seeds itself from its SOURCE's velocity, and that velocity is
+  // framer's own estimate of how fast the source moved between frames. Bounding
+  // the source's value (and even its rate of change) does not bound that
+  // estimate, so an instant scroll — browser scroll restoration on reload, a
+  // hash jump — kicked the springs hard enough to swing the tags past 110
+  // degrees: sideways, over their neighbours, with the section title covered.
+  //
+  // Integrating a damped harmonic oscillator directly means the only energy in
+  // the system is the energy this loop puts there, and the angle is clamped on
+  // every step. One loop drives all three tags.
+  const swayValues = useMemo(
+    () => SWING_SPRINGS.map(() => new MotionValue<number>(0)),
+    [],
+  );
+  const swayVelocities = useRef(SWING_SPRINGS.map(() => 0));
+
+  useAnimationFrame((_, deltaMs) => {
+    if (isTouch) return;
+    const dt = Math.min(deltaMs / 1000, MAX_FRAME_SECONDS);
+    if (dt <= 0) return;
+
+    const scrollSpeed = Math.max(
+      -SWAY_VELOCITY_LIMIT,
+      Math.min(SWAY_VELOCITY_LIMIT, liveVelocity.get()),
+    );
+    const target = (-scrollSpeed / SWAY_VELOCITY_LIMIT) * SWAY_MAX;
+
+    for (let i = 0; i < swayValues.length; i++) {
+      const { stiffness, damping, mass } = SWING_SPRINGS[i];
+      const angle = swayValues[i].get();
+      let velocity = swayVelocities.current[i];
+      const accel = (-stiffness * (angle - target) - damping * velocity) / mass;
+      velocity += accel * dt;
+      const next = Math.max(-SWAY_CEILING, Math.min(SWAY_CEILING, angle + velocity * dt));
+      // Shed the velocity if we hit the ceiling, so it cannot pump against it.
+      if (next === SWAY_CEILING || next === -SWAY_CEILING) velocity = 0;
+      swayVelocities.current[i] = velocity;
+      swayValues[i].set(next);
+    }
+  });
 
   const jpFont = isJapanese
     ? ({ fontFamily: 'var(--font-jp-handwritten)' } as React.CSSProperties)
     : ({} as React.CSSProperties);
-
-  // Hide this section in serious mode
-  if (isSerious) return null;
 
   return (
     <section className="py-20 relative">
@@ -377,7 +421,7 @@ export default function SneakPeek() {
           waters (sea serpent, compass rose, here-be-dragons caption) */}
       <div
         data-map-waypoint="view-uncharted"
-        className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10 pointer-events-auto"
+        className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-11 lg:gap-14 relative z-10 pointer-events-auto"
       >
         {hobbies.map((hobby, index) => (
           <HobbyCard
@@ -386,7 +430,7 @@ export default function SneakPeek() {
             index={index}
             shouldReduceMotion={shouldReduceMotion}
             isJapanese={isJapanese}
-            scrollVelocity={scrollVelocity}
+            swaySignal={swayValues[index % swayValues.length]}
           />
         ))}
       </div>

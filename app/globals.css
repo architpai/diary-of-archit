@@ -746,42 +746,6 @@ body {
 /* ============================================
    SERIOUS MODE STYLES
    ============================================ */
-body.serious-mode {
-  background-color: #fff;
-  color: #000;
-  font-family: var(--font-clean);
-}
-
-body.serious-mode .notebook-paper::before,
-body.serious-mode .notebook-paper::after {
-  display: none;
-}
-
-body.serious-mode .notebook-paper {
-  background-image: none;
-  background-color: #fff;
-}
-
-body.serious-mode .handwritten {
-  font-family: var(--font-clean);
-}
-
-body.serious-mode .doodle-animate,
-body.serious-mode .floating-doodle,
-body.serious-mode .post-it {
-  display: none !important;
-}
-
-body.serious-mode .wobbly-border {
-  border-radius: 4px;
-  animation: none;
-}
-
-body.serious-mode .diary-title {
-  font-family: var(--font-clean);
-  font-weight: 700;
-}
-
 /* ============================================
    PRINT STYLES (ATS-Friendly Resume)
    ============================================ */
@@ -805,8 +769,6 @@ body.serious-mode .diary-title {
   .floating-doodle,
   .post-it,
   .doodle-animate,
-  .serious-mode-toggle,
-  .post-it-nav,
   .diary-narrative,
   .hobby-section,
   .wobbly-border {
@@ -916,10 +878,6 @@ body.serious-mode .diary-title {
 }
 
 [lang="ja"] .clean-font,
-[lang="ja"] body.serious-mode {
-  font-family: var(--font-jp-clean);
-}
-
 /* Japanese text utilities */
 .jp-handwritten {
   font-family: var(--font-jp-handwritten);
@@ -932,10 +890,63 @@ body.serious-mode .diary-title {
   line-height: 1.8;
 }
 
-/* Japanese punctuation and spacing */
+/* Japanese line breaking.
+   `word-break: break-word` let the browser break absolutely anywhere, which is
+   why katakana loanwords split down the middle (ソフト / ウェア) and single
+   characters were orphaned onto their own last line (…を築 / く。).
+   - line-break: strict keeps small kana, long marks and closing punctuation off
+     the start of a line, which is the actual Japanese typesetting rule.
+   - word-break: normal restores kinsoku behaviour instead of anywhere-breaking.
+   - overflow-wrap: anywhere is kept ONLY as the escape hatch for an unbreakable
+     run (a URL, a long latin product name) so nothing can overflow its column. */
 [lang="ja"] {
-  word-break: break-word;
-  overflow-wrap: break-word;
+  word-break: normal;
+  line-break: strict;
+  overflow-wrap: anywhere;
+}
+
+/* CJK type scale. A kanji glyph fills its em box where a latin lowercase fills
+   roughly half of it, so Japanese set at the same declared size carries visibly
+   more mass: 探索の余地はまだまだある was overflowing the space
+   "there's always more to explore" sits in comfortably. Display type is stepped
+   down; body text is left alone, where the extra weight helps legibility. */
+[lang="ja"] .diary-title {
+  font-size: clamp(1.75rem, 6.9vw, 4.3rem);
+}
+
+[lang="ja"] .skills-basecamp-heading {
+  font-size: clamp(2.35rem, 5.4vw, 4.9rem);
+}
+
+[lang="ja"] .hero-cta-label {
+  font-size: 0.94rem;
+}
+
+[lang="ja"] .kit-figure-value {
+  font-size: 1.6rem;
+}
+
+/* Short display strings get `keep-all`, which forbids breaks inside a run of
+   kana or kanji: without it ソフトウェア and エンジニア were splitting across
+   lines, and 気分次第 was breaking after 気. `overflow-wrap: anywhere` stays as
+   the last resort so a run that genuinely cannot fit still wraps rather than
+   overflowing its column. Body copy keeps ordinary kinsoku breaking, which is
+   correct for long Japanese prose. */
+[lang="ja"] .diary-title,
+[lang="ja"] .hero-lede,
+[lang="ja"] .hero-cta-label,
+[lang="ja"] .hero-cta-sub,
+[lang="ja"] .skills-basecamp-heading,
+[lang="ja"] .skills-basecamp-hint,
+[lang="ja"] .skills-basecamp-pin-name,
+[lang="ja"] .kit-system,
+[lang="ja"] .kit-figure-value,
+[lang="ja"] .kit-figure-note,
+[lang="ja"] .kit-toolkit-label,
+[lang="ja"] .terrain-pin,
+[lang="ja"] .hero-margin-note {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 /* Adjust line height for Japanese text readability */
@@ -1204,6 +1215,12 @@ body.serious-mode .diary-title {
     gap: 7px;
     padding: 3px 10px;
     border-radius: 15px 19px 13px 21px / 19px 13px 21px 15px;
+    /* Long company names on a 390px column used to run off the right edge and
+       get clipped mid-word ("…Startu"). Let the tag wrap instead: a two-line
+       hand-drawn label still reads as a label, a truncated one reads as a bug. */
+    white-space: normal;
+    max-width: 54vw;
+    text-align: left;
   }
 
   .terrain-pin-dot {
@@ -1235,19 +1252,196 @@ body.serious-mode .diary-title {
 
 /* Hero subtitle reads as an annotation inked onto the chart — a soft paper
    breath that melts into the map, not a pasted-on bordered card. */
-.hero-map-annotation {
+/* The résumé sheet. The fixed mode switch sits bottom-right at every scroll
+   position, so the document has to end above it: at 390px it was parked on top
+   of the last visible experience bullet, and the résumé is the surface that
+   most needs to be boringly robust. */
+.resume-sheet {
+  padding-bottom: 6rem;
+}
+
+@media print {
+  .resume-sheet {
+    padding-bottom: 0;
+  }
+}
+
+/* A rubber stamp is one impression, not a paragraph. "TOKYO · ENTRY JAN 2024 -
+   NOV 2024" wrapped to two lines at 390px and three at 320px, which broke the
+   illusion, so the impression shrinks on narrow columns instead. */
+@media (max-width: 420px) {
+  .passport-stamp {
+    font-size: 0.92em;
+    letter-spacing: 0.07em;
+    padding: 3px 9px 4px;
+  }
+}
+
+/* Mobile section dots. The tap target stays 40px tall everywhere; only the
+   horizontal pitch tightens on the narrowest phones, so the pill plus the
+   active section name still clears the language toggle at 320px. */
+.mapnav-dot-hit {
+  width: 28px;
+  height: 40px;
+}
+
+@media (max-width: 359px) {
+  .mapnav-dot-hit {
+    width: 23px;
+  }
+}
+
+/* Language toggle: the ACTIVE option is circled in pencil, the way you would
+   mark a choice in a notebook. Neither option is ever struck out. */
+.lang-option {
+  position: relative;
   display: inline-block;
-  padding: 0.4rem 2.25rem 0.7rem;
+  padding: 0 0.15rem;
+}
+
+.lang-option-active {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+@media (min-width: 400px) {
+  .lang-option-active::after {
+    inset: -0.24em -0.42em -0.3em -0.42em;
+  }
+}
+
+.lang-option-active::after {
+  content: '';
+  position: absolute;
+  /* Tighter on the narrowest phones, where the drawn ring was reaching across
+     to the section-dots pill. */
+  inset: -0.2em -0.26em -0.26em -0.26em;
+  border: 2px solid var(--margin-red);
+  /* a hand-drawn ellipse: uneven radii, slightly off-axis */
+  border-radius: 62% 38% 55% 45% / 48% 58% 42% 52%;
+  transform: rotate(-2.5deg);
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+/* Keyboard escape hatch past the fixed chrome. Torn-paper tab, not a blue bar. */
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  left: 50%;
+  z-index: 100;
+  transform: translate(-50%, -160%);
+  padding: 0.5rem 1.1rem;
+  font-family: var(--font-handwritten);
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 2px solid var(--ink);
+  border-radius: 10px 5px 9px 6px / 6px 10px 5px 11px;
+  box-shadow: -2px 3px 0 rgba(45, 45, 45, 0.24);
+  text-decoration: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skip-link:focus-visible {
+  transform: translate(-50%, 0);
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* The hero's one sentence. It sits over the terrain, where contour hatching
+   used to eat it, so it carries its own patch of paper: a soft wash that fades
+   out rather than a card, so it still reads as ink on the chart. */
+.hero-lede {
+  display: inline-block;
+  margin: 0.6rem auto 0;
+  max-width: 34rem;
+  /* Generous padding so the wash reaches zero INSIDE the box: a gradient that
+     is still tinted at the edge reads as a rectangle sitting on the map. */
+  padding: 0.7rem 3.25rem 0.85rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  text-shadow: 0 1px 7px rgba(255, 249, 229, 0.95);
   background: radial-gradient(
-    ellipse 115% 130% at 50% 45%,
-    rgba(255, 249, 229, 0.9) 0%,
-    rgba(255, 249, 229, 0.62) 48%,
-    rgba(255, 249, 229, 0) 100%
+    ellipse 92% 115% at 50% 50%,
+    rgba(255, 249, 229, 0.95) 0%,
+    rgba(255, 249, 229, 0.9) 34%,
+    rgba(255, 249, 229, 0.52) 62%,
+    rgba(255, 249, 229, 0) 86%
   );
 }
 
-.hero-map-annotation p {
-  text-shadow: 0 1px 6px rgba(255, 249, 229, 0.92);
+@media (min-width: 768px) {
+  .hero-lede {
+    font-size: 1.05rem;
+  }
+}
+
+/* The one thing to click above the fold, drawn as an index tab taped to the
+   chart rather than a button. */
+.hero-cta {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+  padding: 0.55rem 1.4rem 0.5rem;
+  background: var(--parchment);
+  border: 2px solid var(--ink);
+  border-radius: 12px 5px 10px 6px / 6px 11px 5px 12px;
+  box-shadow: -3px 3px 0 rgba(45, 45, 45, 0.22);
+  transform: rotate(-1.2deg);
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-cta:hover,
+.hero-cta:focus-visible {
+  transform: rotate(0deg) translateY(-2px);
+  box-shadow: -4px 5px 0 rgba(45, 45, 45, 0.26);
+}
+
+.hero-cta:active {
+  transform: rotate(0deg) translateY(0);
+  box-shadow: -2px 2px 0 rgba(45, 45, 45, 0.26);
+}
+
+/* the strip of masking tape holding the tab to the page */
+.hero-cta-tape {
+  position: absolute;
+  top: -0.6rem;
+  left: 50%;
+  width: 3.1rem;
+  height: 1.05rem;
+  background: rgba(245, 233, 184, 0.85);
+  box-shadow: 0 1px 3px rgba(45, 45, 45, 0.16);
+  transform: translateX(-50%) rotate(-3.5deg);
+}
+
+.hero-cta-label {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.25;
+}
+
+.hero-cta-sub {
+  font-size: 0.74rem;
+  color: var(--sepia);
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-cta,
+  .hero-cta:hover,
+  .hero-cta:focus-visible {
+    transition: none;
+    transform: rotate(-1.2deg);
+  }
 }
 
 /* Handwritten coordinates stamp on journey cards */
@@ -1528,13 +1722,6 @@ a:focus-visible .wax-seal {
 }
 
 /* — Scale bar (hero ornament) — */
-.scale-bar-caption {
-  font-family: var(--font-handwritten);
-  font-size: 0.75rem;
-  color: rgba(45, 45, 45, 0.55);
-  letter-spacing: 0.04em;
-}
-
 /* One shared caption convention for the line under each section headline. */
 .section-subhint {
   color: var(--sepia);
@@ -1831,6 +2018,173 @@ a:focus-visible .wax-seal {
   width: 1.5rem;
 }
 
+/* ---- Kit evidence card ----------------------------------------------------
+   One representative system, one figure, one line of context, then the tools.
+   Every figure here is one the résumé already claims. */
+.kit-system {
+  color: var(--bc-ink);
+  font-size: 1rem;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.kit-figure {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0.1rem 0 0;
+  /* the figure is stamped, not typed */
+  border-top: 2px dashed rgba(100, 81, 59, 0.4);
+  padding-top: 0.45rem;
+}
+
+.kit-figure-value {
+  font-family: var(--font-display), 'Caveat Brush', cursive;
+  font-size: 1.85rem;
+  line-height: 1;
+  color: var(--pin-color, var(--bc-ink));
+}
+
+.kit-figure-note {
+  font-size: 0.82rem;
+  line-height: 1.25;
+  color: var(--sepia);
+}
+
+.kit-note {
+  color: var(--sepia);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.kit-toolkit-label {
+  color: var(--sepia);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-top: 0.35rem;
+}
+
+/* ---- Narrow-screen kit control --------------------------------------------
+   A scroll-snapped row of labelled chips. Replaces tapping 23px unlabelled
+   circles on the folded map, which is neither a legible nor a hittable target
+   at phone widths. */
+.kit-chips {
+  display: flex;
+  gap: 0.55rem;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding: 0.25rem 1rem 0.6rem;
+  margin-top: 0.9rem;
+  /* the row is a scroller, not a scrollbar */
+  scrollbar-width: none;
+}
+
+.kit-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.kit-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex: 0 0 auto;
+  scroll-snap-align: center;
+  min-height: 44px; /* comfortable thumb target */
+  padding: 0.4rem 0.85rem 0.4rem 0.4rem;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 14px 6px 12px 7px / 7px 13px 6px 14px;
+  box-shadow: -2px 2px 0 rgba(45, 45, 45, 0.18);
+  color: var(--ink);
+  transition:
+    transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kit-chip-open {
+  background: var(--parchment);
+  box-shadow: -3px 3px 0 rgba(45, 45, 45, 0.26);
+  transform: translateY(-1px);
+}
+
+.kit-chip:active {
+  transform: translateY(0);
+  box-shadow: -1px 1px 0 rgba(45, 45, 45, 0.26);
+}
+
+.kit-chip-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--chip-color, var(--ink));
+  flex: 0 0 auto;
+}
+
+.kit-chip-glyph svg {
+  width: 18px;
+  height: 18px;
+}
+
+.kit-chip-label {
+  font-size: 0.9rem;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+/* The card in normal flow under the chips: no float, no clamping, no transform. */
+.kit-card-flow {
+  position: static;
+  transform: rotate(-0.6deg);
+  width: auto;
+  max-width: none;
+  margin: 0.3rem 1rem 0;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kit-chip,
+  .kit-chip-open {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* Marker names on the folded map, so the six kits are not anonymous circles. */
+.skills-basecamp-pin-name {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .skills-basecamp-pin-name {
+    display: block;
+    position: absolute;
+    top: calc(100% + 0.3rem);
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-family: var(--font-handwritten), 'Patrick Hand', cursive;
+    font-size: 0.82rem;
+    line-height: 1;
+    color: var(--sepia);
+    /* The name sits on the drawn map, not flat paper, so it carries its own
+       halo of page cream to keep clear of the contour work underneath. */
+    text-shadow:
+      0 1px 2px rgba(255, 249, 229, 1),
+      0 0 5px rgba(255, 249, 229, 0.98),
+      0 0 9px rgba(255, 249, 229, 0.85);
+    pointer-events: none;
+  }
+}
+
+[lang='ja'] .skills-basecamp-pin-name {
+  font-family: var(--font-jp-handwritten);
+}
+
 .skills-basecamp-popup-list {
   display: flex;
   flex-direction: column;
@@ -1906,13 +2260,24 @@ a:focus-visible .wax-seal {
   /* Pin size and pin positions are fully fluid now (cqw + %), and the lottie
      lift is cqw — so the old phone-specific pin re-layout and margin overrides
      are gone; the desktop coordinates scale down correctly on their own. */
+  /* The card sits BELOW the map on phones, in normal flow under the chip row,
+     so it no longer needs the float-above-the-pin transform, and it can use the
+     full column width instead of being squeezed to 78vw. */
   .skills-basecamp-popup {
-    padding: 0.9rem 1.1rem 1rem;
-    transform: translate(
-        calc(-4% + var(--pop-dx, 0px)),
-        calc(-98% + var(--pop-dy, 0px))
-      )
-      rotate(-1.2deg);
+    padding: 0.95rem 1.1rem 1.05rem;
+    transform: rotate(-0.8deg);
+    width: 100%;
+    max-width: none;
+  }
+
+  /* The hint sat right on the folded map's top edge and the cloud doodle. */
+  .skills-basecamp-hint {
+    font-size: 1rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .kit-figure-value {
+    font-size: 1.65rem;
   }
 
   .skills-basecamp-popup-head {

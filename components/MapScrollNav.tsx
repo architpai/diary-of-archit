@@ -2,7 +2,6 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface Section {
@@ -19,19 +18,25 @@ interface Section {
    ═══════════════════════════════════════════════════════════════ */
 
 // Desaturated vintage-map pigments — the tabs are paper artifacts too.
+// Oxide and violet are printed a shade deeper here than their palette tokens:
+// at the token values, cream lettering on them measured 3.2:1 and 4.4:1, under
+// the 4.5:1 these 14px labels need. Same hues, enough ink in them to read.
 const TAB_COLORS = [
   { bg: '#B9A37E', text: '#2D2D2D' },  // Home — aged tan
   { bg: '#3B5F8A', text: '#FFF9E5' },  // Journey — prussian blue
-  { bg: '#B05F66', text: '#FFF9E5' },  // Skills — oxide red
-  { bg: '#7D6B8D', text: '#FFF9E5' },  // Peek — faded violet
+  { bg: '#9A4F56', text: '#FFF9E5' },  // Skills — oxide red, deepened
+  { bg: '#6B5A7B', text: '#FFF9E5' },  // Peek — faded violet, deepened
   { bg: '#82A775', text: '#2D2D2D' },  // Contact — sage
 ];
 
 export default function MapScrollNav() {
-  const { isSerious } = useSeriousMode();
   const { t } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const [activeSection, setActiveSection] = useState(0);
+  // The tabs normally sit 55px off the right edge, showing only a coloured
+  // sliver, which asks the reader to memorise a palette they were never taught.
+  // So they arrive fully out, name showing, then file themselves away.
+  const [introducing, setIntroducing] = useState(true);
 
   const sections: Section[] = useMemo(() => [
     { id: 'hero', label: t('nav.home') },
@@ -41,37 +46,55 @@ export default function MapScrollNav() {
     { id: 'contact', label: t('nav.contact') },
   ], [t]);
 
+  // Which section owns the middle of the viewport. This used to run an
+  // offsetTop read for every section on every scroll event, over a canvas that
+  // is already repainting continuously; an observer does the same job off the
+  // scroll path.
   useEffect(() => {
-    const handleScroll = () => {
-      const mid = window.scrollY + window.innerHeight / 2;
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const el = document.getElementById(sections[i].id);
-        if (el && el.offsetTop <= mid) { setActiveSection(i); break; }
-      }
-    };
-    handleScroll();
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const elements = sections
+      .map((s, i) => ({ el: document.getElementById(s.id), i }))
+      .filter((e): e is { el: HTMLElement; i: number } => e.el !== null);
+    if (!elements.length) return;
+
+    const visible = new Map<number, number>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const match = elements.find((e) => e.el === entry.target);
+          if (!match) continue;
+          if (entry.isIntersecting) visible.set(match.i, entry.intersectionRatio);
+          else visible.delete(match.i);
+        }
+        if (!visible.size) return;
+        // Ties go to the later section, matching the old "last one whose top has
+        // passed the middle" behaviour when two sections straddle the viewport.
+        let best = -1;
+        let bestRatio = -1;
+        for (const [i, ratio] of visible) {
+          if (ratio > bestRatio || (ratio === bestRatio && i > best)) {
+            best = i;
+            bestRatio = ratio;
+          }
+        }
+        if (best >= 0) setActiveSection(best);
+      },
+      { threshold: [0, 0.15, 0.35, 0.6, 0.9] },
+    );
+
+    for (const { el } of elements) observer.observe(el);
+    return () => observer.disconnect();
   }, [sections]);
+
+  useEffect(() => {
+    // Long enough to read five short words, short enough not to be furniture.
+    const timer = window.setTimeout(() => setIntroducing(false), 2600);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const scrollToSection = (i: number) => {
     const el = document.getElementById(sections[i].id);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
-
-  if (isSerious) {
-    return (
-      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 hidden md:block">
-        <div className="flex flex-col gap-3">
-          {sections.map((s, i) => (
-            <button key={s.id} onClick={() => scrollToSection(i)}
-              className={`h-3 rounded-full transition-[width,background-color] duration-300 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ink ${activeSection === i ? 'bg-gray-800 w-10' : 'bg-gray-300 hover:bg-gray-500 w-3'}`}
-              title={s.label} aria-label={s.label} />
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -89,8 +112,8 @@ export default function MapScrollNav() {
               className="relative cursor-pointer block text-right rounded-l-lg focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ink"
               style={{ transformOrigin: 'right center' }}
               animate={{
-                x: isActive ? 0 : 55,
-                rotate: isActive ? 0 : tilt,
+                x: isActive || introducing ? 0 : 55,
+                rotate: isActive || introducing ? 0 : tilt,
               }}
               whileHover={{ x: 0, rotate: 0 }}
               whileFocus={{ x: 0, rotate: 0 }}
@@ -110,7 +133,10 @@ export default function MapScrollNav() {
                 style={{
                   backgroundColor: color.bg,
                   color: color.text,
-                  opacity: isActive ? 1 : 0.78,
+                  // No opacity dimming for the inactive state: fading the whole
+                  // tab faded its label too, pushing the text under AA. Position
+                  // (tucked 55px off the edge) and shadow already carry the
+                  // active/inactive distinction.
                   border: '2px solid #2D2D2D',
                   borderRadius: '13px 5px 9px 7px',
                   boxShadow: isActive
@@ -131,7 +157,10 @@ export default function MapScrollNav() {
           target (the serious-mode toggle now lives bottom-right, so the top-
           right is free of collisions). */}
       <div className="fixed top-3 left-16 z-50 flex md:hidden items-center gap-0.5 pl-2 pr-3 py-1 rounded-full"
-        style={{ backgroundColor: 'rgba(255,249,229,0.9)', boxShadow: '0 2px 10px rgba(0,0,0,0.15)' }}
+        // Opaque, not 0.9 alpha. Floating over the relief map and live body copy,
+        // a translucent pill let card text and pin labels show through it, which
+        // read as a rendering fault rather than as a control.
+        style={{ backgroundColor: 'var(--paper)', boxShadow: '0 2px 10px rgba(45,45,45,0.22)' }}
       >
         {sections.map((s, i) => {
           const isActive = activeSection === i;
@@ -140,8 +169,7 @@ export default function MapScrollNav() {
             <button
               key={s.id}
               onClick={() => scrollToSection(i)}
-              className="flex items-center justify-center rounded-full focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ink"
-              style={{ width: '28px', height: '40px' }}
+              className="mapnav-dot-hit flex items-center justify-center rounded-full focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ink"
               aria-label={s.label}
               aria-current={isActive ? 'true' : undefined}
             >

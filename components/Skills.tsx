@@ -12,7 +12,6 @@ import {
 } from 'react';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
-import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { CATEGORY_COLORS } from '@/components/hero3d/mapData';
 import {
@@ -28,6 +27,26 @@ import BasecampLottie from './BasecampLottie';
 // Run the clamp before paint on the client (no flash of the off-screen popup),
 // but fall back to useEffect on the server so SSR doesn't warn.
 const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+
+/**
+ * Below this width the folded map stops being an interaction surface. Its six
+ * markers measure 23px there, which is half a comfortable tap target, and they
+ * carry no visible label, so the section becomes a row of labelled chips with
+ * the map kept as illustration.
+ */
+const NARROW_QUERY = '(max-width: 767px)';
+
+function useIsNarrow() {
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(NARROW_QUERY);
+    const sync = () => setNarrow(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+  return narrow;
+}
 
 interface Skill {
   id?: string;
@@ -59,6 +78,14 @@ interface SkillGroup {
   frontier?: boolean;
 }
 
+/**
+ * What each kit is EVIDENCE of. "Open a marker" used to promise discovery and
+ * return four résumé keywords, which made the map a decorative skills list. The
+ * card now carries one system, one figure and one line of context per kit, read
+ * from `skills.kit_<group id>_{system,figure,figure_note,note}` in data/ui/*.json.
+ * Every figure is one the résumé already claims, so the two modes agree.
+ */
+
 // Six kits laid out as regions on the map — the diary's real skill
 // categories grouped, coloured by CATEGORY_COLORS so they match the rest of
 // the map's legend. The frontier kit is the uncharted AI edge.
@@ -85,7 +112,7 @@ const SKILL_GROUPS: SkillGroup[] = [
     labelKey: 'skills.group_frontend',
     color: CATEGORY_COLORS.frontend,
     Icon: InkBrackets,
-    skillIds: ['react', 'ts', 'redux', 'threejs'],
+    skillIds: ['react', 'ts', 'redux', 'threejs'],  // redux slot now carries Next.js
   },
   {
     id: 'backend',
@@ -116,19 +143,11 @@ const SKILL_GROUPS: SkillGroup[] = [
 ];
 
 export default function Skills() {
-  const { isSerious } = useSeriousMode();
   const { content, t } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const [activeGroupId, setActiveGroupId] = useState<string | null>(null);
+  const isNarrow = useIsNarrow();
   const skills = content.skills as Skill[];
-
-  // Serious-mode groups by the raw category id; localize it, falling back to
-  // the id itself if a future category has no `skills.cat_*` key yet.
-  const catLabel = (category: string) => {
-    const key = `skills.cat_${category}`;
-    const label = t(key);
-    return label === key ? category : label;
-  };
 
   // id → localized skill name, so a group's pins can list their tools.
   const skillNameById = useMemo(() => {
@@ -169,12 +188,22 @@ export default function Skills() {
     el.style.setProperty('--pop-dy', '0px');
     const r = el.getBoundingClientRect();
     const m = 8; // keep this much clear of every edge
+    // The card opens above its pin, and a taller card on a low pin used to push
+    // up over the section headline. Treat the headline's underside as the ceiling
+    // so the card is pushed down onto the map instead of over the title.
+    const heading = document.querySelector<HTMLElement>('.skills-basecamp-heading');
+    const headingBottom = heading?.getBoundingClientRect().bottom ?? 0;
+    const ceiling = Math.max(m, headingBottom + 10);
     let dx = 0;
     let dy = 0;
-    if (r.top < m) dy = m - r.top;
+    if (r.top < ceiling) dy = ceiling - r.top;
     else if (r.bottom > window.innerHeight - m) dy = window.innerHeight - m - r.bottom;
+    // Leave the bookmark rail its lane on desktop; the card was landing on top
+    // of whichever tab was currently extended.
+    const railWidth = window.innerWidth >= 768 ? 96 : m;
     if (r.left < m) dx = m - r.left;
-    else if (r.right > window.innerWidth - m) dx = window.innerWidth - m - r.right;
+    else if (r.right > window.innerWidth - railWidth)
+      dx = window.innerWidth - railWidth - r.right;
     el.style.setProperty('--pop-dx', `${dx}px`);
     el.style.setProperty('--pop-dy', `${dy}px`);
   }, [activeGroup]);
@@ -222,77 +251,12 @@ export default function Skills() {
 
   return (
     <section
-      className={isSerious ? 'py-20 relative' : 'skills-basecamp-section relative'}
+      className="skills-basecamp-section relative"
       // While this section is centred, the persistent terrain backdrop dims its
       // pin labels + markers (CameraRig reads this) so they don't bleed through
-      // the basecamp illustration. Inert in serious mode (no 3D backdrop).
-      data-map-waypoint={isSerious ? undefined : 'view-network'}
+      // the basecamp illustration.
+      data-map-waypoint="view-network"
     >
-      {isSerious && (
-        <motion.h2
-          className="text-3xl md:text-4xl text-center mb-16 pt-16 font-sans font-bold text-ink"
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          {t('skills.title_serious')}
-        </motion.h2>
-      )}
-
-      {isSerious ? (
-        // Organized skills by category for serious mode
-        <div className="max-w-5xl mx-auto px-4 relative z-20">
-          <div className="max-w-4xl mx-auto">
-            {Object.entries(
-              skills.reduce((acc, skill) => {
-                if (!acc[skill.category]) acc[skill.category] = [];
-                acc[skill.category].push(skill);
-                return acc;
-              }, {} as Record<string, typeof skills>)
-            ).map(([category, categorySkills], categoryIndex) => (
-              <motion.div
-                key={category}
-                className="mb-8"
-                initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={shouldReduceMotion ? { duration: 0 } : { delay: categoryIndex * 0.1 }}
-              >
-                <h3 className="font-sans text-lg font-bold capitalize mb-4 text-gray-700 border-b border-gray-300 pb-2">
-                  {catLabel(category)}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {categorySkills.map((skill, index) => (
-                    <motion.div
-                      key={skill.name}
-                      className="flex items-center justify-between"
-                      initial={shouldReduceMotion ? false : { opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3, delay: index * 0.05 }}
-                    >
-                      <span className="font-sans text-sm">{skill.name}</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-24 h-2 rounded-full overflow-hidden bg-gray-200">
-                          <motion.div
-                            className="h-full rounded-full"
-                            style={{ backgroundColor: '#2D2D2D' }}
-                            initial={shouldReduceMotion ? false : { width: 0 }}
-                            whileInView={{ width: `${skill.level}%` }}
-                            viewport={{ once: true }}
-                            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8, delay: index * 0.1, ease: "easeOut" }}
-                          />
-                        </div>
-                        <span className="text-xs text-gray-500 font-sans w-8">{skill.level}%</span>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      ) : (
         <div className="skills-basecamp-inner">
           <motion.div
             className="skills-basecamp-heading"
@@ -336,7 +300,7 @@ export default function Skills() {
             style={{ opacity: activeGroup ? 0 : 1 }}
             aria-hidden={activeGroup ? true : undefined}
           >
-            {t('skills.map_hint')}
+            {t(isNarrow ? 'skills.map_hint_touch' : 'skills.map_hint')}
           </p>
 
           <div className="skills-basecamp-map-stage">
@@ -363,6 +327,11 @@ export default function Skills() {
                     title={t(group.labelKey)}
                     aria-expanded={group.id === activeGroupId}
                     aria-controls={group.id === activeGroupId ? popupId : undefined}
+                    // Narrow screens drive this from the chip row below, so the
+                    // 23px markers stop being duplicate (and barely tappable)
+                    // stops in the tab order.
+                    tabIndex={isNarrow ? -1 : 0}
+                    aria-hidden={isNarrow || undefined}
                     // One model: hover, focus, or tap all OPEN this group; the
                     // wrap's onMouseLeave + onBlur close it. (A toggle on click
                     // would cancel the open that mouseenter/focus just set,
@@ -373,11 +342,19 @@ export default function Skills() {
                     onClick={() => setActiveGroupId(group.id)}
                   >
                     <Icon className="skills-basecamp-pin-glyph" color={PIN_GLYPH_INK} />
+                    {/* The markers used to be six anonymous coloured circles: the
+                        names existed only as aria-labels, so a screen reader knew
+                        more about this map than a sighted reader did. Shown from
+                        768px up, where the folded map has room for them; narrow
+                        screens get the name in the card instead. */}
+                    <span className="skills-basecamp-pin-name" aria-hidden="true">
+                      {t(group.labelKey)}
+                    </span>
                   </button>
                 );
               })}
 
-              {activeGroup && (
+              {activeGroup && !isNarrow && (
                 <div
                   ref={popupRef}
                   id={popupId}
@@ -393,6 +370,29 @@ export default function Skills() {
                     />
                     {t(activeGroup.labelKey)}
                   </span>
+
+                  {/* One system, one number, one line of context: the evidence
+                      the marker was promising. */}
+                  <p className="kit-system handwritten">
+                    {t(`skills.kit_${activeGroup.id}_system`)}
+                  </p>
+
+                  <p className="kit-figure">
+                    <span className="kit-figure-value">
+                      {t(`skills.kit_${activeGroup.id}_figure`)}
+                    </span>
+                    <span className="kit-figure-note handwritten">
+                      {t(`skills.kit_${activeGroup.id}_figure_note`)}
+                    </span>
+                  </p>
+
+                  <p className="kit-note handwritten">
+                    {t(`skills.kit_${activeGroup.id}_note`)}
+                  </p>
+
+                  <span className="kit-toolkit-label handwritten">
+                    {t('skills.kit_toolkit')}
+                  </span>
                   <ul className="skills-basecamp-popup-list">
                     {groupSkillNames(activeGroup).map((name) => (
                       <li key={name}>{name}</li>
@@ -405,8 +405,86 @@ export default function Skills() {
               )}
             </div>
           </div>
+
+          {/* Narrow screens: a labelled, thumb-sized control instead of six
+              unlabelled 23px circles, and the card below it in normal flow
+              rather than floating over the map it describes. */}
+          {isNarrow && (
+            <div className="kit-chips" role="group" aria-label={t('skills.map_hint_touch')}>
+              {SKILL_GROUPS.map((group) => {
+                const Icon = group.Icon;
+                const isOpen = group.id === activeGroupId;
+                return (
+                  <button
+                    key={group.id}
+                    type="button"
+                    className={`kit-chip${isOpen ? ' kit-chip-open' : ''}`}
+                    style={{ '--chip-color': group.color } as CSSProperties}
+                    aria-expanded={isOpen}
+                    aria-controls={isOpen ? popupId : undefined}
+                    onClick={() =>
+                      setActiveGroupId((cur) => (cur === group.id ? null : group.id))
+                    }
+                  >
+                    <span className="kit-chip-glyph" aria-hidden="true">
+                      <Icon color={PIN_GLYPH_INK} />
+                    </span>
+                    <span className="kit-chip-label handwritten">{t(group.labelKey)}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {isNarrow && activeGroup && (
+            <div
+              id={popupId}
+              className="skills-basecamp-popup kit-card-flow"
+              style={{ '--pin-color': activeGroup.color } as CSSProperties}
+              role="group"
+              aria-label={t(activeGroup.labelKey)}
+            >
+                  <span className="skills-basecamp-popup-head">
+                    <activeGroup.Icon
+                      className="skills-basecamp-popup-glyph"
+                      color={activeGroup.color}
+                    />
+                    {t(activeGroup.labelKey)}
+                  </span>
+
+                  {/* One system, one number, one line of context: the evidence
+                      the marker was promising. */}
+                  <p className="kit-system handwritten">
+                    {t(`skills.kit_${activeGroup.id}_system`)}
+                  </p>
+
+                  <p className="kit-figure">
+                    <span className="kit-figure-value">
+                      {t(`skills.kit_${activeGroup.id}_figure`)}
+                    </span>
+                    <span className="kit-figure-note handwritten">
+                      {t(`skills.kit_${activeGroup.id}_figure_note`)}
+                    </span>
+                  </p>
+
+                  <p className="kit-note handwritten">
+                    {t(`skills.kit_${activeGroup.id}_note`)}
+                  </p>
+
+                  <span className="kit-toolkit-label handwritten">
+                    {t('skills.kit_toolkit')}
+                  </span>
+                  <ul className="skills-basecamp-popup-list">
+                    {groupSkillNames(activeGroup).map((name) => (
+                      <li key={name}>{name}</li>
+                    ))}
+                  </ul>
+                  {activeGroup.frontier && (
+                    <span className="skills-basecamp-popup-note">{t('skills.tier_charting')}</span>
+                  )}
+            </div>
+          )}
         </div>
-      )}
     </section>
   );
 }

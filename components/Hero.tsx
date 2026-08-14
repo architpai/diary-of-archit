@@ -2,32 +2,32 @@
 
 import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import Link from "next/link";
 import HeroAvatarTransition from "./HeroAvatarTransition";
-import { useSeriousMode } from "@/contexts/SeriousModeContext";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useMapReady } from "./hero3d/mapReady";
 import { InkCompassRose, InkScaleBar, InkWind } from "./icons/InkIcons";
 
-function HeroTitle({ compact }: { compact?: boolean }) {
-  const { isSerious } = useSeriousMode();
+function HeroTitle() {
   const { t, isJapanese } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
 
   return (
     <h1
-      className={`diary-title text-ink ${!isSerious && compact ? "!text-5xl md:!text-7xl drop-shadow-lg" : ""}`}
+      className="diary-title text-ink !text-5xl md:!text-7xl drop-shadow-lg"
       style={isJapanese ? { fontFamily: "var(--font-jp-handwritten)" } : {}}
     >
       <span className={`block${shouldReduceMotion ? "" : " handwrite-reveal"}`}>
         {t("hero.diary")}
       </span>
       <span
-        className={`block ${!isSerious ? "text-ink/70 italic" : "text-margin-blue"}${shouldReduceMotion ? "" : " handwrite-reveal-delay-1"}`}
-        style={!isSerious ? { fontSize: "0.5em" } : {}}
+        className={`block text-ink/70 italic${shouldReduceMotion ? "" : " handwrite-reveal-delay-1"}`}
+        style={{ fontSize: "0.5em" }}
       >
         {t("hero.of")}
       </span>
       <span
-        className={`block ${!isSerious ? "" : "underline-sketch"}${shouldReduceMotion ? "" : " handwrite-reveal-delay-2"}`}
+        className={`block${shouldReduceMotion ? "" : " handwrite-reveal-delay-2"}`}
       >
         {t("hero.name")}
       </span>
@@ -49,6 +49,20 @@ function FieldNotebookHero() {
   const shouldReduceMotion = useReducedMotion();
   const jpFont = isJapanese ? { fontFamily: "var(--font-jp-handwritten)" } : {};
 
+  // Everything in the annotation layer is commentary ON the chart, so it waits
+  // for the chart. Before this flips, the hero is just the title block and the
+  // one thing to click; afterwards the ink arrives around the terrain.
+  const mapReady = useMapReady();
+  /** Fade an annotation in once the map exists (and honour reduced motion). */
+  const ink = (delay: number) =>
+    shouldReduceMotion
+      ? { initial: false as const, animate: { opacity: mapReady ? 1 : 0 } }
+      : {
+          initial: { opacity: 0 },
+          animate: { opacity: mapReady ? 1 : 0 },
+          transition: { duration: 0.7, delay: mapReady ? delay : 0 },
+        };
+
   // Clouds drift sideways as the page scrolls (and ride the hero up and out).
   const { scrollY } = useScroll();
   const cloudX0 = useTransform(scrollY, [0, 700], [0, HERO_CLOUDS[0].scrollDrift]);
@@ -68,8 +82,12 @@ function FieldNotebookHero() {
             className={`hidden md:block absolute z-0 pointer-events-none ${cloud.cls}`}
             style={{ x: shouldReduceMotion ? undefined : cloudX[i] }}
             initial={shouldReduceMotion ? false : { opacity: 0, y: -10 }}
-            animate={{ opacity: 0.92, y: 0 }}
-            transition={shouldReduceMotion ? { duration: 0 } : { duration: 1.0, delay: cloud.delay }}
+            animate={{ opacity: mapReady ? 0.92 : 0, y: 0 }}
+            transition={
+              shouldReduceMotion
+                ? { duration: 0 }
+                : { duration: 1.0, delay: mapReady ? cloud.delay : 0 }
+            }
           >
             <Image
               src="/basecamp/cloud01.svg"
@@ -85,10 +103,8 @@ function FieldNotebookHero() {
         {/* Charted weather mark — frames the clouds as a survey annotation
             rather than cartoon decoration */}
         <motion.div
-          className="hidden md:flex absolute top-[19%] left-[31%] z-0 flex-col items-start gap-0.5 text-ink/55 pointer-events-none -rotate-3"
-          initial={shouldReduceMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.9, delay: 1.9 }}
+          className="hidden md:flex absolute top-[19%] left-[31%] z-0 flex-col items-start gap-0.5 text-sepia pointer-events-none -rotate-3"
+          {...ink(0.5)}
         >
           <InkWind className="w-20" />
           <span className="handwritten text-[0.7rem] uppercase tracking-[0.18em] pl-3" style={jpFont}>
@@ -98,11 +114,9 @@ function FieldNotebookHero() {
 
         {/* Field-notes annotation — tucked just above the map's top edge */}
         <motion.p
-          className="hidden md:block absolute top-[32%] left-8 max-w-[230px] handwritten text-ink/60 text-sm leading-snug -rotate-2 z-20"
+          className="hero-margin-note hidden md:block absolute top-[32%] left-8 max-w-[230px] handwritten text-sepia text-sm leading-snug -rotate-2 z-20"
           style={jpFont}
-          initial={shouldReduceMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.2, duration: 0.8 }}
+          {...ink(0.8)}
         >
           {t("hero.map_note")} ↘
         </motion.p>
@@ -113,12 +127,13 @@ function FieldNotebookHero() {
           animate={{ opacity: 1, y: 0 }}
           transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8 }}
         >
-          <HeroTitle compact />
+          <HeroTitle />
 
-          {/* What he does sits directly under the title — the substance read
-              first, ahead of the surveyor's credit (now in the chart margin). */}
+          {/* What he does. This is the one sentence the whole hero exists to
+              deliver, so it gets a paper backing: it used to be set straight
+              onto the terrain, where the contour hatching ate it. */}
           <motion.p
-            className="mt-2.5 mx-auto max-w-[28rem] handwritten text-ink/75 text-sm md:text-base tracking-wide leading-snug"
+            className="hero-lede handwritten"
             style={jpFont}
             initial={shouldReduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -126,13 +141,33 @@ function FieldNotebookHero() {
           >
             {t("hero.subtitle_role")}
           </motion.p>
+
+          {/* The one thing to click above the fold. The résumé is the strongest
+              evidence on the site and used to be 6,400px away. */}
+          <motion.div
+            className="mt-5 flex justify-center pointer-events-auto"
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: 1.15 }}
+          >
+            <Link href="/resume" className="hero-cta group" style={{ textDecoration: "none" }}>
+              <span className="hero-cta-tape" aria-hidden="true" />
+              <span className="hero-cta-label handwritten" style={jpFont}>
+                {t("hero.cta_resume")} →
+              </span>
+              <span className="hero-cta-sub handwritten" style={jpFont}>
+                {t("hero.cta_resume_sub")}
+              </span>
+            </Link>
+          </motion.div>
         </motion.div>
 
-        {/* Taped polaroid of the cartographer. Portrait: tucked into the
-            top-left below the title — a field photo taped to the chart.
-            Desktop keeps it down in the open water, bottom-left. */}
+        {/* Taped polaroid of the cartographer. Narrow screens keep it IN FLOW
+            under the title block, inside the quiet paper band, because absolute
+            placement there landed it on top of the map's own labels. Desktop
+            keeps it down in the open water, bottom-left. */}
         <motion.div
-          className="absolute top-56 left-3 md:top-auto md:bottom-16 md:left-10 pointer-events-auto"
+          className="relative mt-4 self-center pointer-events-auto md:absolute md:mt-0 md:self-auto md:bottom-16 md:left-10"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 30, rotate: -10 }}
           animate={{ opacity: 1, y: 0, rotate: -5 }}
           transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 1.4 }}
@@ -156,31 +191,17 @@ function FieldNotebookHero() {
             anchored in the open water bottom-right */}
         <motion.div
           className="hidden md:flex absolute bottom-28 right-24 flex-col items-center gap-2 text-ink/70"
-          initial={shouldReduceMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.9, delay: 2.0 }}
+          {...ink(1.0)}
         >
           <InkCompassRose className="w-20 h-20" />
           <InkScaleBar className="w-44" />
-          <p className="scale-bar-caption -mt-1" style={jpFont}>
-            ({t("hero.scale_note")})
-          </p>
-          {/* the surveyor's credit, where it belongs — in the chart margin */}
-          <p className="handwritten text-ink/45 text-[0.62rem] uppercase tracking-[0.18em] mt-2 text-center" style={jpFont}>
-            {t("hero.credit")}
-          </p>
-        </motion.div>
-
-        {/* Subtitle — inked across the bottom of the chart, not stacked under
-            the title block */}
-        <motion.div
-          className="absolute bottom-[14.5rem] md:bottom-[5.5rem] left-1/2 -translate-x-1/2 w-[min(92%,30rem)] hero-map-annotation text-center z-20"
-          initial={shouldReduceMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: 1.0 }}
-        >
-          <p className="diary-subtitle handwritten" style={jpFont}>
-            {t("hero.subtitle")}
+          {/* One margin line, not three: the scale joke and the surveyor's
+              credit used to stack into their own little paragraph. */}
+          <p
+            className="hero-margin-note handwritten text-sepia text-[0.7rem] uppercase tracking-[0.14em] mt-3 max-w-[15rem] text-center leading-relaxed"
+            style={jpFont}
+          >
+            {t("hero.margin_credit")}
           </p>
         </motion.div>
 
@@ -199,62 +220,6 @@ function FieldNotebookHero() {
   );
 }
 
-/** Serious mode keeps the clean, centered layout. */
-function SeriousHero() {
-  const { t, isJapanese } = useTranslation();
-  const shouldReduceMotion = useReducedMotion();
-  const jpFont = isJapanese ? { fontFamily: "var(--font-jp-handwritten)" } : {};
-
-  return (
-    <section className="min-h-[70vh] md:min-h-screen flex flex-col items-center justify-center px-4 py-12 md:py-20 relative overflow-hidden">
-      <motion.div
-        className="text-center z-10 relative"
-        initial={shouldReduceMotion ? false : { opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.8 }}
-      >
-        <div className="mb-8">
-          <HeroTitle />
-        </div>
-
-        <motion.div
-          className="my-4 md:my-6 flex justify-center relative"
-          initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 0.5 }}
-        >
-          <HeroAvatarTransition
-            width={800}
-            height={1080}
-            className="w-[180px] sm:w-[220px] md:w-[300px] lg:w-[360px]"
-          />
-        </motion.div>
-
-        <motion.div
-          initial={shouldReduceMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: 0.8 }}
-        >
-          <p className="diary-subtitle max-w-md mx-auto handwritten" style={jpFont}>
-            {t("hero.subtitle")}
-          </p>
-        </motion.div>
-
-        <motion.div
-          className="mt-8 md:mt-12"
-          animate={shouldReduceMotion ? undefined : { y: [0, 10, 0] }}
-          transition={shouldReduceMotion ? undefined : { duration: 1.5, repeat: Infinity }}
-        >
-          <div className="handwritten text-ink/60" style={jpFont}>
-            {t("hero.scroll")}
-          </div>
-        </motion.div>
-      </motion.div>
-    </section>
-  );
-}
-
 export default function Hero() {
-  const { isSerious } = useSeriousMode();
-  return isSerious ? <SeriousHero /> : <FieldNotebookHero />;
+  return <FieldNotebookHero />;
 }

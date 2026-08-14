@@ -23,27 +23,28 @@ export default function LanguageToggle() {
         }`}
         aria-label={`Switch language to ${language === 'en' ? 'Japanese' : 'English'}`}
       >
+        {/* The inactive language used to be struck through, so in English mode
+            日本語 rendered crossed out. A strikethrough reads as "unavailable",
+            not "click to switch", which is the wrong signal on the wrong control
+            for a portfolio aimed at Japanese employers. In a real notebook you
+            circle the option you chose; you do not cross out the alternative. */}
         <div className="flex items-center gap-1 md:gap-2">
-          <span 
-            className={`text-sm md:text-lg ${
-              language === 'en' 
-                ? 'text-ink font-bold' 
-                : 'text-ink/50 scribble-strikethrough'
+          <span
+            className={`lang-option text-sm md:text-lg ${
+              language === 'en' ? 'lang-option-active' : 'text-sepia'
             }`}
             style={{ fontFamily: "'Patrick Hand', cursive" }}
           >
             EN
           </span>
 
-          <span className="text-sm md:text-base text-ink/30" style={{ fontFamily: "'Patrick Hand', cursive" }}>
+          <span className="text-sm md:text-base text-ink/40" style={{ fontFamily: "'Patrick Hand', cursive" }}>
             |
           </span>
 
-          <span 
-            className={`text-sm md:text-lg ${
-              language === 'ja' 
-                ? 'text-ink font-bold' 
-                : 'text-ink/50 scribble-strikethrough'
+          <span
+            className={`lang-option text-sm md:text-lg ${
+              language === 'ja' ? 'lang-option-active' : 'text-sepia'
             }`}
             style={{ fontFamily: "var(--font-jp-handwritten)" }}
           >

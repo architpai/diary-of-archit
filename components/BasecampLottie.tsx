@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useReducedMotion } from 'framer-motion';
 import type { AnimationItem } from 'lottie-web';
 
@@ -19,13 +19,37 @@ export default function BasecampLottie({
 }: BasecampLottieProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
+  // The folded map is an 880KB JSON for a section around 6,000px down the page.
+  // Nothing above the fold needs it, so it waits until the reader is heading
+  // that way rather than competing with the terrain for bandwidth on arrival.
+  const [inRange, setInRange] = useState(false);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      setInRange(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setInRange(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '800px 0px' },
+    );
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     let animation: AnimationItem | undefined;
     let isDisposed = false;
     const container = containerRef.current;
 
-    if (!container) return;
+    if (!container || !inRange) return;
 
     const loadAnimation = async () => {
       const lottie = (await import('lottie-web')).default;
@@ -58,7 +82,7 @@ export default function BasecampLottie({
       animation?.destroy();
       container.textContent = '';
     };
-  }, [autoplay, loop, path, shouldReduceMotion]);
+  }, [autoplay, inRange, loop, path, shouldReduceMotion]);
 
   return <div ref={containerRef} className={className} aria-hidden="true" />;
 }

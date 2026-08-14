@@ -18,6 +18,12 @@ export const sceneState = {
    *  contact/footer tail — fades the timeline pins so they don't bleed over
    *  the closing content (which has no waypoint of its own to fly to). */
   tail: 0,
+  /** 1 while a PHONE-WIDTH hero is on screen, ramping to 0 as it scrolls away.
+   *  A 390px column cannot hold the title block, the lede, the call to action
+   *  and four floating map tags at once — the tags end up under the paper. So
+   *  narrow screens meet the chart unlabelled and the pins arrive with the
+   *  journey. Always 0 on desktop, where there is room for all of it. */
+  heroQuiet: 0,
   /** Skill name currently hovered in the legend panel (flares its star) */
   hoverSkill: null as string | null,
   /** Skill id hovered/tapped in the night sky — its companions orbit it */

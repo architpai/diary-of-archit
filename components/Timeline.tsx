@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import Image from 'next/image';
 import { avatarBox } from './avatarDimensions';
-import { useSeriousMode } from '@/contexts/SeriousModeContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { EXPERIENCE_PIN, experienceColor } from './hero3d/mapData';
 import { InkPlane, InkRoute } from './icons/InkIcons';
@@ -277,6 +276,11 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
             type="button"
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
+            aria-label={
+              expanded
+                ? t('timeline.notes_less')
+                : `${t('timeline.notes_more')} (${bullets.length})`
+            }
             className={`mt-4 handwritten text-sm text-ink/60 hover:text-ink transition-colors cursor-pointer ${
               hiddenCount > 0 ? '' : 'md:hidden'
             }`}
@@ -288,7 +292,7 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
             }}
           >
             {expanded ? (
-              `${t('timeline.notes_less')} ↑`
+              <>{t('timeline.notes_less')} <span aria-hidden="true">↑</span></>
             ) : (
               <>
                 {t('timeline.notes_more')}{' '}
@@ -296,7 +300,7 @@ function ExperienceCard({ exp, index }: { exp: Experience; index: number }) {
                 {hiddenCount > 0 && (
                   <span className="hidden md:inline">(+{hiddenCount})</span>
                 )}{' '}
-                ↓
+                <span aria-hidden="true">↓</span>
               </>
             )}
           </button>
@@ -315,7 +319,7 @@ function BoardingStub({ leg }: { leg: number }) {
 
   return (
     <div className="route-leg py-8 md:py-28" style={jpFont}>
-      <p className="text-sm md:text-base text-ink/50 mb-3">
+      <p className="text-sm md:text-base text-sepia mb-3">
         {t(`timeline.leg_${leg}_rewind`)}
       </p>
       <div
@@ -327,7 +331,7 @@ function BoardingStub({ leg }: { leg: number }) {
             <InkPlane className="w-5 h-5 shrink-0" color="#64513B" />
             <span className="boarding-route">{t(`timeline.leg_${leg}_route`)}</span>
           </div>
-          <p className="text-sm opacity-80 mt-0.5">{t(`timeline.leg_${leg}_note`)}</p>
+          <p className="text-sm mt-0.5">{t(`timeline.leg_${leg}_note`)}</p>
         </div>
         <div className="boarding-stub-tear">
           <span className="text-[10px] uppercase tracking-[0.2em] opacity-70">
@@ -343,14 +347,12 @@ function BoardingStub({ leg }: { leg: number }) {
 }
 
 export default function Timeline() {
-  const { isSerious } = useSeriousMode();
   const { content, t, isJapanese } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const experiences = content.experiences as Experience[];
 
   return (
     <section className="py-20 relative">
-      {!isSerious ? (
         <motion.div
           className="text-center mb-24 px-4"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
@@ -365,68 +367,27 @@ export default function Timeline() {
               <InkRoute className="w-9 h-9 shrink-0 text-ink/80" />
               {t('timeline.title_diary')}
             </h2>
+            {/* The positioning line, moved down out of the hero: it was competing
+                with the role sentence up there, and it reads better as the thing
+                that opens the story than as a second headline. */}
             <p
-              className="handwritten text-ink/50 text-sm mt-1"
+              className="handwritten text-ink text-base md:text-lg mt-2 max-w-[26rem] mx-auto leading-snug"
+              style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
+            >
+              {t('hero.subtitle')}
+            </p>
+            <p
+              className="handwritten text-sepia text-sm mt-2"
               style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
             >
               {t('timeline.map_hint')}
             </p>
           </div>
         </motion.div>
-      ) : (
-        <motion.h2
-          className="diary-title text-3xl md:text-4xl text-center mb-10 pt-16 text-ink"
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          style={isJapanese ? { fontFamily: 'var(--font-jp-handwritten)' } : {}}
-        >
-          {t('timeline.title_serious')}
-        </motion.h2>
-      )}
 
       <div className="relative max-w-7xl mx-auto px-4 md:px-10">
-        {isSerious ? (
-          // Clean vertical timeline for serious mode
-          <div className="timeline max-w-4xl">
-            <div className="timeline-line bg-gray-300" />
-            {experiences.map((exp, index) => (
-              <motion.div
-                key={exp.id}
-                className="relative mb-16"
-                initial={shouldReduceMotion ? false : { opacity: 0, x: -50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: index * 0.2 }}
-              >
-                <div
-                  className="timeline-dot bg-gray-600 border-white"
-                  style={{ top: '20px' }}
-                />
-                <div className="ml-8 p-6 bg-white border border-gray-200 rounded">
-                  <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
-                    <div>
-                      <span className="text-lg font-bold font-sans">{exp.date}</span>
-                      <h3 className="text-xl md:text-2xl font-bold text-ink font-sans">
-                        {exp.professionalTitle}
-                      </h3>
-                      <p className="text-gray-600 font-sans text-sm">
-                        @ {exp.company}
-                      </p>
-                    </div>
-                  </div>
-                  <ul className="list-disc list-inside space-y-1 font-sans text-sm text-gray-800">
-                    {exp.resumeBulletPoints.map((point: string, i: number) => (
-                      <li key={i}>{point}</li>
-                    ))}
-                  </ul>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        ) : (
-          // Journey waypoints — big gaps between cards let the map (and the
-          // camera flight) show through; boarding-pass stubs mark each leg.
+          {/* Journey waypoints: big gaps between cards let the map (and the
+              camera flight) show through; boarding-pass stubs mark each leg. */}
           <div className="relative">
             {experiences.map((exp, index) => (
               <div key={exp.id}>
@@ -435,7 +396,6 @@ export default function Timeline() {
               </div>
             ))}
           </div>
-        )}
       </div>
     </section>
   );
